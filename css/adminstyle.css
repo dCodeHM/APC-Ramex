@@ -284,6 +284,7 @@ header nav{
 
 .line{
     border-top: 5px solid white;
+    border-radius: 5px;
 }
 
 .right{
@@ -380,6 +381,7 @@ header nav{
 
 .adminline{
     border-top: 5px solid black;
+    border-radius: 5px;
 }
 
 .table{
