@@ -384,6 +384,11 @@ header nav{
     border-radius: 5px;
 }
 
+.userline{
+    border-top: 5px solid black;
+    border-radius: 5px;
+}
+
 .table{
     background-color: #EDEDED;
     border: #000000;
