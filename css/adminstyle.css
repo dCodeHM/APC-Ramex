@@ -284,7 +284,6 @@ header nav{
 
 .line{
     border-top: 5px solid white;
-    border-radius: 5px;
 }
 
 .right{
@@ -328,8 +327,8 @@ header nav{
 
 /* User Settings */
 .userhead{
-    width: 80%;
-    text-align: left;
+    width: 50%;
+    text-align: right;
     margin-left: 0;
 }
 
@@ -381,7 +380,6 @@ header nav{
 
 .adminline{
     border-top: 5px solid black;
-    border-radius: 5px;
 }
 
 .userline{
