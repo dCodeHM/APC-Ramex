@@ -2,7 +2,6 @@ body{
     font: 15px/1.5 Arial, Helvetica, sans-serif;
     padding: 0;
     margin: 0;
-    background-color: #ffffff;
     align-content: center;
     width: 100vw;
     height: auto;
@@ -10,7 +9,6 @@ body{
     /*remove if you want it to be responsive in using the phone*/
     /* Should stop downsizing after 1024px */
     min-width: 1024px;
-    min-height: 768px;
 }
 
 /* Global */
@@ -202,6 +200,9 @@ header nav{
     font-size: 20px;
 }
 
-@media for screens {
-    
-}
+/* 
+@media (max-width: 700px) {
+    .container1, .container2, .notification, .user, .container {   
+      flex-direction: column;
+    }
+  } */
