@@ -2,8 +2,15 @@ body{
     font: 15px/1.5 Arial, Helvetica, sans-serif;
     padding: 0;
     margin: 0;
-    background-color: #f4f4f4;
+    background-color: #ffffff;
     align-content: center;
+    width: 100vw;
+    height: auto;
+
+    /*remove if you want it to be responsive in using the phone*/
+    /* Should stop downsizing after 1024px */
+    min-width: 1024px;
+    min-height: 768px;
 }
 
 /* Global */
@@ -24,14 +31,6 @@ body{
     filter: drop-shadow(0 0 0.75rem #0000008a); /*SHADOW*/
 }
 
-/*3 BOXES*/
-#services{
-    width: auto;
-    margin: auto;
-    overflow: hidden;
-    max-width: auto;
-}
-
 .box{
     display:flex;
     justify-content: center;
@@ -44,8 +43,8 @@ body{
     transition: 1s;
 }
 
-.box:hover{
-    transform: scale(1.1);
+.box:hover{/*BOXES HOVER*/
+    transform: scale(1.05);
     z-index: 2;
 }
 
@@ -150,15 +149,9 @@ header nav{
 /* Showcase YELLOW BOX*/
 
 #showcase img{
-    margin-top: 20px;
+    margin-top: 2rem;
     width: 100%;
-    margin-bottom: 0px;
-    object-fit: contain;
-}
-
-.showcase p{
-    text-align: center;
-    font-size: 20px;
+    padding-bottom: 2vh;
 }
 
 /* Boxes */
@@ -169,7 +162,6 @@ header nav{
     /* border: #000000 solid; */
 }
 .container2{
-    padding: 2em;
     display: grid;
     grid-gap: 0.5em;
     grid-template-columns: repeat(auto-fit, minmax(333px, 1fr));
@@ -181,6 +173,7 @@ header nav{
 
         p{
             margin-top: 0;
+            font-size: 1vw;
         }
 
         span{
@@ -209,18 +202,6 @@ header nav{
     font-size: 20px;
 }
 
-.container{
-    object-fit: cover;
-    position: relative;
-
+@media for screens {
+    
 }
-
-/*WHITE LOGO INSIDE YELLOW BOX*/
-.image2{
-    position: absolute;
-    right: center;
-    top: 20%;
-    max-width: 100%;
-    max-height: 100%;
-}
-
