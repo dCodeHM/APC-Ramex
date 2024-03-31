@@ -10,6 +10,8 @@ body{
     /*remove if you want it to be responsive in using the phone*/
     /* Should stop downsizing after 1024px */
     min-width: 968px;
+
+    overflow: hidden;
 }
 
 /* Header */

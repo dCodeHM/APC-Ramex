@@ -8,6 +8,9 @@ body{
     /*remove if you want it to be responsive in using the phone*/
     /* Should stop downsizing after 1024px */
     min-width: 1024px;
+
+    /* remove this if you want it to be scrollable */
+    /* overflow: hidden; */
 }
 
 /* Global */
