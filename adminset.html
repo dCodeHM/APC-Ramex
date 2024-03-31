@@ -21,9 +21,6 @@
             <a href="ca.html"><img id="caheader" src="./img/Course Assessment Header.png"></a>
             <a href="em.html"><img id="emheader" src="./img/Exam Maker Header.png"></a>
 
-            <!--
-                Sheesh
-            -->
         </div>
 
         <nav>
@@ -118,21 +115,15 @@
             <div class="righthead">
 
                 <div class="adminicon">
-                    <img lass="iconadmin" src ="./img/adminsett.png" width="100%">
+                    <img lass="iconadmin" src ="./img/adminsett.png"  min-width="100%"  >
                 </div>
 
                 <div class="adminhead">
                     <p> Admin Settings</p>
                 </div>
 
-                <div class="search">
-                    <div>
-                        <input type="text" class="searchbar">
-                    </div>
-
-                    <div class="searchicon">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </div>
+                <div class="searchicon " style="position:relative; left: auto">
+                    <input type="text" class="searchbar" >
                 </div>
             </div>
 
@@ -157,11 +148,27 @@
                     </div>
 
                     <div class="adassign">
-                        <p> Unassigned </p>                        
+                        <div class="adminassigned" style="position:relative; bottom: 30px">
+                            <p> Unassigned </p>   
+                        </div>                  
                     </div>
 
+                    <div class="dropdown">
+                            <button class="dropbtn"><img lass="arrowdown" src ="./img/arrowdown.png"></button>
+                            <div class="dropdown-content">
+                              <a href="#">Unassigned</a>
+                              <a href="#">Professor</a>
+                              <a href="#">Program Director (Computer Engineering)</a>
+                              <a href="#">Program Director (Electronics Engineering)</a>
+                              <a href="#">Program Director (Civil Engineering)</a>
+                              <a href="#">Program Director (Architecture)</a>
+                              <a href="#">Executive Director (EX-D)</a>
+                            </div>
+                          </div>
+                          
+
                     <div class="adremove">
-                        <a href="#"> Remove </a>
+                        <a href="#" style="position:relative; right: 50px"> Remove </a>
                     </div>
                 </div>
             </div>
