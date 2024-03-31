@@ -425,8 +425,9 @@ header nav{
     height: fit-content;
     width:  97%;
     text-align: right;
-    font-weight: bo;
     margin: 15px auto;
+    /* min-width: 100vh;
+    min-height: 15%; */
 }
 
 .adminame{
@@ -569,7 +570,7 @@ header nav{
     z-index: 1;
     bottom: 100%;
     left: 50%;
-    margin-left: -60px;
+    margin-left: 10px;
     border: #000000;
     border-style: solid;
     border-width: 2px;
@@ -583,3 +584,4 @@ header nav{
     visibility: visible;
     opacity: 1;
   }
+
