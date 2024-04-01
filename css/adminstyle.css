@@ -1,8 +1,17 @@
+/* start copying here */
 body{
     font: 15px/1.5 Arial, Helvetica, sans-serif;
     padding: 0;
     margin: 0;
-    background-color: #f4f4f4;
+    align-content: center;
+    width: 100%;
+    height: auto;
+
+    /*remove if you want it to be responsive in using the phone*/
+    /* Should stop downsizing after 1024px */
+    min-width: 968px;
+
+    overflow: hidden;
 }
 
 /* Header */
@@ -10,49 +19,40 @@ header{
     background: #293A82;
     color: #ffffff;
     padding-top: 0;
-    min-height: 90px;
+    min-height: 100px;
 }
-
 header a{
     color: #ffffff;
     text-decoration: none;
     text-transform: uppercase;
     font-size: 20px;
 }
-
 header ul{
     margin: 0;
     padding: 0;
     list-style: none;
 }
-
 header li{
     float: left;
     display: inline;
     position: relative;
     padding: 0 20px 30px 20px;
 }
-
 header .user{
-    padding: 0 0 30px 0;
+    padding: 0 0 0 0;
 }
-
 header .notification{
     padding: 7px 20px 20px 10px;
 }
-
 header .notification img{
     padding: 0 0 0 20px;
 }
-
 header .username{
     padding: 0 30px 0 0;
 }
-
 header li ul.dropdown li{
     display: block;
 }
-
 header li ul.dropdown{
     width: 100%;
     background: #ffffff;
@@ -64,7 +64,6 @@ header li ul.dropdown{
     display: none;
     align-items: center;
 }
-
 header li ul.dropdown h3{
     color: #000000;
     margin: 10px 60px 10px 30px;
@@ -72,7 +71,6 @@ header li ul.dropdown h3{
     position: relative;
     display: inline-block;
 }
-
 header li ul.dropdown p{
     color: #000000;
     margin: 10px 60px 10px 15px;
@@ -80,30 +78,47 @@ header li ul.dropdown p{
     position: relative;
     display: inline-block;
 }
-
 header .settings li{
     padding: 20px 100px 20px 70px;
     margin: 10px 50px 10px 10px;
     position: relative;
-    background: url(../img/Settings.png) no-repeat;
-    
+    background: url(../img/Settings.png) no-repeat; 
 }
-
 header .settings li:hover{
     background: url(../img/Settings\ Hover.png) no-repeat;
 }
-
 header .logout li{
     padding: 20px 100px 20px 70px;
     margin: 10px 50px 10px 10px;
     position: relative;
     background: url('../img/Logout.png') no-repeat;
 }
-
 header .logout li:hover{
     background: url(../img/Settings\ Hover.png) no-repeat;
 }
+header li:hover ul.dropdown{
+    display: block;
+}
+header #branding{
+    float: left;
+}
+header #branding img{
+    margin-top: 20px;
+    width: 230px;
+    margin-bottom: 0;
+}
+header nav{
+    float: right;
+    margin-top: 20px;
+}
 
+/* Showcase YELLOW BOX*/
+
+#showcase img{
+    margin-top: 2rem;
+    width: 100%;
+    padding-bottom: 2vh;
+}
 /* header li:active ul.dropdown{
     display: block;
 } */
@@ -133,6 +148,7 @@ nav a:active + ul {
 
 header #branding{
     float: left;
+    
 }
 
 header #branding img{
@@ -164,8 +180,9 @@ header #branding #emheader{
 
 header nav{
     float: right;
-    margin-top: 20px;
 }
+
+/* Copy until */
 
 /* Navbar */
 .navbar{
@@ -214,11 +231,15 @@ header nav{
 .column{
     display: flex;
     width: 100%;
+    img{
+        max-width: 100%;
+        max-height: 100%;
+    }
 }
 
 .left{
-    width:5%;
-    height:92vh;
+    width: 50px;
+    height: 100vh;
     background-color: #343A40;
 }
 
@@ -241,7 +262,7 @@ header nav{
 
 .mid{
     width: 20%;
-    height:92vh;
+    height: 100vh;
     background-color: #454C52;
     text-align: center;
 }
@@ -287,14 +308,13 @@ header nav{
 }
 
 .right{
-
     height:86vh;
-    width: 75%;
+    width: 100%;
     text-align: center;
 }
 
 .container{
-    width:80%;
+    width: 90%;
     margin: auto;
 }
 
@@ -304,22 +324,30 @@ header nav{
     align-items: center;
 }
 
+/* USER PROFILE IMAGE PICTURE*/
+.adminicon{ 
+    margin-top: 70px;
+    width: 100px;
+    padding: 1vh;
+    height: 100px;
 
-.adminicon{
-    width: 7%;
-    padding: 10px;
-    margin: auto;
+    img{
+        max-width: 100%;
+        max-height: 100%;
+    }
+    
 }
 
 /* Admin Settings */
 .adminhead{
+    margin-top: auto;
     width: 50%;
     text-align: right;
     margin-left: 0;
 }
 
 .adminhead p{
-    font-size: 40px;
+    font-size: 39.3px;
     font-weight: 700;
     text-align: left;
     color: #343A40;
@@ -327,6 +355,7 @@ header nav{
 
 /* User Settings */
 .userhead{
+    margin-top: auto;
     width: 50%;
     text-align: right;
     margin-left: 0;
@@ -344,6 +373,7 @@ header nav{
     width: 50%;
     text-align: right;
     margin-left: 0;
+    margin-top: auto;
 }
 
 .programlisthead p{
@@ -353,30 +383,24 @@ header nav{
     color: #343A40;
 }
 
-.search{
-    background-color: #ffffff;
-    padding: 10px;
-    align-items: center;
-    border: solid 3px;
-    height: 30px;
-    width: 40%;
-    border-radius: 5px;
-    display: flex;
-    text-align: center;
-    margin: auto;
-}
-
 .searchbar{
-    border-width: 0;
-    height: 30px;
-    width: 280px;
+    width: 400px;
+    min-width: 100%;
+    min-height: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    left: 100px;
+    box-sizing: border-box;
+    border: 3px solid #000000;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+    max-width: 100%;
+    max-height: 100%;
     border-radius: 5px;
 }
 
-.searchicon i{
-    font-size: 30px;
-    padding: 10px;
-}
+
 
 .adminline{
     border-top: 5px solid black;
@@ -392,22 +416,23 @@ header nav{
     text-align: center;
     
 }
-
+/* white background inside center box */
 .tablecontent{
     display: flex;
     background-color: #ffffff;
     border-radius: 10px;
     height: fit-content;
-    width: 90%;
-    text-align: center;
-    margin: 10px auto;
-    
+    width:  97%;
+    text-align: right;
+    margin: 15px auto;
+    /* min-width: 100vh;
+    min-height: 15%; */
 }
 
 .adminame{
     padding: 5px 20px;
     text-align: left;
-    width: 40%;
+    width: 100%;
     margin: auto;
     line-height: 5px;
 }
@@ -420,6 +445,8 @@ header nav{
 .adrequest{
     width: 10%;
     margin: auto;
+    text-align: center;
+    color: white;
 }
 
 .adrequest p{
@@ -428,10 +455,13 @@ header nav{
     border-radius: 50px;
 }
 
+/* box inside the white */
 .adassign{
     text-align: left;
-    width: 40%;
+    /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
+    width: 50%;
     margin: auto 20px;
+    padding-top: 30px;;
 }
 
 .adassign p{
@@ -443,6 +473,8 @@ header nav{
 .adremove{
     width: 20%;
     margin: auto;
+    text-align: center;
+    
 }
 
 .adremove a{
@@ -474,4 +506,141 @@ header nav{
     color: #343A40;
 
 }
+
+/* DROP DOWN IN USER PROFILE */
+.admindropbtn {
+    padding: px;
+    border: none;
+    border-radius: 5px;
+    height: 30px;
+    width: 30px;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+    padding-top: 50px;
+    right: 143px;
+    bottom: 2px;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    text-align: left;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-content a:hover {background-color: #ddd;}
+  
+  .dropdown:hover .dropdown-content {display: block;}
+  
+  .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+  /* DROP DOWN FOR ADMIN SETTINGS */
+
+  /* DROP DOWN IN USER PROFILE */
+.dropbtn {
+    padding: px;
+    border: none;
+    border-radius: 5px;
+    height: 30px;
+    width: 30px;
+  }
+  
+  .admindropdown {
+    position: relative;
+    display: inline-block;
+    padding-top: 50px;
+    right: 143px;
+    bottom: 2px;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 35vh;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    text-align: left;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-content a:hover {background-color: #ddd;}
+  
+  .dropdown:hover .dropdown-content {display: block;}
+  
+  .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+  /* HOVER USER INFORMATION */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    height: 25px;
+    right: 130px;
+    top: 50px;
+  }
+  
+  /* on hover text */
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 25em;
+    height: auto;
+    background-color: rgb(255, 255, 255);
+    color: #000000;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: 10px;
+    border: #000000;
+    border-style: solid;
+    border-width: 2px;
+    
+    /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+    opacity: 0;
+    transition: opacity 1s;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .adminassigned{
+    text-align: left;
+    /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
+    width: 60%;
+    left: 100px;
+    margin: auto 20px;
+    padding-top: 30px;;
+}
+
+.adminassigned p{
+    border-radius: 5px;
+    padding: 5px 20px;
+    border: solid 2px;
+}
+
 
