@@ -9,6 +9,7 @@ header #branding #emactive{
     width:95%;
 }
 
+/* label */
 .rightemhead{
     display: flex;
     height: 120px;
@@ -50,6 +51,7 @@ header #branding #emactive{
     color: #343A40;
 }
 
+/*2 boxes below line*/
 .embox{
     display: flex;
     
