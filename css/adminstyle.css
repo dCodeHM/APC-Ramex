@@ -304,13 +304,6 @@ header nav{
     align-items: center;
 }
 
-
-.adminicon{
-    width: 7%;
-    padding: 10px;
-    margin: auto;
-}
-
 /* Admin Settings */
 .adminhead{
     width: 50%;
@@ -380,6 +373,7 @@ header nav{
 
 .adminline{
     border-top: 5px solid black;
+    border-radius: 5px;
 }
 
 .userline{
