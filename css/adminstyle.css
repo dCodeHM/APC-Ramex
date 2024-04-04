@@ -611,13 +611,15 @@ header nav{
     padding: 5px 0;
     position: absolute;
     z-index: 1;
-    bottom: 100%;
-    left: 50%;
+    bottom: -13rem;
+    left: 55%;
     margin-left: 10px;
     border: #000000;
     border-style: solid;
     border-width: 2px;
     margin-top: 20rem;
+
+
     
     /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
     opacity: 0;
