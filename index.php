@@ -15,7 +15,7 @@
         <header>
             <div class="container1">
                 <div id="branding">
-                    <a href="index.html"><img src="./img/APC AcademX Logo.png"></a>
+                    <a href="index.php"><img src="./img/APC AcademX Logo.png"></a>
                 </div>
 
                 <nav>
@@ -34,8 +34,8 @@
                             <ul class="dropdown">
                                 <h3>ADMIN</h3>
                                 <p>PROFESSOR</p>
-                                <a href="usersettings.html" class="settings"><li>Settings⚙️</li></a>
-                                <a href="test.html" class="logout"><li>Logout[➡</li></a>
+                                <a href="usersettings.php" class="settings"><li>Settings⚙️</li></a>
+                                <a href="test.php" class="logout"><li>Logout[➡</li></a>
                             </ul>
                         </li>
                     </ul>
@@ -54,21 +54,21 @@
         <section id="services">
             <div class="container2">
                 <div class="box">
-                    <a href="sa.html" class="fill-div">
+                    <a href="sa.php" class="fill-div">
                     <img src="./img/StudentAssessment.png">
                     <p>Organize and Record Grades: Encode the grades of students using CLO-based rubrics.</p>
                     </a>
                 </div>
 
                 <div class="box">
-                    <a href="ca.html" class="fill-div">
+                    <a href="ca.php" class="fill-div">
                     <img src="./img/CourseAssessment.png">
                     <p>Assess Courses: Assign courses and use the automatic assessment to make informed decisions.</p>
                     </a>
                 </div>
 
                 <div class="box">
-                    <a href="em.html" class="fill-div">
+                    <a href="em.php" class="fill-div">
                     <img src="./img/ExamMaker.png">
                     <p>Create Exams: Easily make multiple-choice exams using the system's question and exam library.</p>
                     </a>

@@ -252,12 +252,14 @@ header nav{
 
 .back{
     margin-top: 0;
-    padding: 10px;
+    position: relative;
 }
 
 .help{
     margin-bottom: 0;
-    padding-top: 530px;
+    position: relative;
+    top: 34.5rem;
+    min-width: 100%;
 }
 
 .mid{

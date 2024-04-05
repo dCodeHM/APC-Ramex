@@ -15,7 +15,7 @@
             <div class="container1">
 
                 <div id="branding">
-                    <a href="index.html"><img src="./img/APC AcademX Logo.png"></a>
+                    <a href="index.php"><img src="./img/APC AcademX Logo.png"></a>
                 </div>
 
                 <nav>

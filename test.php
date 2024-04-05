@@ -11,7 +11,7 @@
 
     <body>
         
-        <a href="index.html"><h1>LOGIN</h1></a>
+        <a href="index.php"><h1>LOGIN</h1></a>
         
         <script src="" async defer></script>
     </body>

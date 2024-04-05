@@ -16,10 +16,10 @@
     <div class="container1">
     
         <div id="branding">
-            <a href="index.html"><img src="./img/APC AcademX Logo.png"></a>
-            <a href="sa.html"><img id="saheader" src="./img/Student Assessment Header.png"></a>
-            <a href="ca.html"><img id="caheader" src="./img/Course Assessment Header.png"></a>
-            <a href="em.html"><img id="emheader" src="./img/Exam Maker Header.png"></a>
+            <a href="index.php"><img src="./img/APC AcademX Logo.png"></a>
+            <a href="sa.php"><img id="saheader" src="./img/Student Assessment Header.png"></a>
+            <a href="ca.php"><img id="caheader" src="./img/Course Assessment Header.png"></a>
+            <a href="em.php"><img id="emheader" src="./img/Exam Maker Header.png"></a>
         </div>
 
         <nav>
@@ -38,8 +38,8 @@
                     <ul class="dropdown">
                         <h3>ADMIN</h3>
                         <p>PROFESSOR</p>
-                        <a href="usersettings.html" class="settings"><li>Settings⚙️</li></a>
-                        <a href="test.html" class="logout"><li>Logout[➡</li></a>
+                        <a href="usersettings.php" class="settings"><li>Settings⚙️</li></a>
+                        <a href="test.php" class="logout"><li>Logout[➡</li></a>
                     </ul>
                 </li>
 
@@ -59,7 +59,7 @@
         <div class="sidenav" id="bar">
             
             <div class="back">
-                <a href="#">
+                <a href="index.php">
                     <img src="./img/Exam Maker (5) 6.png">
                 </a>
             </div>
@@ -85,19 +85,19 @@
             </div>
 
             <div>
-                <a href="usersettings.html" class="midbutton">
+                <a href="usersettings.php" class="midbutton">
                     <p> User Settings </p>
                 </a>
             </div>
 
             <div>
-                <a href="adminset.html" class="midbutton">
+                <a href="adminset.php" class="midbutton">
                     <p> Admin Settings </p>
                 </a>
             </div>
 
             <div>
-                <a href="programlist.html" class="midbutton active">
+                <a href="programlist.php" class="midbutton active">
                     <p> Program List </p>
                 </a>
             </div>

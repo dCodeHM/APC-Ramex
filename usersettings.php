@@ -17,10 +17,10 @@
     <!--done-->
     <div class="container1">
         <div id="branding">
-            <a href="index.html"><img src="./img/APC AcademX Logo.png"></a>
-            <a href="sa.html"><img id="saheader" src="./img/Student Assessment Header.png"></a>
-            <a href="ca.html"><img id="caheader" src="./img/Course Assessment Header.png"></a>
-            <a href="em.html"><img id="emheader" src="./img/Exam Maker Header.png"></a>
+            <a href="index.php"><img src="./img/APC AcademX Logo.png"></a>
+            <a href="sa.php"><img id="saheader" src="./img/Student Assessment Header.png"></a>
+            <a href="ca.php"><img id="caheader" src="./img/Course Assessment Header.png"></a>
+            <a href="em.php"><img id="emheader" src="./img/Exam Maker Header.png"></a>
         </div>
 
 <!--DONE-->
@@ -40,8 +40,8 @@
                             <ul class="dropdown">
                                 <h3>ADMIN</h3>
                                 <p>PROFESSOR</p>
-                                <a href="usersettings.html" class="settings"><li>Settings⚙️</li></a>
-                                <a href="test.html" class="logout"><li>Logout[➡</li></a>
+                                <a href="usersettings.php" class="settings"><li>Settings⚙️</li></a>
+                                <a href="test.php" class="logout"><li>Logout[➡</li></a>
                             </ul>
                         </li>
                     </ul>
@@ -59,7 +59,7 @@
         <div class="sidenav" id="bar">
             
             <div class="back">
-                <a href="#">
+                <a href="index.php">
                     <img src="./img/Exam Maker (5) 6.png">
                 </a>
             </div>
@@ -69,7 +69,7 @@
                     <img src="./img/Help.png"> 
                 </a>
             </div>
-        
+
         </div>
     </div>
 
@@ -86,19 +86,19 @@
             </div>
 
             <div>
-                <a href="usersettings.html" class="midbutton active">
+                <a href="usersettings.php" class="midbutton active">
                     <p> User Profile </p>
                 </a>
             </div>
 
             <div>
-                <a href="adminset.html" class="midbutton">
+                <a href="adminset.php" class="midbutton">
                     <p> Admin Settings </p>
                 </a>
             </div>
 
             <div>
-                <a href="programlist.html" class="midbutton">
+                <a href="programlist.php" class="midbutton">
                     <p> Program List </p>
                 </a>
             </div>
@@ -152,8 +152,8 @@
                           </div>
 
                           <div class="tooltip">
-                            <img lass="information" src ="./img/information.png">
-                            <span class="tooltiptext">
+                                <img lass="information" src ="./img/information.png">
+                                <span class="tooltiptext">
                                 <img src ="./img/information.png" width="10px">
                                 <b>Role information</b>
                                 <br>
@@ -161,35 +161,35 @@
                                     <span><br><b>2. Professor</b> - Has access to the Student Assessment and Exam Maker.
                                         <span><br><b>3. Program Director (PD)</b> - Has access to the Student Assessment, Course Assessment,and Exam Maker.
                                             <span><br><b>4. Executive Director (EX-D)</b> - Has access to the Student Assessment, Course Assessment, Exam Maker, and Admin Settings.
+                                        </span>
                                     </span>
                                 </span>
-                            </span>
-                        </div>
+                            </div>
 
-                        <div class="adrequest">
-                            <p> Request </p>
-                        </div>
+                            <div class="adrequest">
+                                <p> Request </p>
+                            </div>
 
                     </div>
     
                     <div class="tablecontent">
                         <p style="position:relative; left: 15px; top: 5px">
                             <b>First Name</b>
-                        </p>
+                            </p>
     
-                        <div class="adassign">
-                            <p style="position:relative; right: 84px"> 
+                            <div class="adassign">
+                                <p style="position:relative; right: 84px"> 
                                 Paulo
                             </p>                        
                         </div>
                     </div>
     
                     <div class="tablecontent">
-                        <p style="position:relative; left: 15px; top: 5px">
+                            <p style="position:relative; left: 15px; top: 5px">
                             <b>Last Name</b>
-                        </p>
+                            </p>
     
-                        <div class="adassign">
+                            <div class="adassign">
                             <p style="position:relative; right: 80px"> 
                                 Causo
                             </p>                        
@@ -197,16 +197,16 @@
                     </div>
     
                     <div class="tablecontent">
-                        <p style="position:relative; left: 15px; top: 5px">
+                            <p style="position:relative; left: 15px; top: 5px">
                             <b>Email Address</b>
-                        </p>
+                            </p>
     
-                        <div class="adassign">
-                                <p style="position:relative; right: 107px"> 
+                            <div class="adassign">
+                                    <p style="position:relative; right: 107px"> 
                                     pcausio@apc.edu.ph
-                                </p>
-                        </div>
-                    </div>
+                                    </p>
+                                </div>
+                            </div>
 
                     <div class="tablecontent">
                         <p style="position:relative; left: 15px; top: 5px">
