@@ -1,5 +1,5 @@
 <?
-
+$conn = mysqli_connect('localhost', 'root', '123', 'ramexdb');
 // database information (these are variables)
 $user = "root"; 
 $pass = "";
@@ -11,4 +11,7 @@ $db = new mysqli('localhost', $user, $pass, $db) or die("Unable to connect to My
 
 echo "Great work!!!";
 
+if(!$conn){
+    echo 'Connection Error: ' . mysqli_connect_error();
+}
 ?>

@@ -131,14 +131,41 @@
 
                 <div class="table" style="overflow: auto;">
                     <div class="tablecontent">
-    
+                        
                         <div class="adminame">
                             <div class="adname">
-                                <p> Cosio, Paulo </p>
+                                <p> <?php
+                                $conn = mysqli_connect("localhost", "root", "", "ramexdb");
+                                $sql = "SELECT * FROM account WHERE account_id = 1"; 
+                                $result = $conn->query($sql);
+
+                                if ($result) {
+                                    // output data of each row
+                                    while($row = $result->fetch_assoc()) {
+                                        
+                                        echo " " . $row["last_name"]. " ";
+                                        echo " " . $row["first_name"]. " ";            
+                                    }
+                                } else {
+                                    echo "0 results";
+                                }
+                                ?> </p>
                             </div>
     
                             <div class="ademail">
-                                <p> pauloc@apc.edu.ph </p>
+                                <p>
+                                    <?php
+                                    $result = $conn->query($sql);
+                                    if ($result) {
+                                    // output data of each row
+                                    while($row = $result->fetch_assoc()) {
+                                        
+                                        echo " " . $row["user_email"]. " ";         
+                                    }
+                                } else {
+                                    echo "0 results";
+                                }
+                                ?> </p>
                             </div>
                         </div>
     
@@ -167,176 +194,19 @@
                               
     
                         <div class="adremove">
-                            <button id="myButton" 
-                            style ="position: relative; right: 50px" 
-                            onclick="alert('Hello world!')">Click Me
-                        </button> 
-                        </div>
-                    </div>
-    
-                    <div class="tablecontent">
-                            <!--tang ina mo aivan love you-->
-                        <div class="adminame">
-                            <div class="adname">
-                                <p> Manes, Honniel </p>
-                            </div>
-    
-                            <div class="ademail">
-                                <p> hmanes@student.apc.edu.ph </p>
-                            </div>
-                        </div>
-    
-                        <div class="adrequest">
-                            <p> New </p>
-                        </div>
-    
-                        <div class="adassign">
-                            <div class="adminassigned" style="position:relative; bottom: 30px">
-                                <p> Professor </p>   
-                            </div>                  
-                        </div>
-    
-                        <div class="dropdown">
-                                <button class="dropbtn"><img lass="arrowdown" src ="./img/arrowdown.png"></button>
-                                <div class="dropdown-content">
-                                  <a href="#">Unassigned</a>
-                                  <a href="#">Professor</a>
-                                  <a href="#">Program Director (Computer Engineering)</a>
-                                  <a href="#">Program Director (Electronics Engineering)</a>
-                                  <a href="#">Program Director (Civil Engineering)</a>
-                                  <a href="#">Program Director (Architecture)</a>
-                                  <a href="#">Executive Director (EX-D)</a>
-                                </div>
-                              </div>
-                              
-    
-                        <div class="adremove">
-                            <a href="#" style="position:relative; right: 50px"> Remove </a>
-                        </div>
-                    </div>
-    
-                    
-                    <div class="tablecontent">
-                        <div class="adminame">
-                            <div class="adname">
-                                <p> Cruz, Christian Kyle </p>
-                            </div>
-    
-                            <div class="ademail">
-                                <p> ckcruz@student.apc.edu.ph </p>
-                            </div>
-                        </div>
-    
-                        <div class="adrequest">
-                            <p> Request </p>
-                        </div>
-    
-                        <div class="adassign">
-                            <div class="adminassigned" style="position:relative; bottom: 30px">
-                                <p> Program Director (Civil Engineering) </p>   
-                            </div>                  
-                        </div>
-    
-                        <div class="dropdown">
-                                <button class="dropbtn"><img lass="arrowdown" src ="./img/arrowdown.png"></button>
-                                <div class="dropdown-content">
-                                  <a href="#">Unassigned</a>
-                                  <a href="#">Professor</a>
-                                  <a href="#">Program Director (Computer Engineering)</a>
-                                  <a href="#">Program Director (Electronics Engineering)</a>
-                                  <a href="#">Program Director (Civil Engineering)</a>
-                                  <a href="#">Program Director (Architecture)</a>
-                                  <a href="#">Executive Director (EX-D)</a>
-                                </div>
-                              </div>
-                              
-    
-                        <div class="adremove">
-                            <a href="#" style="position:relative; right: 50px"> Remove </a>
+                            <?php
+                            $sql = "SELECT * FROM account WHERE account_id = 'id'"; 
+                            if (isset($_GET['role_request']))
+                            {
+                                $role_request=$_GET['role_request'];
+                                // echo $_GET['role_request'];
+                                $delete = mysqli_query($conn, "DELETE role_request FROM users WHERE 'user_id'");
+                            }
+                            ?>
+                            <a href = 'adminset.php?".$result["role_request"]."'>Delete</a>
                         </div>
                     </div>
 
-                    <div class="tablecontent">
-                        <div class="adminame">
-                            <div class="adname">
-                                <p> Gomez, Aivan </p>
-                            </div>
-    
-                            <div class="ademail">
-                                <p> agomez@student.apc.edu.ph </p>
-                            </div>
-                        </div>
-    
-                        <div class="adrequest">
-                            <p> Request </p>
-                        </div>
-    
-                        <div class="adassign">
-                            <div class="adminassigned" style="position:relative; bottom: 30px">
-                                <p> Program Director (Computer Engineering) </p>   
-                            </div>                  
-                        </div>
-    
-                        <div class="dropdown">
-                                <button class="dropbtn"><img lass="arrowdown" src ="./img/arrowdown.png"></button>
-                                <div class="dropdown-content">
-                                  <a href="#">Unassigned</a>
-                                  <a href="#">Professor</a>
-                                  <a href="#">Program Director (Computer Engineering)</a>
-                                  <a href="#">Program Director (Electronics Engineering)</a>
-                                  <a href="#">Program Director (Civil Engineering)</a>
-                                  <a href="#">Program Director (Architecture)</a>
-                                  <a href="#">Executive Director (EX-D)</a>
-                                </div>
-                              </div>
-
-                              
-                              
-    
-                        <div class="adremove">
-                            <a href="#" style="position:relative; right: 50px"> Remove </a>
-                        </div>
-                    </div>
-
-                    <div class="tablecontent">
-                        <div class="adminame">
-                            <div class="adname">
-                                <p> Gonzales, Charm Anne </p>
-                            </div>
-    
-                            <div class="ademail">
-                                <p> cagonzales@student.apc.edu.ph </p>
-                            </div>
-                        </div>
-    
-                        <div class="adrequest">
-                            <p> Request </p>
-                        </div>
-    
-                        <div class="adassign">
-                            <div class="adminassigned" style="position:relative; bottom: 30px">
-                                <p> Program Director (Electronics Engineering) </p>   
-                            </div>                  
-                        </div>
-    
-                        <div class="dropdown">
-                                <button class="dropbtn"><img lass="arrowdown" src ="./img/arrowdown.png"></button>
-                                <div class="dropdown-content">
-                                  <a href="#">Unassigned</a>
-                                  <a href="#">Professor</a>
-                                  <a href="#">Program Director (Computer Engineering)</a>
-                                  <a href="#">Program Director (Electronics Engineering)</a>
-                                  <a href="#">Program Director (Civil Engineering)</a>
-                                  <a href="#">Program Director (Architecture)</a>
-                                  <a href="#">Executive Director (EX-D)</a>
-                                </div>
-                              </div>
-                              
-    
-                        <div class="adremove">
-                            <a href="#" style="position:relative; right: 50px"> Remove </a>
-                        </div>
-                    </div>
                 </div>
             </div>
             

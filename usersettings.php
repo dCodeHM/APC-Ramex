@@ -11,7 +11,6 @@
 </head>
 
 <body>
-
 <header> 
     <!-- nav -->
     <!--done-->
@@ -134,8 +133,22 @@
                         </p>
     
                         <div class="adassign" style="position:relative; right: 90px">
-                            <p > 
-                                Professor 
+                            <p> 
+                            <?php
+                                $conn = mysqli_connect("localhost", "root", "", "ramexdb");
+                                $sql = "SELECT role FROM users WHERE account_id = 1"; 
+                                $result = $conn->query($sql);
+
+                                if ($result) {
+                                    // output data of each row
+                                    while($row = $result->fetch_assoc()) {
+                                        
+                                        echo " " . $row["role"]. " ";      
+                                    }
+                                } else {
+                                    echo "0 results";
+                                }
+                                ?>
                             </p>     
                                          
                         </div>
@@ -169,33 +182,59 @@
                             <div class="adrequest">
                                 <p> Request </p>
                             </div>
-
                     </div>
-    
+
+                    <!-- FIRST NAME WITH DATABASE -->
                     <div class="tablecontent">
                         <p style="position:relative; left: 15px; top: 5px">
                             <b>First Name</b>
                             </p>
-    
                             <div class="adassign">
                                 <p style="position:relative; right: 84px"> 
-                                Paulo
-                            </p>                        
-                        </div>
+                                <?php
+                                $conn = mysqli_connect("localhost", "root", "", "ramexdb");
+                                $sql = "SELECT first_name FROM account WHERE account_id = 1"; ;
+                                $result = $conn->query($sql);
+
+                                if ($result) {
+                                    // output data of each row
+                                    while($row = $result->fetch_assoc()) {
+                                        echo " " . $row["first_name"]. " ";
+                                    }
+                                } else {
+                                    echo "0 results";
+                                }
+                                ?>
+                                </p>                        
+                            </div>
                     </div>
-    
+                    
+                    <!-- LAST NAME WITH DATABASE -->
                     <div class="tablecontent">
                             <p style="position:relative; left: 15px; top: 5px">
                             <b>Last Name</b>
                             </p>
     
                             <div class="adassign">
-                            <p style="position:relative; right: 80px"> 
-                                Causo
+                            <p style="position:relative; right: 80px">
+                            <?php
+                            $sql = "SELECT last_name FROM account WHERE account_id = 1"; ;
+                                $result = $conn->query($sql);
+
+                                if ($result) {
+                                    // output data of each row
+                                    while($row = $result->fetch_assoc()) {
+                                        echo " " . $row["last_name"]. " ";
+                                    }
+                                } else {
+                                    echo "0 results";
+                                }
+                                ?>
                             </p>                        
                         </div>
                     </div>
     
+                    <!-- EMAIL WITH DATABASE -->
                     <div class="tablecontent">
                             <p style="position:relative; left: 15px; top: 5px">
                             <b>Email Address</b>
@@ -203,11 +242,25 @@
     
                             <div class="adassign">
                                     <p style="position:relative; right: 107px"> 
-                                    pcausio@apc.edu.ph
+                                    <?php
+                            $sql = "SELECT user_email FROM account WHERE account_id = 1"; ;
+                                $result = $conn->query($sql);
+
+                                if ($result) {
+                                    // output data of each row
+                                    while($row = $result->fetch_assoc()) {
+                                        echo " " . $row["user_email"]. " ";
+                                    }
+                                } else {
+                                    echo "0 results";
+                                }
+                                ?>
                                     </p>
                                 </div>
                             </div>
 
+
+                    <!-- PASSWORD WITH DATABASE -->
                     <div class="tablecontent">
                         <p style="position:relative; left: 15px; top: 5px">
                             <b>Password</b>
@@ -215,7 +268,22 @@
                         
                         <div class="adassign">
                                 <p style="position:relative; right: 76px"> 
-                                    sircaosiobecrazy4
+                                <?php
+                                $sql = "SELECT pwd FROM account WHERE account_id = 1"; ;
+                                $result = $conn->query($sql);
+
+                                if ($result) {
+                                    // output data of each row
+                                    while($row = $result->fetch_assoc()) {
+                                        
+                                        // echo " " . $row["pwd"]. " ";             this there is no hashing
+                                        echo $hash = password_hash("pwd", PASSWORD_DEFAULT); 
+                                        // . $row["pwd"];   just remove the comment and same line above it
+                                    }
+                                } else {
+                                    echo "0 results";
+                                }
+                                ?>
                                 </p>           
                         </div>
                     </div>
