@@ -127,7 +127,7 @@
             </div>
 
             <form action = "usersettingscode.php" method = "POST">
-            <div class="userline" action >
+            <div class="userline"  >
                 <div class="table" style="overflow: auto;">
                     <div class="tablecontent">
                         <p style="position:relative; left: 15px; top: 5px">
