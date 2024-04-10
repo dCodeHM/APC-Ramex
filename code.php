@@ -1,7 +1,7 @@
 <?php
 session_start();
 $conn = mysqli_connect("localhost","root","","ramexdb");
-$sql = "SELECT id, stud_name, stud_class, stud_phone FROM student WHERE id = 1"; 
+$sql = "SELECT * FROM student WHERE id = 1"; 
 
 //UPDATING DATA
 if(isset($_POST['update_stud_data']))

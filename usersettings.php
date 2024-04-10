@@ -1,6 +1,29 @@
 <?php 
   include("config/db.php");
+
+  
 ?>
+<?php 
+                    if(isset($_SESSION['status']))
+                    {
+                        ?>
+                        
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>Hey!</strong> <?php echo $_SESSION['status']; ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php
+                        unset($_SESSION['status']);
+                    }
+                ?>
+<?php
+                                $sql = "SELECT * FROM  account WHERE account_id = 1";
+                                $gotResults = mysqli_query($connection, $sql);
+                                if ($gotResults){
+                                if(mysqli_num_rows($gotResults)>0){
+                                    while($row = mysqli_fetch_array($gotResults)){
+                                    // print_r($row['first_name']);
+                            ?>
 <!DOCTYPE html>
 <html >
     <head>
@@ -138,21 +161,7 @@
     
                         <div class="adassign" style="position:relative; right: 90px">
                             <p> 
-                            <?php
-                                $conn = mysqli_connect("localhost", "root", "", "ramexdb");
-                                $sql = "SELECT role FROM users WHERE account_id = 1"; 
-                                $result = $conn->query($sql);
-
-                                if ($result) {
-                                    // output data of each row
-                                    while($row = $result->fetch_assoc()) {
-                                        
-                                        echo " " . $row["role"]. " ";      
-                                    }
-                                } else {
-                                    echo "0 results";
-                                }
-                                ?>
+                            <input type="text" name="updateRole" class="form-control" value="<?php echo $row['roles']; ?>">
                             </p>     
                                          
                         </div>
@@ -195,20 +204,7 @@
                             </p>
                             <div class="adassign">
                                 <p style="position:relative; right: 84px"> 
-                                <?php
-                                $conn = mysqli_connect("localhost", "root", "", "ramexdb");
-                                $sql = "SELECT first_name FROM account WHERE account_id = 1"; ;
-                                $result = $conn->query($sql);
-
-                                if ($result) {
-                                    // output data of each row
-                                    while($row = $result->fetch_assoc()) {
-                                        echo " " . $row["first_name"]. " ";
-                                    }
-                                } else {
-                                    echo "0 results";
-                                }
-                                ?>
+                                <input type="text" name="updateFirstname" class="form-control" value="<?php echo $row['first_name']; ?>">
                                 </p>                        
                             </div>
                     </div>
@@ -221,19 +217,7 @@
     
                             <div class="adassign">
                             <p style="position:relative; right: 80px">
-                            <?php
-                            $sql = "SELECT last_name FROM account WHERE account_id = 1"; ;
-                                $result = $conn->query($sql);
-
-                                if ($result) {
-                                    // output data of each row
-                                    while($row = $result->fetch_assoc()) {
-                                        echo " " . $row["last_name"]. " ";
-                                    }
-                                } else {
-                                    echo "0 results";
-                                }
-                                ?>
+                            <input type="text" name="updateLastname" class="form-control" value="<?php echo $row['last_name']; ?>">
                             </p>                        
                         </div>
                     </div>
@@ -245,20 +229,8 @@
                             </p>
     
                             <div class="adassign">
-                                    <p style="position:relative; right: 107px"> 
-                                    <?php
-                            $sql = "SELECT user_email FROM account WHERE account_id = 1"; ;
-                                $result = $conn->query($sql);
-
-                                if ($result) {
-                                    // output data of each row
-                                    while($row = $result->fetch_assoc()) {
-                                        echo " " . $row["user_email"]. " ";
-                                    }
-                                } else {
-                                    echo "0 results";
-                                }
-                                ?>
+                                    <p style="position:relative; right: 107px" name="userEmail" class="form-control">
+                                    <?php echo $row['user_email']; ?>
                                     </p>
                                 </div>
                             </div>
@@ -272,24 +244,14 @@
                         
                         <div class="adassign">
                                 <p style="position:relative; right: 76px"> 
-                                <?php
-                                $sql = "SELECT pwd FROM account WHERE account_id = 1"; ;
-                                $result = $conn->query($sql);
-
-                                if ($result) {
-                                    // output data of each row
-                                    while($row = $result->fetch_assoc()) {
-                                        
-                                        // echo " " . $row["pwd"]. " ";             this there is no hashing
-                                        echo $hash = password_hash("pwd", PASSWORD_DEFAULT); 
-                                        // . $row["pwd"];   just remove the comment and same line above it
-                                    }
-                                } else {
-                                    echo "0 results";
-                                }
-                                ?>
+                                <input type="text" name="updatePassword" class="form-control" value="<?php echo $row['pwd']; ?>">
+                                <!-- echo $hash = password_hash("pwd", PASSWORD_DEFAULT);  -->
                                 </p>           
                         </div>
+
+                        <div class="form-group mb-3">
+                                <button type="submit" name="update_stud_data" class="btn btn-primary">Update Data</button>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -301,4 +263,10 @@
 <!--sheesh
 -->
 </body>
+<?php
+                                }
+                            }
+                        }
+
+?>
 </html>
