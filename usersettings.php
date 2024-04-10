@@ -1,3 +1,6 @@
+<?php 
+  include("config/db.php");
+?>
 <!DOCTYPE html>
 <html >
     <head>
@@ -123,7 +126,8 @@
 
             </div>
 
-            <div class="userline">
+            <form action = "usersettingscode.php" method = "POST">
+            <div class="userline" action >
                 <div class="table" style="overflow: auto;">
                     <div class="tablecontent">
                         <p style="position:relative; left: 15px; top: 5px">
