@@ -1,7 +1,5 @@
 <?php 
   include("config/db.php");
-
-  
 ?>
 <?php 
                     if(isset($_SESSION['status']))
@@ -33,6 +31,7 @@
         <meta name="author" content="APC AcademX">
         <title>APC AcademX | User Settings</title>
         <link rel="stylesheet" href="./css/adminstyle.css">
+        <script defer src = "./usersettingAction.js"></script>
         
 </head>
 
@@ -149,25 +148,31 @@
 
             </div>
 
-            <form action = "usersettingscode.php" method = "POST">
-            <div class="userline"  >
+            <form id = "form" action = "usersettingscode.php" method = "POST" >
+            <div class="userline">
                 <div class="table" style="overflow: auto;">
-                    <div class="tablecontent">
+
+                    <div class="usercontent">
                         <p style="position:relative; left: 15px; top: 5px">
                             <b>
                                 School Role
                             </b>
                         </p>
     
-                        <div class="adassign" style="position:relative; right: 90px">
+                        <div class="useredit" style="position:relative; right: 105px">
                             <p> 
-                            <input type="text" name="updateRole" class="form-control" value="<?php echo $row['roles']; ?>">
+                            <input style ="width: 100%; margin: 1px;" type="text" name="updateRole" class="form-control" value="<?php echo $row['roles']; ?>">
                             </p>     
                                          
                         </div>
                         
                         <!-- dropdown -->
-                        <div class="dropdown">
+
+                            <!-- <div class="dropdown" style = "text-align: center;">
+                            <select role = "reqRole" id = "requestRole">
+                                <option > <?php echo $row['roles']; ?></option> -->
+
+                        <!-- <div class="dropdown">
                             <button class="dropbtn"><img lass="arrowdown" src ="./img/arrowdown.png"></button>
                             <div class="dropdown-content">
                               <a href="#">Unassigned</a>
@@ -175,9 +180,9 @@
                               <a href="#">Program Director (PD)</a>
                               <a href="#">Executive Director (EX-D)</a>
                             </div>
-                          </div>
+                          </div> -->
 
-                          <div class="tooltip">
+                            <div class="tooltip">
                                 <img lass="information" src ="./img/information.png">
                                 <span class="tooltiptext">
                                 <img src ="./img/information.png" width="10px">
@@ -190,44 +195,48 @@
                                         </span>
                                     </span>
                                 </span>
-                            </div>
-
-                            <div class="adrequest">
+                                </div>
+                                <div class="adrequest">
                                 <p> Request </p>
+                                </div>
                             </div>
-                    </div>
 
                     <!-- FIRST NAME WITH DATABASE -->
-                    <div class="tablecontent">
-                        <p style="position:relative; left: 15px; top: 5px">
+                    <div class="usercontent">
+                        <p style="position:relative; left: 15px; top: 5px" >
                             <b>First Name</b>
                             </p>
-                            <div class="adassign">
-                                <p style="position:relative; right: 84px"> 
-                                <input type="text" name="updateFirstname" class="form-control" value="<?php echo $row['first_name']; ?>">
+                            <div class="useredit">
+                                <p style="position:relative; right: 95px"> 
+                                <input type="text" style ="width: 100%;"  
+                                id = "firstName" name="updateFirstname" class="form-control" value="<?php echo $row['first_name']; ?>">
+                                <div class = "error">
+                                </div>
                                 </p>                        
                             </div>
                     </div>
                     
                     <!-- LAST NAME WITH DATABASE -->
-                    <div class="tablecontent">
+                    <div class="usercontent">
                             <p style="position:relative; left: 15px; top: 5px">
                             <b>Last Name</b>
                             </p>
     
-                            <div class="adassign">
-                            <p style="position:relative; right: 80px">
-                            <input type="text" name="updateLastname" class="form-control" value="<?php echo $row['last_name']; ?>">
+                            <div class="useredit">
+                            <p style="position:relative; right: 93px">
+                            <input style ="width: 100%; margin: 1px 0;" type="text" 
+                            id = "lastName" name="updateLastname" class="form-control" value="<?php echo $row['last_name']; ?>">
+                            <div class = "error">
+                            </div>
                             </p>                        
                         </div>
                     </div>
     
                     <!-- EMAIL WITH DATABASE -->
-                    <div class="tablecontent">
+                    <div class="usercontent">
                             <p style="position:relative; left: 15px; top: 5px">
                             <b>Email Address</b>
                             </p>
-    
                             <div class="adassign">
                                     <p style="position:relative; right: 107px" name="userEmail" class="form-control">
                                     <?php echo $row['user_email']; ?>
@@ -237,25 +246,44 @@
 
 
                     <!-- PASSWORD WITH DATABASE -->
-                    <div class="tablecontent">
+                    <div class="usercontent">
                         <p style="position:relative; left: 15px; top: 5px">
                             <b>Password</b>
                         </p>
                         
-                        <div class="adassign">
-                                <p style="position:relative; right: 76px"> 
-                                <input type="text" name="updatePassword" class="form-control" value="<?php echo $row['pwd']; ?>">
+                        <div class="useredit">
+                                <p style="position:relative; right:85px">  
+
+                                <input style ="width: 100%; margin: 1px 0;" 
+                                type="password" name="updatePassword" class="form-control" id = "userInput" value="<?php echo $row['pwd']; ?>">
                                 <!-- echo $hash = password_hash("pwd", PASSWORD_DEFAULT);  -->
+                                <br>
+                                <input id = "passWord" type="checkbox" class="showPW" onclick="myFunction()">show
+                                
+                                <div class = "error"></div>
+
+                                <!-- JS FOR SHOWING PASSWORD -->
+                                <script>
+                                    function myFunction() {
+                                    var x = document.getElementById("userInput");
+                                    if (x.type === "password") {
+                                        x.type = "text";
+                                    } else {
+                                        x.type = "password";
+                                    }
+                                    }
+                                    </script>
                                 </p>           
                         </div>
 
-                        <div class="form-group mb-3">
-                                <button type="submit" name="update_stud_data" class="btn btn-primary">Update Data</button>
+                        
+                    </div>  
+            </div>
+                            <!-- SUBMIT BUTTON -->
+                            <div class="form-group mb-3">
+                                <button type="submit" name="update_stud_data" class="updatebtn" style = "vertical-align:middle">Update</button>
                             </div>
                     </div>
-                </div>
-            </div>
-            
 
     </div>
 

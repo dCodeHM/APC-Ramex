@@ -328,7 +328,7 @@ header nav{
 
 /* USER PROFILE IMAGE PICTURE*/
 .adminicon{ 
-    margin-top: 70px;
+    margin-top: 40px;
     width: 100px;
     padding: 1vh;
     height: 100px;
@@ -357,7 +357,6 @@ header nav{
 
 /* User Settings */
 .userhead{
-    margin-top: auto;
     width: 50%;
     text-align: right;
     margin-left: 0;
@@ -406,19 +405,36 @@ header nav{
 
 .adminline{
     border-top: 5px solid black;
+    padding-top: 10px;
 }
 
+/* THE BLACK TABLE WITH INFORMATIN */
 .table{
+
     background-color: #EDEDED;
     border: #000000;
     height: 60vh;
-    margin-top: 20px;
+    /* margin-top: 20px; */
     border-radius: 10px;
     border: solid 3px;
     text-align: center;
     
 }
 /* white background inside center box */
+.usercontent{
+    /* TANGGALIN KAPAG OKAY NA YUNG white*/
+    background-color: white;
+    display: flex;
+    border-radius: 10px;
+    height: fit-content;
+    width: fit-content;
+    width:  97%;
+    text-align: right;
+    margin: 15px auto;
+    /* min-width: 100vh;
+    min-height: 15%; */
+}
+
 .tablecontent{
     display: flex;
     background-color: #ffffff;
@@ -451,6 +467,7 @@ header nav{
     color: white;
 }
 
+
 .adrequest p{
     background-color: #E7AF41;
     padding: 2px ;
@@ -470,6 +487,53 @@ header nav{
     border-radius: 5px;
     padding: 5px 20px;
     border: solid 2px;
+    background-color: white;
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+/* user box class */
+.useredit{
+    text-align: left;
+    /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
+    width: 50%;
+    margin: auto 20px;
+    padding-top: 30px;
+}
+/* user text box */
+.useredit p{
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+/* user input */
+.useredit input[type=text]{
+    border-style: solid;
+    border-radius: 5px;
+    border-color: black;
+    padding: 5px 10px 10px 10px;
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+
+.useredit input[type=password]{
+    border-style: solid;
+    border-radius: 5px;
+    border-color: black;
+    padding: 5px 10px 10px 10px;
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+/* JAVASCRIPT ERROR */
+.error {
+    text-align: left;
+    /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
+    width: 50%;
+    margin: auto 20px;
 }
 
 .adremove{
@@ -647,5 +711,58 @@ header nav{
     padding: 5px 20px;
     border: solid 2px;
 }
+
+/* USER PROFILE UPDATE */
+.updatebtn {
+    display: inline-block;
+    border-radius: 10px;
+    background-color: #f4511e;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 20px;
+    padding: 10px;
+    width: 200px;
+    height: 50px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 10px 10px;
+    z-index: 100;
+    box-shadow: 0 10px 25px -5px rgba(44,179,240,0.6);
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+  }
+  
+  .updatebtn span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+  
+  .updatebtn span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+  
+  .updatebtn:hover span {
+    padding-right: 25px;
+  }
+  
+  .updatebtn:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+
+
+
 
 
