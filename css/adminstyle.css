@@ -716,7 +716,7 @@ header nav{
 .updatebtn {
     display: inline-block;
     border-radius: 10px;
-    background-color: #f4511e;
+    background-color: #008000;
     border: none;
     color: #FFFFFF;
     text-align: center;
@@ -732,7 +732,7 @@ header nav{
     right: 0;
     margin: 10px 10px;
     z-index: 100;
-    box-shadow: 0 10px 25px -5px rgba(44,179,240,0.6);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.521);
     -webkit-transition: all 0.5s;
     transition: all 0.5s;
   }
