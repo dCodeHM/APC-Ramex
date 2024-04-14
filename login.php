@@ -1,3 +1,5 @@
+<?php ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,5 +16,18 @@
         <a href="index.php"><h1>LOGIN</h1></a>
         
         <script src="" async defer></script>
+
+        <div id = "box">
+            <form method = "post">
+                <div>LOGIN</div>
+                <input type = "text" name = "username" placeholder = "Username"> <br>
+                <input type = "password" name = "password" placeholder = "Password"> <br>
+                <input type = "submit" value = "Login">
+                <br>
+
+
+                <a href = "signup.php">Register</a>
+            </form>
+        </div>
     </body>
 </html>

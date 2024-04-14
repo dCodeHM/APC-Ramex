@@ -281,11 +281,15 @@
             </div>
                             <!-- SUBMIT BUTTON -->
                             <div class="form-group mb-3">
-                                <button type="submit" name="update_stud_data" class="updatebtn" style = "vertical-align:middle">Update</button>
+                                <button type="submit" onclick="alert('Your profile has been updated')" name="update_stud_data" class="updatebtn" style = "vertical-align:middle">Update</button>
                             </div>
                     </div>
-
+        </form>            
     </div>
+
+<script>
+
+</script>
 
 </div>
 <!--sheesh

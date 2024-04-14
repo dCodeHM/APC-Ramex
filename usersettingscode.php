@@ -1,5 +1,7 @@
 <?php
 session_start();
+
+$_SESSION;
 $conn = mysqli_connect("localhost","root","","ramexdb");
 $sql = "SELECT * FROM account WHERE account_id = 1"; 
 

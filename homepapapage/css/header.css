@@ -1,0 +1,354 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
+}
+
+html {
+  font-size: 62.5%;
+}
+
+/* Variables */
+:root {
+  --primary-color: #F3C44C;
+  --bg-color: #293A82;
+  --white-color: #ffffff;
+  --gray-color: #343A40;
+  --dark-blue-color: #343A40;
+  --light-gray-color: #909090;
+  --error-color: #ff0000;
+  --border-color: #dedede;
+  --gray-button: #EDEDED;
+  --yellow-button-hover: #DBA927;
+  --gray-button-hover: #CCCCCC;
+  --darkblue-button-hover: #676C70;
+  --font-family: "Noto Sans", sans-serif;
+  --font-weight-normal: 500;
+  --font-weight-semibold: 700;
+  --font-weight-bold: 800;
+  --font-size-small-small: 1.1rem;
+  --font-size-small: 1.3rem;
+  --font-size-small-medium: 1.5rem;
+  --font-size-mediun-medium: 1.6rem;
+  --font-size-medium: 1.7rem;
+  --font-size-medium-large: 2.2rem;
+  --font-size-large: 3rem;
+}
+
+body {
+    
+    display: grid;    
+    font-family: var(--font-family);
+    background-color: var(--white-color);
+    min-height: 100px;
+    height: calc(100%+100px);
+    min-width: 500px;
+    font-weight: 200;
+  }
+
+/* Navigation bar styles */
+.navbar {
+    
+    position: fixed;
+    background-color: var(--bg-color);
+    color: white;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    margin-top: 0px;
+    min-width: 100rem;
+    min-height: 3rem;
+    height: 7rem;
+    display: flex;
+    z-index: 9999;
+    width: 100%;
+}
+
+.left-header {
+    
+    list-style-type: none;
+    list-style: none;
+    display: flex;
+    align-items: center; /* Align items vertically */
+    margin-left: auto;
+    margin-right: 3rem;
+}
+
+.right-header {
+    
+    list-style-type: none;
+    list-style: none;
+    display: flex;
+    align-items: center; /* Align items vertically */
+    margin-left: 3rem;
+    margin-right: auto;
+
+}
+
+.left-header .username {
+    margin-right: 2rem; /* Adjust the margin to create equal spacing */
+}
+
+.left-header .username h3 {
+    font-size: var(--font-size-mediun-medium);
+    color: var(--white-color);
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: var(--font-weight-normal);
+}
+
+/* .left-header li {
+    margin-right: rem; /* Adjust the margin to create equal spacing} */
+
+.left-header #notification img,
+.left-header #profile img {
+    height: 100%; /* Set height to match the navigation bar */
+}
+
+.right-header img{
+    height: 100%;
+}
+
+.right-header #logo{
+    height: 10rem; /* Adjust the height as needed */
+    display: flex;
+    margin-left: 0rem;
+    margin-top: 0.5rem;
+    align-items: center; /* Align content vertically */
+}
+
+.right-header #sas{
+    height: 5.5rem; /* Adjust the height as needed */
+    display: flex;
+    margin-left: 3rem;
+    margin-top: -0.4rem;
+    align-items: center; /* Align content vertically */
+}
+
+.right-header #cas{
+    height: 5.4rem; /* Adjust the height as needed */
+    display: flex;
+    margin-left: 0rem;
+    margin-top: -0.1rem;
+    align-items: center; /* Align content vertically */
+}
+
+.right-header #ems{
+    height: 5.6rem; /* Adjust the height as needed */
+    display: flex;
+    margin-left: -2.4rem;
+    margin-top: -0.9rem;
+    align-items: center; /* Align content vertically */
+}
+
+.right-header #test:hover{
+    background-image: url('img/ems_logo.png');
+}
+
+
+.left-header #notification{
+    height: 4rem; /* Adjust the height as needed */
+    display: flex;
+    margin-right: 2rem;
+    align-items: center; /* Align content vertically */
+}
+
+.left-header #profile{
+    height: 7rem; /* Adjust the height as needed */
+    display: flex;
+    align-items: center; /* Align content vertically */
+}
+
+
+
+
+.navbar a{
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 20px;
+}
+
+
+.navbar li ul.dropdown li{
+    display: block;
+}
+
+.navbar li ul.dropdown{
+    background: #ffffff;
+    border: var(--dark-blue-color) solid;
+    border-width: 0.3rem;
+    border-radius: 1rem;
+    position: absolute;
+    z-index: 999;
+    display: block;
+    align-items: center;
+    text-align: center;
+}
+
+.navbar li ul.notif-drop{
+    background-color: var(--gray-button);
+    width: 35rem;
+    margin-left: -310px;
+    margin-top: 8px;
+    height: 50rem;
+    display: none;
+}
+
+.navbar li ul.user-drop{
+    background-color: var(--gray-button);
+    width: 23rem;
+    margin-left: -160px;
+    margin-top:-8px;
+    padding-bottom: 2rem;
+    display: none;
+}
+
+.navbar li ul.dropdown h3{
+    margin-left: auto; 
+    margin-right: auto; 
+    color:#000000;
+    display: block;
+    margin-top: 18px;
+    font-size: var(--font-size-medium-large);
+    color: var(--dark-blue-color);
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: var(--font-weight-semibold);
+}
+
+.navbar li ul.user-drop p{
+    margin-left: auto; 
+    margin-right: auto; 
+    color:#000000;
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 12px;
+    font-size: var(--font-size-small-medium);
+    color: var(--dark-blue-color);
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: var(--font-weight-normal);
+}
+
+/* .navbar li ul.dropdown h3{
+    color: #000000;
+    position: relative;
+    display: inline-block;
+}
+
+.navbar li ul.dropdown p{
+    color: #000000;
+    margin: 10px 60px 10px 15px;
+    padding: 10px 100px 10px 80px;
+    position: relative;
+    display: inline-block;
+} */
+
+.navbar li ul.dropdown hr{
+    margin-left: 3rem; 
+    height: 0.35rem;
+    margin-right: 3rem;
+    background-color: var(--dark-blue-color); 
+    margin-top: 1.5rem;
+    border-radius: 1rem;
+}
+
+
+.navbar li ul.user-drop a{
+    width: 18rem;
+    height: 4rem;
+    box-shadow: 0px 3px 3px 0px #C9C9C9;
+    background-color: var(--dark-blue-color);
+    font-size: var(--font-size-small-medium);
+    font-family: Noto Sans;
+    color: var(--white-color); 
+    font-weight: 500;
+    border: none;
+    outline: none;
+    text-transform: none;
+    margin-top: 10px;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+.navbar li ul.user-drop a:hover{
+    background-color: var(--darkblue-button-hover);
+}
+
+.notif-list{
+    position: absolute;
+    border-radius: 0px;
+    width: 100%;
+    background-color: var(--gray-button);
+    padding: 30px 23px;
+    padding-left: 31px;
+    justify-content: space-between;
+    overflow-y: auto;
+    max-height: 42.5rem;
+    border-radius: 2rem;
+}
+
+.notif{
+    background-color: var(--white-color);
+    border-radius: 5px;
+    align-items: center;
+    justify-content: space-between;
+    height: 90px;
+    padding: 15px 20px;
+    display: block;
+    width: 100%;
+}
+
+.notif label{
+    align-items: center;
+    justify-content: space-between;
+    font-size: 15px;
+    font-weight: 400;
+    display: flex;
+    align-items: flex-start;
+}
+
+.notif label .notifname{
+    font-size: var(--font-size-mediun-medium);
+    color: var(--dark-blue-color);
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: var(--font-weight-semibold);
+}
+
+.notif label .notifdate{
+    font-size: var(--font-size-small);
+    color: var(--darkblue-button-hover);
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: var(--font-weight-normal);
+}
+
+.notif label .notifdetails{
+    margin-top: 3px;
+    font-size: var(--font-size-small);
+    color: var(--dark-blue-color);
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: var(--font-weight-normal);
+    margin-left: 8px;
+    text-align: left;
+}
+
+.notif-list::-webkit-scrollbar{
+    width: 8px;
+}
+.notif-list::-webkit-scrollbar-track{
+    border-radius: 25px;
+}
+.notif-list::-webkit-scrollbar-thumb{
+    background: var(--dark-blue-color);
+    border-radius: 25px;
+}
+
+

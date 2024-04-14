@@ -1,3 +1,12 @@
+<?php 
+session_start();
+
+include("config/db.php");
+include("config/functions.php");
+
+$user_data = check_login($conn);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
