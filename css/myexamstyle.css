@@ -53,7 +53,6 @@ header #branding #emactive{
 
 /*2 boxes below line*/
 .mebox{
-    display: flex;
     justify-content: space-around;
 }
 
@@ -64,17 +63,21 @@ header #branding #emactive{
 }
 
 .boxme{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 20%;
     float: left;
-    padding: 0;
     position: relative;
     margin: 1%;
     background-color: white;
     border-radius: 5px;
-    box-shadow: 0 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
         img{
-            width: 100%;
+            margin: 10px;
+            display: flex;
             justify-content: center;
+            align-items: center;
         }
 
         p{
@@ -84,21 +87,215 @@ header #branding #emactive{
     
 }
 
+.boxme a {
+    display: block; /* Make the anchor fill the entire box */
+    width: 100%; /* Ensure full width for clickable area */
+    height: 100%; /* Ensure full height for clickable area */
+    text-decoration: none; /* Remove underline from anchor */
+  }
+
+
+/* add button */
 .addbutt i{
     font-size: 30px;
-    padding: 10px;
 }
 
-.addbutt a{
-    text-decoration: none;
-    color: black;
+.addbutt{
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
 }
 
-.addbutt a:hover{
+.addbutt.hover{
     color: #343A40;
+}
+
+/* for the pop up */
+.popup-hidden{
+    display: none;
+    position: relative;
+    margin-top: -790px;
+    min-width: 100.05rem;
+    height: 50rem; 
+    min-height: 100%;
+    z-index: 99999;
+    overflow: hidden;
+}
+
+.popup_bg{
+    display: block;
+    position: relative;
+    background-color: #343A40;
+    opacity: 85%;
+    height: 100%;
+    width: 100%;
+    z-index: 99999;
+    overflow-x: hidden;
+}
+
+/*Add Course popup*/
+
+.Add_popup{
+    display: flex;
+    position: absolute;
+    width: 41rem;
+    height: 19rem;
+    margin-left: 27%;
+    margin-top: 15%;
+    transform: translate(-55%,-15%);
+    background-color: #FFFFFF;
+    border: 3.5px solid #343A40;
+    border-radius: 0.3rem;
+    z-index: 99999;
+}
+
+.popup_tc{
+    display: flex;
+    position: relative;
+    height: 4rem;
+    width: 40rem;
+    margin-top: 4%;
+    margin-left: 5%;
+}
+
+.popup_tc li{
+    display: list-item;
+    list-style: none;
+    text-decoration: none;
+}
+
+.popup_tc h1{
+    display: list-item;
+    list-style: none;
+    text-decoration: none;
+    font: Noto Sans;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #343A43;
+    position: relative;
+    display: flex;
+    
+}
+
+.popup_tc img{
+    position: relative;
+    margin-top: -5%;
+    margin-left: 1%;
+    height: 3.5rem;
+    width: 3.5rem;
+}
+
+.popup_ic{
+    position: relative;
+    display: flex;
+    margin-top: 12%;
+    margin-left: -90%;
+    width: 80%;
+    height: 35%;
+}
+
+.prog{
+    font: Noto Sans;
+    font-size: 0.85rem;
+    width: 10rem;
+    height: 1rem;
+}
+
+.course{
+    font: Noto Sans;
+    font-size: 0.85rem;
+    margin-top: 15.55%;
+    width: 10rem;
+    height: 1rem;
+    position: absolute; 
+}
+
+.popup_ic li{
+    display: list-item;
+    list-style: none;
+    text-decoration: none;
 
 }
 
+.program{
+    font: Noto Sans;
+    font-size: 23px;
+    border-radius: 0.5rem;
+    width: 13.7rem;
+    height: 2.2rem;
+    position: relative;
+    display: flex;
+    margin-top: 7%;
+    margin-left: -20.8%;
+    border-color: #343A40;
+    border: 0.13rem solid ;
+}
+
+.program[type="text"]::-webkit-inner-spin-button,
+.program[type="text"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+
+}
+
+.program[type="text"] {
+    appearance: textfield;
+    /* Add vendor prefixes for broader compatibility */
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+.course_code{
+    font: Noto Sans;
+    font-size: 23px;
+    background-color: #EDEDED;
+    border-radius: 0.5rem;
+    width: 13.7rem;
+    height: 2.2rem;
+    position: relative;
+    display: flex;
+    margin-top: 19.9%;
+    margin-left: 0%;
+    border-color: #343A40;
+    border: 0.13rem solid ;
+}
+
+/* 2 buttons below */
+#create{
+    width: 200px; 
+    height: 55px;
+    right: 1rem;
+    bottom: 1rem; 
+    position: absolute; 
+    background: #343A40;
+    color: #FFFFFF; 
+    text-decoration: bold;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#cancel{
+    width: 200px; 
+    height: 55px;
+    right: 14rem;
+    bottom: 1rem;   
+    position: absolute; 
+    background: #EDEDED;
+    color: #343A40;
+    text-decoration: bold;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#cancel a{
+    text-decoration: none;
+    background: #EDEDED;
+    color: #343A40;
+    width: 100%;
+}
+/* searchbar */
 .searchbar{
     width: 400px;
     min-width: 100%;
@@ -114,4 +311,48 @@ header #branding #emactive{
     max-width: 100%;
     max-height: 100%;
     border-radius: 5px;
+}
+
+/* for the dots */
+.dots{
+    border: none;
+    width: auto;
+    color: #848484;
+    background: none;
+    z-index: 10;
+    font-weight: bolder;
+    margin-left: 85%;
+    cursor: pointer;
+}
+
+#Add_smallpopup{
+    display: flex;
+    position: absolute;
+    width: 10rem;
+    height: 5rem;
+    margin-left: 27%;
+    margin-top: 15%;
+    transform: translate(-55%,-15%);
+    background-color: #FFFFFF;
+    border: 3.5px solid #343A40;
+    border-radius: 0.3rem;
+    z-index: 99999;
+}
+
+#smallpop_up{
+    width: 40px;
+    height: 50px;
+    border: #343A40;
+    background: none;
+}
+
+.smallpopup-hidden{
+    display: none;
+    position: relative;
+    margin-top: -790px;
+    min-width: 100.05rem;
+    height: 50rem; 
+    min-height: 100%;
+    z-index: 99999;
+    overflow: hidden;
 }

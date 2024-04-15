@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="./css/style.css">
 <link rel="stylesheet" href="./css/emstyle.css">
 <link rel="stylesheet" href="./css/myexamstyle.css">
+<script src="myexams.js"></script>
 
 <html lang="en">
 
@@ -90,12 +91,29 @@
                         <p> My Exams </p>
                     </div>
 
-                    <div class="addbutt">
-                        <a href="adminset.html" class="fill-div">
-                            <i class="fa-solid fa-circle-plus"></i>
-                        </a>
-                    </div>
+                    <button class="addbutt" onclick="showPopup()">
+                        <i class="fa-solid fa-circle-plus"></i>
+                    </button>
+                    <script src="./myexams.js"></script>
 
+                    <div class="popup-hidden">
+                        <div class="popup_bg"></div>
+                        <div class="Add_popup">
+                            <div class="popup_tc">
+                                <li><h1><b>Create a Course Folder</b></h1></li>
+                                <li><img src="img/Folder.png" style="margin: 5px; width: 4rem;"></li>
+                            </div>
+                            <div class="popup_ic">
+                            <p class="prog">Program</p>
+                                <input type="text" class="program" oninput="updateprogram(this.value)"/>
+                            <p class="course">Course Code</p>
+                                <input type="text" class="course_code" oninput="updatecourse(this.value)"/>
+                            </div>
+                       
+                            <a href="myexams.html"><button id="cancel">Cancel</button></a>
+                            <button id="create" onclick="createBox()">Create</button>
+                    </div>
+                 </div>
                     <div class="searchicon " style="position:relative; left: 45%">
                         <input type="text" class="searchbar" >
                     </div>
@@ -111,37 +129,42 @@
                     <div class="container2">        
                         <div class="mebox">
                             <div class="boxme">
-                                <a href="#" class="fill-div">
-                                <img src="./img/GRAPHYS LOGO.png">
-                                <p>GRAPHYS</p>
+                                <a href="topic.html" class="fill-div">
+                                <button class="dots" onclick="showsmallPopup()">...</button>
+                                <img src="./img/GRAPHYS LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">GRAPHYS</p>
                                 </a>
                             </div>
 
                             <div class="boxme">
                                 <a href="#" class="fill-div">
-                                <img src="./img/PROGLOD LOGO.png">
-                                <p>PROGLOD</p>
+                                <button class="dots">...</button>
+                                <img src="./img/PROGLOD LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">PROGLOD</p>
                                 </a>
                             </div>
 
                             <div class="boxme">
                                 <a href="#" class="fill-div">
-                                <img src="./img/OPRSYS LOGO.png">
-                                <p>OPRSYST</p>
+                                <button class="dots">...</button>
+                                <img src="./img/OPRSYS LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">OPRSYST</p>
                                 </a>
                             </div>
 
                             <div class="boxme">
                                 <a href="#" class="fill-div">
-                                <img src="./img/DATASTRC LOGO.png">
-                                <p>DATSTRC</p>
+                                <button class="dots">...</button>
+                                <img src="./img/DATASTRC LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">DATSTRC</p>
                                 </a>
                             </div>
 
                             <div class="boxme">
                                 <a href="#" class="fill-div">
-                                <img src="./img/ECON LOGO.png">
-                                <p>ECONOMC</p>
+                                <button class="dots">...</button>
+                                <img src="./img/ECON LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">ECONOMC</p>
                                 </a>
                             </div>
                         </div>
@@ -149,10 +172,5 @@
                 </section>
             </div>
         </div>
-
-
-
-
-        <script src="" async defer></script>
     </body>
 </html>
