@@ -1,12 +1,12 @@
 <?php
-session_start();
+// session_start();
 
-// Check if the user is not logged in
-if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    // Redirect to the login page
-    header("Location: login.php");
-    exit;
-}
+// // Check if the user is not logged in
+// if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+//     // Redirect to the login page
+//     header("Location: login.php");
+//     exit;
+// }
 
 ?>
 
@@ -41,21 +41,21 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 <ul class="left-header">
 
 <?php
-    // Check if the session variable exists
-    if(isset($_SESSION['user'])) {
-        // Retrieve data from the session variable
-        $userData = $_SESSION['user'];
+    // // Check if the session variable exists
+    // if(isset($_SESSION['user'])) {
+    //     // Retrieve data from the session variable
+    //     $userData = $_SESSION['user'];
         
-        // // Access specific data from the session variable
-        // $username = $userData['username'];
-        // $email = $userData['email'];
+    //     // // Access specific data from the session variable
+    //     // $username = $userData['username'];
+    //     // $email = $userData['email'];
         
-        // Output the retrieved data in HTML text
-        echo "<li class='username'><h3>$userData</h3></li>";
-    } else {
-        // Session variable does not exist or user is not logged in
-        echo "<li class='username'><h3>Null</h3></li>";
-    }
+    //     // Output the retrieved data in HTML text
+    //     echo "<li class='username'><h3>$userData</h3></li>";
+    // } else {
+    //     // Session variable does not exist or user is not logged in
+    //     echo "<li class='username'><h3>Null</h3></li>";
+    // }
     ?>
 
     
@@ -131,7 +131,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
         <ul class="user-drop dropdown" id="user-drop" style="display: none;">
             <h3>Admin</h3>
             <p>School Role</p>
-            <a href="userprofile.php" class="settings"><span>Settings</span></a>
+            <a href="userprofile.html" class="settings"><span>Settings</span></a>
             <a href="logout.php" class="logout"><span>Logout</span></a>
         </ul>
     </li>

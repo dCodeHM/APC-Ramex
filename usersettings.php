@@ -1,7 +1,13 @@
 <?php 
-  include("config/db.php");
-?>
-<?php 
+session_start();
+include("config/db.php");
+
+// // Check if the user is not logged in
+// if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+//     // Redirect to the login page
+//     header("Location: login.php");
+//     exit;
+// }
                     if(isset($_SESSION['status']))
                     {
                         ?>
@@ -14,9 +20,10 @@
                         unset($_SESSION['status']);
                     }
                 ?>
-<?php
-                                $sql = "SELECT * FROM  account WHERE account_id = 1";
-                                $gotResults = mysqli_query($connection, $sql);
+<?php                           
+                                $id = $_SESSION['account_id'];
+                                $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1 ";
+                                $gotResults = mysqli_query($conn, $sql);
                                 if ($gotResults){
                                 if(mysqli_num_rows($gotResults)>0){
                                     while($row = mysqli_fetch_array($gotResults)){
@@ -31,74 +38,130 @@
         <meta name="author" content="APC AcademX">
         <title>APC AcademX | User Settings</title>
         <link rel="stylesheet" href="./css/adminstyle.css">
+
+        <link rel="stylesheet" href="css/settings.css">
+        <link rel="stylesheet" href="css/header.css">
+        <link rel="stylesheet" href="css/sidebar.css">
         <script defer src = "./usersettingAction.js"></script>
         
 </head>
 
 <body>
-<header> 
-    <!-- nav -->
-    <!--done-->
-    <div class="container1">
-        <div id="branding">
-            <a href="index.php"><img src="./img/APC AcademX Logo.png"></a>
-            <a href="sa.php"><img id="saheader" src="./img/Student Assessment Header.png"></a>
-            <a href="ca.php"><img id="caheader" src="./img/Course Assessment Header.png"></a>
-            <a href="em.php"><img id="emheader" src="./img/Exam Maker Header.png"></a>
-        </div>
 
-<!--DONE-->
-                <nav>
-                    <ul>
-                        <li class="username"><h3>Einstein Yong</h3></li>
+<navigation class="navbar">
 
-                        <li class="notification">
-                            <a href="#"><img src="./img/Notification.png"></a>
-                            <ul class="dropdown">
-                                <img src="./img/Notification Title.png">
-                            </ul>
-                        </li>
+<ul class="right-header">
+    <li class="logo">
+        <a href="index.php"><img id="logo" src="img/logo.png"></a>
+    </li>
+</ul>
 
-                        <li class="user">
-                            <a href="#"><img src="./img/LOGO (2) 1.png"></a>
-                            <ul class="dropdown">
-                                <h3>ADMIN</h3>
-                                <p>PROFESSOR</p>
-                                <a href="usersettings.php" class="settings"><li>Settings⚙️</li></a>
-                                <a href="test.php" class="logout"><li>Logout[➡</li></a>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
+<ul class="left-header">
+    <?php
+    // Check if the session variable exists
+    if(isset($_SESSION['user'])) {
+        // Retrieve data from the session variable
+        $userData = $_SESSION['user'];
+        
+        // // Access specific data from the session variable
+        // $username = $userData['username'];
+        // $email = $userData['email'];
+        
+        // Output the retrieved data in HTML text
+        echo "<li class='username'><h3>$userData</h3></li>";
+    } else {
+        // Session variable does not exist or user is not logged in
+        echo "<li class='username'><h3>Null</h3></li>";
+    }
+    ?>
 
-    </div>
-
-</header>
-
-<!-- left navigation -->
-<div class="column">
-    
-    <div class="left">
-
-        <div class="sidenav" id="bar">
-            
-            <div class="back">
-                <a href="index.php">
-                    <img src="./img/Exam Maker (5) 6.png">
-                </a>
+    <li class="notification">
+        <a href="#" id="toggleNotif"><img id="notification" src="img/notification.png"></a>
+        <ul class="notif-drop dropdown" id="notif-drop" style="display: none;">
+            <h3>Notifications</h3>
+            <hr>
+            <div class="notif-list">
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
             </div>
-            
-            <div class="help">
-                <a href="#">
-                    <img src="./img/Help.png"> 
-                </a>
-            </div>
+        </ul>
+    </li>
 
-        </div>
+    <li class="user">
+        <a href="#" id="toggleUser"><img id="profile" src="img/profile.png"></a>
+        <ul class="user-drop dropdown" id="user-drop" style="display: none;">
+            <h3>Admin</h3>
+            <p>School Role</p>
+            <a href="userprofile.php" class="settings"><span>Settings</span></a>
+            <a href="logout.php" class="logout"><span>Logout</span></a>
+        </ul>
+    </li>
+</ul>
+
+<div class="sidebar">
+    <div class="back_button">
+        <a href="index.php">
+        <img src="img/back.png">
+        </a>
     </div>
+    <div class="help_button">
+        <img src="img/help.png">
+    </div>
+</div>
 
-    <!--THE THREE SETTINGS-->
-    <div class="mid">
+<div class="mid">
 
         <div class="midnav">
 
@@ -109,28 +172,28 @@
             <div class="line">
             </div>
 
-            <div>
+            <div class="buttonmid">
                 <a href="usersettings.php" class="midbutton active">
                     <p> User Profile </p>
                 </a>
             </div>
 
-            <div>
+            <div class="buttonmid">
                 <a href="adminset.php" class="midbutton">
                     <p> Admin Settings </p>
                 </a>
             </div>
 
-            <div>
+            <div class="buttonmid">
                 <a href="programlist.php" class="midbutton">
                     <p> Program List </p>
                 </a>
             </div>
-
         </div>
-
     </div>
-    
+</navigation>
+
+<div class = "column">
     <!--Title-->
     <div class="right">
         
@@ -159,31 +222,14 @@
                             </b>
                         </p>
     
-                        <div class="useredit" style="position:relative; right: 105px">
-                            <p> 
-                            <input style ="width: 100%; margin: 1px;" type="text" name="updateRole" class="form-control" value="<?php echo $row['roles']; ?>">
-                            </p>     
-                                         
-                        </div>
+                        <div class="adassign">
+                                    <p style="position:relative; right: 91px" name="userEmail" class="form-control">
+                                    <?php echo $row['role']; ?>
+                                    </p>
+                                </div>
                         
-                        <!-- dropdown -->
-
-                            <!-- <div class="dropdown" style = "text-align: center;">
-                            <select role = "reqRole" id = "requestRole">
-                                <option > <?php echo $row['roles']; ?></option> -->
-
-                        <!-- <div class="dropdown">
-                            <button class="dropbtn"><img lass="arrowdown" src ="./img/arrowdown.png"></button>
-                            <div class="dropdown-content">
-                              <a href="#">Unassigned</a>
-                              <a href="#">Professor</a>
-                              <a href="#">Program Director (PD)</a>
-                              <a href="#">Executive Director (EX-D)</a>
-                            </div>
-                          </div> -->
-
-                            <div class="tooltip">
-                                <img lass="information" src ="./img/information.png">
+                            <div class="tooltip" style="position:relative; right: 105px">
+                                <img  lass="information" src ="./img/information.png">
                                 <span class="tooltiptext">
                                 <img src ="./img/information.png" width="10px">
                                 <b>Role information</b>
@@ -196,9 +242,9 @@
                                     </span>
                                 </span>
                                 </div>
-                                <div class="adrequest">
+                                <!-- <div class="adrequest">
                                 <p> Request </p>
-                                </div>
+                                </div> -->
                             </div>
 
                     <!-- FIRST NAME WITH DATABASE -->
@@ -292,8 +338,9 @@
 </script>
 
 </div>
-<!--sheesh
--->
+
+<script src="https://kit.fontawesome.com/9e5ba2e3f5.js" crossorigin="anonymous"></script>
+    <script src="js/header.js"></script>
 </body>
 <?php
                                 }

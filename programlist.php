@@ -6,74 +6,128 @@
         <meta name="author" content="APC AcademX">
         <title>APC AcademX | Program List</title>
         <link rel="stylesheet" href="./css/adminstyle.css">
+
+        <link rel="stylesheet" href="css/settings.css">
+        <link rel="stylesheet" href="css/header.css">
+        <link rel="stylesheet" href="css/sidebar.css">
         <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
+<navigation class="navbar">
 
-<header> 
-    <!-- nav -->
-    <div class="container1">
-    
-        <div id="branding">
-            <a href="index.php"><img src="./img/APC AcademX Logo.png"></a>
-            <a href="sa.php"><img id="saheader" src="./img/Student Assessment Header.png"></a>
-            <a href="ca.php"><img id="caheader" src="./img/Course Assessment Header.png"></a>
-            <a href="em.php"><img id="emheader" src="./img/Exam Maker Header.png"></a>
-        </div>
+<ul class="right-header">
+    <li class="logo">
+        <a href="index.php"><img id="logo" src="img/logo.png"></a>
+    </li>
+</ul>
 
-        <nav>
-            <ul>
-                <li class="username"><h3>Einstein Yong</h3></li>
-
-                <li class="notification">
-                    <a href="#"><img src="./img/Notification.png"></a>
-                    <ul class="dropdown">
-                        <img src="./img/Notification Title.png">
-                    </ul>
-                </li>
-
-                <li class="user">
-                    <a href="#"><img src="./img/LOGO (2) 1.png"></a>
-                    <ul class="dropdown">
-                        <h3>ADMIN</h3>
-                        <p>PROFESSOR</p>
-                        <a href="usersettings.php" class="settings"><li>Settings⚙️</li></a>
-                        <a href="test.php" class="logout"><li>Logout[➡</li></a>
-                    </ul>
-                </li>
-
-            </ul>
-        </nav>
-
-    </div>
-
-</header>
-
-
-<!-- body -->
-<div class="column">
-    
-    <div class="left">
-
-        <div class="sidenav" id="bar">
-            
-            <div class="back">
-                <a href="index.php">
-                    <img src="./img/Exam Maker (5) 6.png">
-                </a>
-            </div>
-            
-            <div class="help">
-                <a href="#">
-                    <img src="./img/Help.png"> 
-                </a>
-            </div>
+<ul class="left-header">
+    <?php
+    // Check if the session variable exists
+    if(isset($_SESSION['user'])) {
+        // Retrieve data from the session variable
+        $userData = $_SESSION['user'];
         
-        </div>
-    </div>
+        // // Access specific data from the session variable
+        // $username = $userData['username'];
+        // $email = $userData['email'];
+        
+        // Output the retrieved data in HTML text
+        echo "<li class='username'><h3>$userData</h3></li>";
+    } else {
+        // Session variable does not exist or user is not logged in
+        echo "<li class='username'><h3>Null</h3></li>";
+    }
+    ?>
 
-    <div class="mid">
+    <li class="notification">
+        <a href="#" id="toggleNotif"><img id="notification" src="img/notification.png"></a>
+        <ul class="notif-drop dropdown" id="notif-drop" style="display: none;">
+            <h3>Notifications</h3>
+            <hr>
+            <div class="notif-list">
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+                <div class="notif">
+                    <label id="notifname">
+                        <p class="notifname">Sergio Peruda</p>
+                        <p class="notifdate">5/22/24</p>
+                    </label>
+                    <label id="notifname">
+                        <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                    </label>
+                </div>;
+            </div>
+        </ul>
+    </li>
+
+    <li class="user">
+        <a href="#" id="toggleUser"><img id="profile" src="img/profile.png"></a>
+        <ul class="user-drop dropdown" id="user-drop" style="display: none;">
+            <h3>Admin</h3>
+            <p>School Role</p>
+            <a href="userprofile.php" class="settings"><span>Settings</span></a>
+            <a href="logout.php" class="logout"><span>Logout</span></a>
+        </ul>
+    </li>
+</ul>
+
+<div class="sidebar">
+    <div class="back_button">
+        <a href="index.php">
+        <img src="img/back.png">
+        </a>
+    </div>
+    <div class="help_button">
+        <img src="img/help.png">
+    </div>
+</div>
+
+<div class="mid">
 
         <div class="midnav">
 
@@ -84,29 +138,29 @@
             <div class="line">
             </div>
 
-            <div>
+            <div class="buttonmid">
                 <a href="usersettings.php" class="midbutton">
-                    <p> User Settings </p>
+                    <p> User Profile </p>
                 </a>
             </div>
 
-            <div>
+            <div class="buttonmid">
                 <a href="adminset.php" class="midbutton">
                     <p> Admin Settings </p>
                 </a>
             </div>
 
-            <div>
+            <div class="buttonmid">
                 <a href="programlist.php" class="midbutton active">
                     <p> Program List </p>
                 </a>
             </div>
-
         </div>
-
-
     </div>
-    
+</navigation>
+
+<!-- body -->
+<div class="column">
     <div class="right">
         
         <div class="container">

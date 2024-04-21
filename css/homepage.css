@@ -1,0 +1,120 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
+}
+
+html {
+  font-size: 62.5%;
+}
+
+
+/* Variables */
+:root {
+    --primary-color: #F3C44C;
+    --bg-color: #293A82;
+    --white-color: #ffffff;
+    --gray-color: #343A40;
+    --dark-blue-color: #343A40;
+    --light-gray-color: #909090;
+    --error-color: #ff0000;
+    --border-color: #dedede;
+    --gray-button: #EDEDED;
+    --yellow-button-hover: #DBA927;
+    --gray-button-hover: #CCCCCC;
+    --darkblue-button-hover: #676C70;
+    --font-family: "Noto Sans", sans-serif;
+    --font-weight-normal: 500;
+    --font-weight-semibold: 700;
+    --font-weight-bold: 800;
+    --font-size-small-small: 1.1rem;
+    --font-size-small: 1.3rem;
+    --font-size-small-medium: 1.5rem;
+    --font-size-mediun-medium: 1.6rem;
+    --font-size-medium: 1.7rem;
+    --font-size-medium-large: 2.2rem;
+    --font-size-large: 3rem;
+  }
+  
+  body {
+      
+      display: grid;    
+      font-family: var(--font-family);
+      background-color: var(--white-color);
+      min-height: 100px;
+      height: calc(100%+100px);
+      min-width: 500px;
+      font-weight: 200;
+    }
+  
+
+    
+.content{
+    overflow: hidden;
+    display: block;
+    min-width: 120rem;
+    width: 95%;
+    height: fit-content;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10rem;
+    margin-bottom: 1.5rem;
+}
+
+.content img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.box{
+    float: left;
+    position:relative;
+    display: block;
+    width: 100%;
+    min-width: 20rem;
+    height: 100%;
+    transition: 0.5s;
+}
+
+.space{
+    margin: 2rem;
+}
+
+.box:hover{/*BOXES HOVER*/
+    transform: scale(1.05);
+    z-index: 2;
+}
+
+
+.box img{
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+    min-height: 25rem;
+    min-width: 35rem;
+}
+
+.box a{
+    color: #000000;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.system-list{
+    margin-left: auto;
+    margin-right: auto;
+    min-width: 120rem;
+    width: 95%;
+    margin: auto;
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+

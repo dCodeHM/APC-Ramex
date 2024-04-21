@@ -420,6 +420,18 @@ header nav{
     text-align: center;
     
 }
+
+.tables{
+
+    background-color: #EDEDED;
+    border: #000000;
+    height: 5vh;
+    /* margin-top: 20px; */
+    border-radius: 10px;
+    border: solid 3px;
+    text-align: center;
+    
+}
 /* white background inside center box */
 .usercontent{
     /* TANGGALIN KAPAG OKAY NA YUNG white*/

@@ -2,7 +2,8 @@
 
 function check_login($conn){
 
-  if(isset($_SESSION['account_id'])){
+  if(isset($_SESSION['account_id']))
+  {
     $id = $_SESSION['account_id'];
     $_query = "SELECT * FROM account WHERE account_id = '$id' LIMIT 1";
 
