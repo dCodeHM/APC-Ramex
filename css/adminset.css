@@ -1,0 +1,39 @@
+/* Base table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #dddddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  /* Hide the table header on smaller screens */
+  thead {
+      display: none;
+  }
+
+  /* Display table rows as block for responsive layout */
+  tbody, tr, td {
+      display: block;
+  }
+
+  /* Set table data to full width */
+  td {
+      width: 100%;
+  }
+
+  /* Add spacing between table cells */
+  td:not(:last-child) {
+      margin-bottom: 10px;
+  }
+}

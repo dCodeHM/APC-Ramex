@@ -39,11 +39,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
         <meta name="author" content="APC AcademX">
         <title>APC AcademX | Signup</title>
         <link rel="stylesheet" href="./css/teststyle.css">
+        <link rel="stylesheet" href="./css/registerdesign.css">
     </head>
 
     <body>
         
-        <a href="index.php"><h1>LOGIN</h1></a>
+        <a href="index.php"><h1></h1></a>
         
         <script src="" async defer></script>
 
@@ -56,7 +57,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
                 <input type = "text" name = "Lastname" placeholder = "Lastname">
                 <input type = "submit" value = "Signup">
 
-                <a href = "login.php">Click to login</a>
+                <a href = "login.php">Go back to login</a>
             </form>
         </div>
     </body>

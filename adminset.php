@@ -18,6 +18,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         <link rel="stylesheet" href="css/settings.css">
         <link rel="stylesheet" href="css/header.css">
         <link rel="stylesheet" href="css/sidebar.css">
+        <link rel="stylesheet" href="css/adminset.css">
         <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
 </head>
 
@@ -178,13 +179,12 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
                     <p> Admin Settings</p>
                 </div>
 
+                <!-- THIS IS THE SEARCH BAR -->
                 <form action="" method="GET" class="searchicon " style="position:relative; left: auto">
-                    <div class="input-group mb-3">
-                        <input type="text" name="search" required value="<?php if(isset($_GET['search'])){echo $_GET['search']; } ?>" class="searchbar" placeholder="Search data">
-                        <button type="submit" class="btn btn-primary">Search</button>
-                    </div>
-                </form>
 
+                    <input type = "text" class = "form-control" id  = "live_search" autocomplete="off" placeholder = "Search...">
+                </form>
+                <div id = "searchresult"></div>
             </div>
 
             <form id = "form" action = "adminsetcode.php" method = "POST" >
@@ -227,29 +227,6 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
                                 }
                                 ?> </p>
                             </div>
-
-                            <table class = "table">
-                                <thead>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
-                                    <th>Role</th>
-                                    <th>Email</th>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($result as $row){
-
-                                    ?>
-                                    <tr>
-                                        <td> <?php echo $row['last_name']; ?></td>
-                                        <td> <?php echo $row['first_name']; ?></td>
-                                        <td> <?php echo $row['role']; ?></td>
-                                        <td> <?php echo $row['user_email']; ?></td>
-                                    </tr>
-                                    <?php 
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
                         </div>
 
                         <!-- //BUTTON -->
@@ -319,7 +296,50 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         </div>
     </div>
 </div>
+
+
+
 <script src="https://kit.fontawesome.com/9e5ba2e3f5.js" crossorigin="anonymous"></script>
 <script src="js/header.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        // Function to fetch all data
+        function fetchAllData() {
+            $.ajax({
+                url: "livesearch.php",
+                method: "POST",
+                data: { input: "" }, // Sending empty input to fetch all data
+                success: function(data){
+                    $("#searchresult").html(data);
+                    $("#searchresult").css("display", "block");
+                }
+            });
+        }
+
+        // Call fetchAllData function initially to display all data
+        fetchAllData();
+
+        // Keyup event for live search
+        $("#live_search").keyup(function(){
+            var input = $(this).val();
+            if(input != ""){
+                $.ajax({
+                    url: "livesearch.php",
+                    method: "POST",
+                    data: { input: input },
+                    success: function(data){
+                        $("#searchresult").html(data);
+                        $("#searchresult").css("display", "block");
+                    }
+                });
+            } else {
+                $("#searchresult").html(""); // Clear search result if input is empty
+                fetchAllData(); // Fetch all data again when input is empty
+            }
+        });
+    });
+</script>
 </body>
 </html>
