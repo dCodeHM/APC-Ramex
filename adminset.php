@@ -203,85 +203,15 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
                     <div class="tablecontent">
                         <!-- THIS IS TABLE FOR SEARCHING -->
                         <div id = "searchresult"></div> 
+
                         <div class="adminame">
-                            <div class="adname">
-                                <p> <?php
-                                $conn = mysqli_connect("localhost", "root", "", "ramexdb");
-                                $sql = "SELECT * FROM account WHERE account_id = '$id' LIMIT 1"; 
-                                $result = $conn->query($sql);
-
-                                if ($result) {
-                                    // output data of each row
-                                    while($row = $result->fetch_assoc()) {
-                                        
-                                        echo " " . $row["last_name"]. " ";
-                                        echo " " . $row["first_name"]. " ";            
-                                    }
-                                } else {
-                                    echo "0 results";
-                                }
-                                ?> </p>
-                            </div>
-    
-                            <div class="ademail">
-                                <p>
-                                    <?php
-                                    $result = $conn->query($sql);
-                                    if ($result) {
-                                    // output data of each row
-                                    while($row = $result->fetch_assoc()) {
-                                        
-                                        echo " " . $row["user_email"]. " ";         
-                                    }
-                                } else {
-                                    echo "0 results";
-                                }
-                                ?> </p>
-                            </div>
-                        </div>
-
-                        <!-- //BUTTON -->
-                        <div class="form-group mb- 3">
-                                <button type="submit" onclick="alert('Your profile has been updated')" name="update_admin_data" class="updatebtn" style = "vertical-align:middle">Update</button>
-                            </div>
+                            <!-- //BUTTON -->
+                            
                               <!-- ITO YUNG MAAYOS NA TALAGA -->
-                              <div class="dropdown">
-                                <select name="updateRole" id="lastName">
-                                    <?php
-                                    $sql = "SELECT role FROM account WHERE account_id = '$id'";
-                                    $result = mysqli_query($conn, $sql) or die("Query failed: " . mysqli_error($conn));
-
-                                    if ($result && mysqli_num_rows($result) > 0) {
-                                        $currentRole = mysqli_fetch_assoc($result)['role'];  // Get current role
-                                        
-                                        $sql = "SELECT * FROM role ";
-                                        $data = mysqli_query($conn, $sql) or die("Query failed: " . mysqli_error($conn));
-                                        
-                                        while ($row = mysqli_fetch_assoc($data)) {
-                                            $selected = $currentRole == $row["role"] ? "selected" : ""; // Set selected attribute dynamically
-                                            echo "<option value='" . $row["role"] . "' $selected>" . $row["role"] . "</option>";
-                                        }
-                                    } else {
-                                        echo "<option value=''>No Role Found</option>";  // Handle no role case
-                                    }
-                                    ?>
-                                </select>
-                            </div>
                               
-                        <div class="adremove">
-                            <?php
-                            $sql = "SELECT * FROM account WHERE account_id = 'id'"; 
-                            if (isset($_GET['role_request']))
-                            {
-                                $role_request=$_GET['role_request'];
-                                // echo $_GET['role_request'];
-                                $delete = mysqli_query($conn, "DELETE role_request FROM users WHERE 'user_id'");
-                            }
-                            ?>
-                            <a href = 'adminset.php?".$result["role_request"]."'>Delete</a>
+
                         </div>
                     </div>
-                </div>
                 </div>
             
                 <div class="info">
