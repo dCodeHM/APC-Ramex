@@ -1,3 +1,19 @@
+<?php session_start();
+include("config/db.php");
+
+$id = $_SESSION['account_id'];
+
+$result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
+?>
+<?php                           
+                                $id = $_SESSION['account_id'];
+                                $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
+                                $gotResults = mysqli_query($conn, $sql);
+                                if ($gotResults){
+                                if(mysqli_num_rows($gotResults)>0){
+                                    while($row = mysqli_fetch_array($gotResults)){
+                                    // print_r($row['first_name']);
+                            ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -37,7 +53,7 @@
         echo "<li class='username'><h3>$userData</h3></li>";
     } else {
         // Session variable does not exist or user is not logged in
-        echo "<li class='username'><h3>Null</h3></li>";
+        echo "<li class='username'><h3>$row[first_name] $row[last_name]</h3></li>";
     }
     ?>
 
@@ -324,6 +340,10 @@
     </div>
 
 </div>
-    
 </body>
+<?php
+                                }
+                            }
+                        }
+                            ?>
 </html>

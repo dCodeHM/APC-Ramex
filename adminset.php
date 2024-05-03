@@ -5,6 +5,15 @@ $id = $_SESSION['account_id'];
 
 $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
 ?>
+<?php                           
+                                $id = $_SESSION['account_id'];
+                                $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
+                                $gotResults = mysqli_query($conn, $sql);
+                                if ($gotResults){
+                                if(mysqli_num_rows($gotResults)>0){
+                                    while($row = mysqli_fetch_array($gotResults)){
+                                    // print_r($row['first_name']);
+                            ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +28,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         <link rel="stylesheet" href="css/header.css">
         <link rel="stylesheet" href="css/sidebar.css">
         <link rel="stylesheet" href="css/adminset.css">
+
         <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
 </head>
 
@@ -46,7 +56,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         echo "<li class='username'><h3>$userData</h3></li>";
     } else {
         // Session variable does not exist or user is not logged in
-        echo "<li class='username'><h3>Null</h3></li>";
+        echo "<li class='username'><h3>$row[first_name] $row[last_name]</h3></li>";
     }
     ?>
 
@@ -184,7 +194,6 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
 
                     <input type = "text" class = "form-control" id  = "live_search" autocomplete="off" placeholder = "Search...">
                 </form>
-                <div id = "searchresult"></div>
             </div>
 
             <form id = "form" action = "adminsetcode.php" method = "POST" >
@@ -192,6 +201,8 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
 
                 <div class="table" style="overflow: auto;">
                     <div class="tablecontent">
+                        <!-- THIS IS TABLE FOR SEARCHING -->
+                        <div id = "searchresult"></div> 
                         <div class="adminame">
                             <div class="adname">
                                 <p> <?php
@@ -233,19 +244,6 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
                         <div class="form-group mb- 3">
                                 <button type="submit" onclick="alert('Your profile has been updated')" name="update_admin_data" class="updatebtn" style = "vertical-align:middle">Update</button>
                             </div>
-
-                        <!-- <div class="adrequest">
-                            <p> New </p>
-                        </div> -->
-<!--     
-                        <div class="adassign">
-                            <div class="adminassigned" style="position:relative; bottom: 30px">
-                                <p> Unassigned </p>   
-                            </div>                  
-                        </div> -->
-    
- 
-
                               <!-- ITO YUNG MAAYOS NA TALAGA -->
                               <div class="dropdown">
                                 <select name="updateRole" id="lastName">
@@ -281,7 +279,6 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
                             }
                             ?>
                             <a href = 'adminset.php?".$result["role_request"]."'>Delete</a>
-                            
                         </div>
                     </div>
                 </div>
@@ -342,4 +339,9 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
     });
 </script>
 </body>
+<?php
+                            }
+                        }
+                    }
+?>
 </html>

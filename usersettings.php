@@ -22,7 +22,7 @@ include("config/db.php");
                 ?>
 <?php                           
                                 $id = $_SESSION['account_id'];
-                                $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1 ";
+                                $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
                                 $gotResults = mysqli_query($conn, $sql);
                                 if ($gotResults){
                                 if(mysqli_num_rows($gotResults)>0){
@@ -39,9 +39,11 @@ include("config/db.php");
         <title>APC AcademX | User Settings</title>
         <link rel="stylesheet" href="./css/adminstyle.css">
 
-        <link rel="stylesheet" href="css/settings.css">
+        <link rel="stylesheet" href="css/userset.css">
         <link rel="stylesheet" href="css/header.css">
         <link rel="stylesheet" href="css/sidebar.css">
+        <link rel="stylesheet" href="css/boxset.css">
+        <link rel="stylesheet" href="css/settings.css">
         <script defer src = "./usersettingAction.js"></script>
         
 </head>
@@ -71,7 +73,7 @@ include("config/db.php");
         echo "<li class='username'><h3>$userData</h3></li>";
     } else {
         // Session variable does not exist or user is not logged in
-        echo "<li class='username'><h3>Null</h3></li>";
+        echo "<li class='username'><h3>$row[first_name] $row[last_name]</h3></li>";
     }
     ?>
 
@@ -208,16 +210,16 @@ include("config/db.php");
                 <div class="userhead">
                     <p> User Profile</p>
                 </div>
-
             </div>
 
-            <form id = "form" action = "usersettingscode.php" method = "POST" >
-            <div class="userline">
-                <div class="table" style="overflow: auto;">
 
+            <form id = "form" action = "usersettingscode.php" method = "POST" >
+            <div class="adminline">
+                <div class="table">
                     <div class="usercontent">
-                        <p style="position:relative; left: 15px; top: 5px">
-                            <b>
+                        <p>
+                            
+                            <b style="position:relative; left: 15px; top: 5px">
                                 School Role
                             </b>
                         </p>
@@ -249,8 +251,8 @@ include("config/db.php");
 
                     <!-- FIRST NAME WITH DATABASE -->
                     <div class="usercontent">
-                        <p style="position:relative; left: 15px; top: 5px" >
-                            <b>First Name</b>
+                            <p>
+                            <b style="position:relative; left: 15px; top: 5px" >First Name</b>
                             </p>
                             <div class="useredit">
                                 <p style="position:relative; right: 95px"> 
@@ -305,7 +307,8 @@ include("config/db.php");
                                 <!-- echo $hash = password_hash("pwd", PASSWORD_DEFAULT);  -->
                                 <br>
                                 <input id = "passWord" type="checkbox" class="showPW" onclick="myFunction()">show
-                                
+                                <!-- THIS IS FOR THE FORGOT PASSWORD -->
+                                <a href="forgotpassword.php" target="_blank">Change</a>
                                 <div class = "error"></div>
 
                                 <!-- JS FOR SHOWING PASSWORD -->
@@ -324,7 +327,7 @@ include("config/db.php");
 
                         
                     </div>  
-            </div>
+                </div>
                             <!-- SUBMIT BUTTON -->
                             <div class="form-group mb-3">
                                 <button type="submit" onclick="alert('Your profile has been updated')" name="update_stud_data" class="updatebtn" style = "vertical-align:middle">Update</button>

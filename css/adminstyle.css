@@ -1,332 +1,5 @@
-/* start copying here */
-body{
-    font: 15px/1.5 Arial, Helvetica, sans-serif;
-    padding: 0;
-    margin: 0;
-    align-content: center;
-    width: 100%;
-    height: auto;
 
-    /*remove if you want it to be responsive in using the phone*/
-    /* Should stop downsizing after 1024px */
-    min-width: 968px;
-
-    overflow: hidden;
-}
-
-/* Header */
-header{
-    background: #293A82;
-    color: #ffffff;
-    padding-top: 0;
-    min-height: 100px;
-}
-header a{
-    color: #ffffff;
-    text-decoration: none;
-    text-transform: uppercase;
-    font-size: 20px;
-}
-header ul{
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-header li{
-    float: left;
-    display: inline;
-    position: relative;
-    padding: 0 20px 30px 20px;
-}
-header .user{
-    padding: 0 0 0 0;
-}
-header .notification{
-    padding: 7px 20px 20px 10px;
-}
-header .notification img{
-    padding: 0 0 0 20px;
-}
-header .username{
-    padding: 0 30px 0 0;
-}
-header li ul.dropdown li{
-    display: block;
-}
-header li ul.dropdown{
-    width: 100%;
-    background: #ffffff;
-    border: #000000 solid;
-    margin: 0 0px 100px -250px;
-    padding: 10px 200px 10px 10px;
-    position: absolute;
-    z-index: 999;
-    display: none;
-    align-items: center;
-}
-header li ul.dropdown h3{
-    color: #000000;
-    margin: 10px 60px 10px 30px;
-    padding: 10px 100px 10px 80px;
-    position: relative;
-    display: inline-block;
-}
-header li ul.dropdown p{
-    color: #000000;
-    margin: 10px 60px 10px 15px;
-    padding: 10px 100px 10px 80px;
-    position: relative;
-    display: inline-block;
-}
-header .settings li{
-    padding: 20px 100px 20px 70px;
-    margin: 10px 50px 10px 10px;
-    position: relative;
-    background: url(../img/Settings.png) no-repeat; 
-}
-header .settings li:hover{
-    background: url(../img/Settings\ Hover.png) no-repeat;
-}
-header .logout li{
-    padding: 20px 100px 20px 70px;
-    margin: 10px 50px 10px 10px;
-    position: relative;
-    background: url('../img/Logout.png') no-repeat;
-}
-header .logout li:hover{
-    background: url(../img/Settings\ Hover.png) no-repeat;
-}
-header li:hover ul.dropdown{
-    display: block;
-}
-header #branding{
-    float: left;
-}
-header #branding img{
-    margin-top: 20px;
-    width: 230px;
-    margin-bottom: 0;
-}
-header nav{
-    float: right;
-    margin-top: 20px;
-}
-
-/* Showcase YELLOW BOX*/
-
-#showcase img{
-    margin-top: 2rem;
-    width: 100%;
-    padding-bottom: 2vh;
-}
-/* header li:active ul.dropdown{
-    display: block;
-} */
-
-nav ul ul li a:focus,
-nav ul ul li a:active {
-    color: var(--link-active-color);
-}
-
-nav a:hover,
-nav a:focus,
-nav a:active,
-nav a:focus:hover,
-nav a:active:hover {
-    color: var(--link-active-color);
-}
-
-nav ul li:focus > ul,
-nav ul li:active > ul {
-    display: inherit;
-}
-
-nav a:focus + ul,
-nav a:active + ul {
-    display: inherit;
-}
-
-header #branding{
-    float: left;
-    
-}
-
-header #branding img{
-    margin-top: 20px;
-    width: 230px;
-    margin-bottom: 0;
-}
-
-header #branding #saheader{
-    margin-top: 10px;
-    width: 130px;
-    min-height: 10%;
-    margin-bottom: 0;
-}
-
-header #branding #caheader{
-    margin-top: 10px;
-    width: 130px;
-    min-height: 10%;
-    margin-bottom: 0;
-}
-
-header #branding #emheader{
-    margin-top: 10px;
-    width: 130px;
-    min-height: 10%;
-    margin-bottom: 0;
-}
-
-header nav{
-    float: right;
-}
-
-/* Copy until */
-
-/* Navbar */
-.navbar{
-    width: auto;
-    height: 60px;
-    background-color: #293A82;
-    display: flex;
-}
-
-.branding{
-    margin: auto 0;
-}
-
-.branding img{
-    width: auto;
-    height: 50px;
-    padding: 5px;
-    
-}
-
-.navbuts{
-    display: flex;
-    width: 30%;
-    margin: auto;
-    margin-left: 2%;
-}
-
-.navbutton{
-    margin: auto;
-    padding: 0;
-    align-items: center;
-}
-
-
-.navbutton img{
-    width: auto;
-    height: 45px;
-    margin: auto;
-}
-
-.adminname{
-    width: 20%;
-    display: flex;
-}
-
-.column{
-    display: flex;
-    width: 100%;
-    img{
-        max-width: 100%;
-        max-height: 100%;
-    }
-}
-
-.left{
-    width: 50px;
-    height: 100vh;
-    background-color: #343A40;
-}
-
-.sidenav{
-    /* padding: 500px 0px 20px 10px; */
-    margin: auto;
-    text-align: center;
-    display: grid;
-}
-
-.back{
-    margin-top: 0;
-    position: relative;
-}
-
-.help{
-    margin-bottom: 0;
-    position: relative;
-    top: 34.5rem;
-    min-width: 100%;
-}
-
-.mid{
-    width: 20%;
-    height: 100vh;
-    background-color: #454C52;
-    text-align: center;
-}
-
-.midnav{
-    padding: 10px;
-}
-
-.midbutton{
-    text-decoration: none;
-}
-
-.midbutton p{
-    background-color: #ffffff;
-    color: black;
-    padding: 20px;
-    border-radius: 10px;
-    font-weight: 600;
-}
-
-.active p{
-    background-color: #E7AF41;
-    color: white;
-}
-
-.midbutton p:hover{
-    background-color: #E7AF41;
-    color: white;
-}
-
-.midhead{
-    padding: 5px;
-}
-
-.midhead p{
-    color: #ffffff;
-    font-size: 30px;
-    font-weight: 700;
-}
-
-.line{
-    border-top: 5px solid white;
-}
-
-.right{
-    height:86vh;
-    width: 100%;
-    text-align: center;
-}
-
-.container{
-    width: 90%;
-    margin: auto;
-}
-
-.righthead{
-    display: flex;
-    height: 120px;
-    align-items: center;
-}
-
-/* USER PROFILE IMAGE PICTURE*/
+/* ICONS FOR SETTINSG */
 .adminicon{ 
     margin-top: 40px;
     width: 100px;
@@ -337,7 +10,6 @@ header nav{
         max-width: 100%;
         max-height: 100%;
     }
-    
 }
 
 /* Admin Settings */
@@ -355,72 +27,7 @@ header nav{
     color: #343A40;
 }
 
-/* User Settings */
-.userhead{
-    width: 50%;
-    text-align: right;
-    margin-left: 0;
-}
-
-.userhead p{
-    font-size: 40px;
-    font-weight: 700;
-    text-align: left;
-    color: #343A40;
-}
-
-/* Program List */
-.programlisthead{
-    width: 50%;
-    text-align: right;
-    margin-left: 0;
-    margin-top: auto;
-}
-
-.programlisthead p{
-    font-size: 40px;
-    font-weight: 700;
-    text-align: left;
-    color: #343A40;
-}
-
-.searchbar{
-    width: 400px;
-    min-width: 100%;
-    min-height: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    left: 100px;
-    box-sizing: border-box;
-    border: 3px solid #000000;
-    -webkit-transition: 0.5s;
-    transition: 0.5s;
-    outline: none;
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 5px;
-}
-
-
-
-.adminline{
-    border-top: 5px solid black;
-    padding-top: 10px;
-}
-
-/* THE BLACK TABLE WITH INFORMATIN */
-.table{
-
-    background-color: #EDEDED;
-    border: #000000;
-    height: 60vh;
-    /* margin-top: 20px; */
-    border-radius: 10px;
-    border: solid 3px;
-    text-align: center;
-    
-}
-
+/* admin settings and program black box */
 .tables{
 
     background-color: #EDEDED;
@@ -431,33 +38,7 @@ header nav{
     border: solid 3px;
     text-align: center;
     
-}
-/* white background inside center box */
-.usercontent{
-    /* TANGGALIN KAPAG OKAY NA YUNG white*/
-    background-color: white;
-    display: flex;
-    border-radius: 10px;
-    height: fit-content;
-    width: fit-content;
-    width:  97%;
-    text-align: right;
-    margin: 15px auto;
-    /* min-width: 100vh;
-    min-height: 15%; */
-}
-
-.tablecontent{
-    display: flex;
-    background-color: #ffffff;
-    border-radius: 10px;
-    height: fit-content;
-    width:  97%;
-    text-align: right;
-    margin: 15px auto;
-    /* min-width: 100vh;
-    min-height: 15%; */
-}
+  }
 
 .adminame{
     padding: 5px 20px;
@@ -472,118 +53,6 @@ header nav{
     font-weight: 600;
 }
 
-.adrequest{
-    width: 10%;
-    margin: auto;
-    text-align: center;
-    color: white;
-}
-
-
-.adrequest p{
-    background-color: #E7AF41;
-    padding: 2px ;
-    border-radius: 50px;
-}
-
-/* box inside the white */
-.adassign{
-    text-align: left;
-    /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
-    width: 50%;
-    margin: auto 20px;
-    padding-top: 30px;;
-}
-
-.adassign p{
-    border-radius: 5px;
-    padding: 5px 20px;
-    border: solid 2px;
-    background-color: white;
-    font-size: 15px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-}
-
-/* user box class */
-.useredit{
-    text-align: left;
-    /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
-    width: 50%;
-    margin: auto 20px;
-    padding-top: 30px;
-}
-/* user text box */
-.useredit p{
-    border-radius: 5px;
-    padding: 5px 10px;
-}
-/* user input */
-.useredit input[type=text]{
-    border-style: solid;
-    border-radius: 5px;
-    border-color: black;
-    padding: 5px 10px 10px 10px;
-    font-size: 15px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-}
-
-
-.useredit input[type=password]{
-    border-style: solid;
-    border-radius: 5px;
-    border-color: black;
-    padding: 5px 10px 10px 10px;
-    font-size: 15px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-}
-
-/* JAVASCRIPT ERROR */
-.error {
-    text-align: left;
-    /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
-    width: 50%;
-    margin: auto 20px;
-}
-
-.adremove{
-    width: 20%;
-    margin: auto;
-    text-align: center;
-    
-}
-
-.adremove a{
-    color: #343A40;
-}
-
-.info{
-    width: 100%;
-    display: flex;
-    margin: auto;
-    text-align: justify; /* For Edge */
-    text-align-last: right;
-}
-
-.rolesinfo{
-    width: 100%;
-    font-size: 20px;
-    padding: 5px;
-    margin: 0;
-}
-
-.rolesinfo a{
-    text-decoration: none;
-    color: #343A40;
-}
-
-.rolesinfo a:hover{
-    text-decoration: underline;
-    color: #343A40;
-
-}
 
 /* DROP DOWN IN USER PROFILE */
 .admindropbtn {
@@ -627,88 +96,6 @@ header nav{
 
   /* DROP DOWN FOR ADMIN SETTINGS */
 
-  /* DROP DOWN IN USER PROFILE */
-.dropbtn {
-    padding: px;
-    border: none;
-    border-radius: 5px;
-    height: 30px;
-    width: 30px;
-  }
-  
-  .admindropdown {
-    position: relative;
-    display: inline-block;
-    padding-top: 50px;
-    right: 143px;
-    bottom: 2px;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    min-width: 35vh;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    text-align: left;
-  }
-  
-  .dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-  }
-  
-  .dropdown-content a:hover {background-color: #ddd;}
-  
-  .dropdown:hover .dropdown-content {display: block;}
-  
-  .dropdown:hover .dropbtn {background-color: #3e8e41;}
-
-  /* HOVER USER INFORMATION */
-  .tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-    height: 25px;
-    right: 130px;
-    top: 50px;
-  }
-  
-  /* on hover text */
-  .tooltip .tooltiptext {
-    visibility: hidden;
-    width: 25em;
-    height: auto;
-    background-color: rgb(255, 255, 255);
-    color: #000000;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
-    bottom: -13rem;
-    left: 55%;
-    margin-left: 10px;
-    border: #000000;
-    border-style: solid;
-    border-width: 2px;
-    margin-top: 20rem;
-
-
-    
-    /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
-    opacity: 0;
-    transition: opacity 1s;
-  }
-  
-  .tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-  }
-
   .adminassigned{
     text-align: left;
     /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
@@ -724,57 +111,54 @@ header nav{
     border: solid 2px;
 }
 
-/* USER PROFILE UPDATE */
-.updatebtn {
-    display: inline-block;
-    border-radius: 10px;
-    background-color: #008000;
+  .adminame{
+    padding: 20px;
+    text-align: left;
+    width: 40rem;
+    float: left;
+  
+    margin-left: 10px;
+    line-height: 5px;
+    color: #000000;
+  }
+  
+  .adremove{
+    padding: 5px;
+    text-align: right;
+    width: 20rem;
+    margin: auto;
+    margin-right: 50px;
+    float: right;
+    margin-top: 40px;
+    line-height: 5px;
+    color: #000000;
+  }
+  
+  .adremove a{
+      color: #343A40;
+  }
+  
+  .adremove button{
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #343A40;
+    /* Remove default button styles */
     border: none;
-    color: #FFFFFF;
-    text-align: center;
-    font-size: 20px;
-    padding: 10px;
-    width: 200px;
-    height: 50px;
-    transition: all 0.5s;
+    outline: none; /* This removes the default focus outline */
+    background: none; /* This removes any default background */
     cursor: pointer;
-    margin: 5px;
+    text-decoration: underline;
+  }
+
+  .right{
     position: fixed;
-    bottom: 0;
-    right: 0;
-    margin: 10px 10px;
-    z-index: 100;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.521);
-    -webkit-transition: all 0.5s;
-    transition: all 0.5s;
+    top: 0rem;
+    left: 29rem;
+    height:100%;
+    width: 80vw;
+    margin-right: 50rem;
+    min-height: 50rem;
+    text-align: center;
+    display: flex;
   }
-  
-  .updatebtn span {
-    cursor: pointer;
-    display: inline-block;
-    position: relative;
-    transition: 0.5s;
-  }
-  
-  .updatebtn span:after {
-    content: '\00bb';
-    position: absolute;
-    opacity: 0;
-    top: 0;
-    right: -20px;
-    transition: 0.5s;
-  }
-  
-  .updatebtn:hover span {
-    padding-right: 25px;
-  }
-  
-  .updatebtn:hover span:after {
-    opacity: 1;
-    right: 0;
-  }
-
-
-
-
 

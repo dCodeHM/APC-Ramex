@@ -12,14 +12,15 @@ if(isset($_POST['update_stud_data']))//update_stud_data is the button name for u
 {
 
     //['updateVALUE'] is the name of of each class in the user 
-    $password = $_POST['updatePassword'];
+    // $password = $_POST['updatePassword'];
     $firstname = $_POST['updateFirstname'];
     $lastname = $_POST['updateLastname'];
     // $role = $_POST['updateRole'];
 
     //=$result = mysqli_query($conn, "SELECT * FROM student WHERE id=1");
 
-    $query = "UPDATE account SET pwd='$password', first_name='$firstname', last_name='$lastname'  WHERE account_id= '$id'";
+    $query = "UPDATE account SET first_name='$firstname', last_name='$lastname'  WHERE account_id= '$id'";
+    //  pwd='$password',
     // roles='$role'
     $query_run = mysqli_query($conn, $query);
 

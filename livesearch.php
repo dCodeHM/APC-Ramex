@@ -41,7 +41,7 @@ if (isset($_POST['input'])){
       ?>
     </tbody>
     </table>
-                    </div>
+    </div>
   </div>
     <?php
   }
