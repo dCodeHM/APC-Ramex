@@ -175,8 +175,20 @@ include("config/db.php");
             </div>
 
             <div class="buttonmid">
-                <a href="usersettings.php" class="midbutton active">
+                <a href="adminusersettings.php" class="midbutton active">
                     <p> User Profile </p>
+                </a>
+            </div>
+
+            <div class="buttonmid">
+                <a href="adminset.php" class="midbutton">
+                    <p> Admin Settings </p>
+                </a>
+            </div>
+
+            <div class="buttonmid">
+                <a href="programlist.php" class="midbutton">
+                    <p> Program List </p>
                 </a>
             </div>
         </div>

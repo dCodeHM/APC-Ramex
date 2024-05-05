@@ -2,40 +2,53 @@
 session_start();
 
 include("config/db.php");
-include ("config/functions.php");
+include("config/functions.php");
 
 if($_SERVER["REQUEST_METHOD"] == "POST")
 { 
-  // something was posted
   $user_email = $_POST['username'];
   $pwd = $_POST['password'];
 
   if(!empty($user_email) && !empty($pwd)){
-    // $user_id = random_num(20);
-
-    //READ TO DATABASE
+    // Query database for user
     $query = "SELECT * FROM account WHERE user_email = '$user_email' LIMIT 1";
-
     $result = mysqli_query($conn, $query);
 
-    // check if all login in fine
-    if($result)
-        {
-            if($result && mysqli_num_rows($result) > 0)
-            {
-                $user_data = mysqli_fetch_assoc($result);
-                
-                if($user_data['pwd'] === $pwd){
+    if($result && mysqli_num_rows($result) > 0)
+    {
+        $user_data = mysqli_fetch_assoc($result);
+        
+        // Check if the password matches
+        // Note: replace this line with password_verify if using hashed passwords
+        if($user_data['pwd'] === $pwd){
+            $_SESSION['account_id'] = $user_data['account_id'];
+            $_SESSION['user_email'] = $user_data['user_email'];
+            $_SESSION['first_name'] = $user_data['first_name'];
+            $_SESSION['last_name'] = $user_data['last_name'];
+            $_SESSION['role'] = $user_data['role'];
 
-                    $_SESSION['account_id'] = $user_data['account_id'];
+            // Redirect based on role
+            switch ($user_data['role']) {
+                case 'Executive Director':
                     header("Location: index.php");
-                    die;
-                }
+                    exit;
+                case 'Professor':
+                    header("Location: professoruser.php");
+                    exit;
+                case 'Unassigned':
+                    header("Location: unassigneduser.php");
+                    break;
+                default:
+                    header("Location: unauthorized_access.php");
+                    exit;
             }
+        } else {
+            echo "Wrong email or password";
         }
+    } else {
         echo "Wrong email or password";
-  }
-  else{
+    }
+  } else {
     echo "Please enter some valid information!";
   }
 }
@@ -54,12 +67,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 </head>
 
 <body>
-  <a href="index.php">
-    <h1>Welcome!</h1>
-  </a>
-
-  <script src="" async defer></script>
-
   <div id="box">
     <form method="post">
       <h2>LOGIN</h2>

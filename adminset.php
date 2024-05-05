@@ -160,7 +160,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
             </div>
 
             <div class="buttonmid">
-                <a href="usersettings.php" class="midbutton">
+                <a href="adminusersettings.php" class="midbutton">
                     <p> User Profile </p>
                 </a>
             </div>
