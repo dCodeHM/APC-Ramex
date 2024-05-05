@@ -3,83 +3,92 @@
 <?php
 include("config/db.php");
 
+// Function to check the count of Executive Directors
+function countExecutiveDirectors($conn) {
+    $execQuery = "SELECT COUNT(*) AS exec_count FROM account WHERE role = 'Executive Director'";
+    $execResult = mysqli_query($conn, $execQuery);
+    if ($execResult) {
+        $execData = mysqli_fetch_assoc($execResult);
+        return (int) $execData['exec_count'];
+    }
+    return 0; // In case of query failure, assume no Executive Director which should be handled as error
+}
+
 if (isset($_POST['input'])) {
     $input = $_POST['input'];
-
     $query = "SELECT * FROM account WHERE user_email LIKE '{$input}%' OR first_name LIKE '{$input}%' OR last_name LIKE '{$input}%' OR role LIKE '{$input}%'";
 
     $result = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($result) > 0) {
+        // Get the count of Executive Directors only once
+        $execDirectorCount = countExecutiveDirectors($conn);
         ?>
         <div class="table" style="overflow: auto;">
-                <table class="center">
-                    <thead>  
-                        <tr>
-                            <th>Last Name</th>
-                            <th>First Name</th>
-                            <th>User Role</th>
-                            <th>User Email</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            $lname = $row['last_name'];
-                            $fname = $row['first_name'];
-                            $role = $row['role'];
-                            $email = $row['user_email'];
-                            $id = $row['account_id'];
-                            ?>
-                            <tr>
-                                <td><?php echo $lname; ?></td>
-                                <td><?php echo $fname; ?></td>
-                                <td style="text-align: center">
-                                    <form action="adminsetcode.php" method="post">
-                                        <input type="hidden" name="user_id" value="<?= $id; ?>">
-                                        <select name="user_role" class="rolebutton">
-                                            <?php
-                                            // Query to get current role of user
-                                            $sql = "SELECT role FROM account WHERE account_id = '$id'";
-                                            $role_result = mysqli_query($conn, $sql);
-                                            
-                                            if ($role_result && mysqli_num_rows($role_result) > 0) {
-                                                $currentRole = mysqli_fetch_assoc($role_result)['role'];  // Get current role
-                                                
-                                                // Query to fetch all roles from database
-                                                $sql = "SELECT * FROM role";
-                                                $role_data = mysqli_query($conn, $sql);
-                                                
-                                                while ($row = mysqli_fetch_assoc($role_data)) {
-                                                    $selected = $currentRole == $row["role"] ? "selected" : ""; // Set selected attribute dynamically
-                                                    echo "<option value='" . $row["role"] . "' $selected>" . $row["role"] . "</option>";
-                                                }
-                                            } else {
-                                                echo "<option value=''>No Role Found</option>";  // Handle no role case
-                                            }
-                                            ?>
-                                        </select>
-                                        <button type="submit" class="btn btn-primary" name="update_admin_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new role?')">Update</button>
-                                    </form>
-                                </td>
-                                <td><?php echo $email; ?></td>
-                                <td style="text-align: center">
-                                    <form action="adminsetcode.php" method="post">
-                                        <input type="hidden" name="user_delete" value="<?= $id; ?>">
-                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete <?= $fname . ' ' . $lname; ?>?')">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <?php
-                        }
+            <table class="center">
+                <thead>
+                    <tr>
+                        <th>Last Name</th>
+                        <th>First Name</th>
+                        <th>User Role</th>
+                        <th>User Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $lname = $row['last_name'];
+                        $fname = $row['first_name'];
+                        $role = $row['role'];
+                        $email = $row['user_email'];
+                        $id = $row['account_id'];
                         ?>
-                    </tbody>
-                </table>
+                        <tr>
+                            <td><?php echo $lname; ?></td>
+                            <td><?php echo $fname; ?></td>
+                            <td style="text-align: center">
+                                <form action="adminsetcode.php" method="post">
+                                    <input type="hidden" name="user_id" value="<?= $id; ?>">
+                                    <select name="user_role" class="rolebutton" <?= ($execDirectorCount <= 1 && $role === 'Executive Director') ? 'disabled' : '' ?>>
+                                        <?php
+                                        $sql = "SELECT * FROM role";
+                                        $role_data = mysqli_query($conn, $sql);
+                                        
+                                        while ($role_row = mysqli_fetch_assoc($role_data)) {
+                                            $selected = ($role == $role_row["role"]) ? "selected" : "";
+                                            echo "<option value='" . $role_row["role"] . "' $selected>" . $role_row["role"] . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                    <?php if ($execDirectorCount > 1 || $role !== 'Executive Director'): ?>
+                                        <button type="submit" class="btn btn-primary" name="update_admin_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new role?')">Update</button>
+                                    <?php else: ?>
+                                        <button type="button" class="btn btn-primary" disabled>Update Denied</button>
+                                    <?php endif; ?>
+                                </form>
+                            </td>
+                            <td><?php echo $email; ?></td>
+                            <td style="text-align: center">
+                                <form action="adminsetcode.php" method="post">
+                                    <input type="hidden" name="user_delete" value="<?= $id; ?>">
+                                    <?php if ($execDirectorCount > 1 || $role !== 'Executive Director'): ?>
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete <?= $fname . ' ' . $lname; ?>?')">Delete</button>
+                                    <?php else: ?>  
+                                        <button type="button" class="btn btn-danger" disabled>Deletion Denied</button>
+                                    <?php endif; ?>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
         <?php
     } else {
-        echo "No result found";
+        echo "No results found";
     }
 }
 ?>
