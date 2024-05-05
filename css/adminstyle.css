@@ -1,4 +1,3 @@
-
 /* ICONS FOR SETTINSG */
 .adminicon{ 
     margin-top: 40px;
@@ -150,15 +149,4 @@
     text-decoration: underline;
   }
 
-  .right{
-    position: fixed;
-    top: 0rem;
-    left: 29rem;
-    height:100%;
-    width: 80vw;
-    margin-right: 50rem;
-    min-height: 50rem;
-    text-align: center;
-    display: flex;
-  }
 

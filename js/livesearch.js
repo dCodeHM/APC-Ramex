@@ -34,3 +34,14 @@ $(document).ready(function(){
       }
   });
 });
+
+// Function to confirm delete
+function confirmDelete(userName) {
+    return confirm('Are you sure you want to delete ' + userName + '?');
+}
+
+// Event listener for delete button
+$(document).on("submit", "form", function() {
+    var userName = $(this).find(".user-name").val(); // Assuming you have a hidden input with class "user-name" containing the user's name
+    return confirmDelete(userName);
+});

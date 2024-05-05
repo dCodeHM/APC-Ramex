@@ -10,8 +10,7 @@ if (isset($_POST['input'])) {
 
     if (mysqli_num_rows($result) > 0) {
         ?>
-        <div class="table" style="overflow: auto; padding-top: 200px">
-            <div class="tablecontent">
+        <div class="table" style="overflow: auto;">
                 <table class="center">
                     <thead>  
                         <tr>
@@ -59,14 +58,14 @@ if (isset($_POST['input'])) {
                                             }
                                             ?>
                                         </select>
-                                        <button type="submit" class="btn btn-primary" name = "update_admin_data">Update</button>
+                                        <button type="submit" class="btn btn-primary" name="update_admin_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to <?= $role; ?>?')">Update</button>
                                     </form>
                                 </td>
                                 <td><?php echo $email; ?></td>
                                 <td>
                                     <form action="adminsetcode.php" method="post">
                                         <input type="hidden" name="user_delete" value="<?= $id; ?>">
-                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete <?= $fname . ' ' . $lname; ?>?')">Delete</button>
                                     </form>
                                 </td>
                             </tr>
@@ -75,11 +74,10 @@ if (isset($_POST['input'])) {
                         ?>
                     </tbody>
                 </table>
-            </div>
         </div>
         <?php
     } else {
         echo "No result found";
     }
 }
-
+?>

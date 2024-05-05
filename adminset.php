@@ -28,6 +28,8 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         <link rel="stylesheet" href="css/header.css">
         <link rel="stylesheet" href="css/sidebar.css">
         <link rel="stylesheet" href="css/adminset.css">
+        <link rel="stylesheet" href="css/boxset.css">
+        <link rel="stylesheet" href="css/searchdesign.css">
 
         <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
 </head>
@@ -191,34 +193,22 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
 
                 <!-- THIS IS THE SEARCH BAR -->
                 <form action="" method="GET" class="searchicon " style="position:relative; left: auto">
-
-                    <input type = "text" class = "form-control" id  = "live_search" autocomplete="off" placeholder = "Search...">
+                    <input type = "text" name = "searcbox" class = "form-control" id  = "live_search" autocomplete="on" placeholder = "Search...">
                 </form>
             </div>
 
             <form id = "form" action = "adminsetcode.php" method = "POST" >
              <div class="adminline" style="overflow: auto;">
 
-                <div class="table" style="overflow: auto;">
-                    <div class="tablecontent">
-                        <!-- THIS IS TABLE FOR SEARCHING -->
+                        <!-- THIS IS TABLE FOR SEARCHING and TABLE -->
                         <div id = "searchresult"></div> 
 
-                        <div class="adminame">
-                            <!-- //BUTTON -->
-                            
-                              <!-- ITO YUNG MAAYOS NA TALAGA -->
-                              
-
-                        </div>
-                    </div>
-                </div>
-            
                 <div class="info">
                 <div class="rolesinfo">
                     <a href="#"><i class="fa-solid fa-circle-info"></i>  Admin Information </a>
                 </div>
                 </div>
+             </div>
             </form>
         </div>
     </div>

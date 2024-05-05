@@ -144,7 +144,7 @@ body{
 
 }
 /* white background inside center box */
-.tablecontent{
+.tablecontent {
     display: block;
     background-color: #ffffff;
     border-radius: 10px;
@@ -213,8 +213,6 @@ body{
     text-decoration: underline;
 
 }
-
-
 
 .adrequest{
     width: 10%;
