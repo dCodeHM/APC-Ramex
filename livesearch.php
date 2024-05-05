@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="css/buttons.css">
+<link rel="stylesheet" href="css/tabledesign.css">
 <?php
 include("config/db.php");
 
@@ -33,10 +35,10 @@ if (isset($_POST['input'])) {
                             <tr>
                                 <td><?php echo $lname; ?></td>
                                 <td><?php echo $fname; ?></td>
-                                <td>
+                                <td style="text-align: center">
                                     <form action="adminsetcode.php" method="post">
                                         <input type="hidden" name="user_id" value="<?= $id; ?>">
-                                        <select name="user_role" class="form-control">
+                                        <select name="user_role" class="rolebutton">
                                             <?php
                                             // Query to get current role of user
                                             $sql = "SELECT role FROM account WHERE account_id = '$id'";
@@ -58,11 +60,11 @@ if (isset($_POST['input'])) {
                                             }
                                             ?>
                                         </select>
-                                        <button type="submit" class="btn btn-primary" name="update_admin_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to <?= $role; ?>?')">Update</button>
+                                        <button type="submit" class="btn btn-primary" name="update_admin_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new role?')">Update</button>
                                     </form>
                                 </td>
                                 <td><?php echo $email; ?></td>
-                                <td>
+                                <td style="text-align: center">
                                     <form action="adminsetcode.php" method="post">
                                         <input type="hidden" name="user_delete" value="<?= $id; ?>">
                                         <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete <?= $fname . ' ' . $lname; ?>?')">Delete</button>

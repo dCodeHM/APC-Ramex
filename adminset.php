@@ -193,12 +193,13 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
 
                 <!-- THIS IS THE SEARCH BAR -->
                 <form action="" method="GET" class="searchicon " style="position:relative; left: auto">
-                    <input type = "text" name = "searcbox" class = "form-control" id  = "live_search" autocomplete="on" placeholder = "Search...">
+                    <input type = "text" name = "searchbox" class = "form-control" id  = "live_search" autocomplete="on" placeholder = "Search...">
+                    <img src="./img/search.png" alt="" class="search-icon">
                 </form>
             </div>
 
             <form id = "form" action = "adminsetcode.php" method = "POST" >
-             <div class="adminline" style="overflow: auto;">
+             <div class="adminline">
 
                         <!-- THIS IS TABLE FOR SEARCHING and TABLE -->
                         <div id = "searchresult"></div> 
