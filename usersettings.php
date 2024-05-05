@@ -230,7 +230,7 @@ include("config/db.php");
                                     </p>
                                 </div>
                         
-                            <div class="tooltip" style="position:relative; right: 105px">
+                                <div class="tooltip" style="position:relative; right: 100px;">
                                 <img  lass="information" src ="./img/information.png">
                                 <span class="tooltiptext">
                                 <img src ="./img/information.png" width="10px">
@@ -238,25 +238,22 @@ include("config/db.php");
                                 <br>
                                 <span><b>1. Unassigned</b> - Has no access
                                     <span><br><b>2. Professor</b> - Has access to the Student Assessment and Exam Maker.
-                                        <span><br><b>3. Program Director (PD)</b> - Has access to the Student Assessment, Course Assessment,and Exam Maker.
-                                            <span><br><b>4. Executive Director (EX-D)</b> - Has access to the Student Assessment, Course Assessment, Exam Maker, and Admin Settings.
+                                            <span><br><b>3. Executive Director (EX-D)</b> - Has access to the Student Assessment, Course Assessment, Exam Maker, and Admin Settings.
                                         </span>
                                     </span>
                                 </span>
                                 </div>
-                                <!-- <div class="adrequest">
-                                <p> Request </p>
-                                </div> -->
+
                             </div>
 
                     <!-- FIRST NAME WITH DATABASE -->
                     <div class="usercontent">
                             <p>
-                            <b style="position:relative; left: 15px; top: 5px" >First Name</b>
+                            <b style="position:relative; left: 15px; top: 10px" >First Name</b>
                             </p>
                             <div class="useredit">
                                 <p style="position:relative; right: 95px"> 
-                                <input type="text" style ="width: 100%;"  
+                                <input type="text" 
                                 id = "firstName" name="updateFirstname" class="form-control" value="<?php echo $row['first_name']; ?>">
                                 <div class = "error">
                                 </div>
@@ -266,13 +263,13 @@ include("config/db.php");
                     
                     <!-- LAST NAME WITH DATABASE -->
                     <div class="usercontent">
-                            <p style="position:relative; left: 15px; top: 5px">
+                            <p style="position:relative; left: 15px; top: 10px">
                             <b>Last Name</b>
                             </p>
     
                             <div class="useredit">
                             <p style="position:relative; right: 93px">
-                            <input style ="width: 100%; margin: 1px 0;" type="text" 
+                            <input type="text" 
                             id = "lastName" name="updateLastname" class="form-control" value="<?php echo $row['last_name']; ?>">
                             <div class = "error">
                             </div>
@@ -295,17 +292,16 @@ include("config/db.php");
 
                     <!-- PASSWORD WITH DATABASE -->
                     <div class="usercontent">
-                        <p style="position:relative; left: 15px; top: 5px">
+                        <p style="position:relative; left: 15px; top: 10px">
                             <b>Password</b>
                         </p>
                         
                         <div class="useredit">
                                 <p style="position:relative; right:85px">  
 
-                                <input style ="width: 100%; margin: 1px 0;" 
+                                <input 
                                 type="password" name="updatePassword" class="form-control" id = "userInput" value="<?php echo $row['pwd']; ?>">
                                 <!-- echo $hash = password_hash("pwd", PASSWORD_DEFAULT);  -->
-                                <br>
                                 <input id = "passWord" type="checkbox" class="showPW" onclick="myFunction()">show
                                 <!-- THIS IS FOR THE FORGOT PASSWORD -->
                                 <a href="forgotpassword.php" target="_blank">Change</a>

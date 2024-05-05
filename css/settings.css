@@ -10,7 +10,6 @@ body{
     /*remove if you want it to be responsive in using the phone*/
     /* Should stop downsizing after 1024px */
     min-width: 968px;
-
     overflow: hidden;
 }
 
@@ -228,19 +227,18 @@ body{
 }
 
 /* box inside the white */
-/* adassign{
-    text-align: left; */
-    /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
-    /* width: 50%;
+.adassign{
+    text-align: left;
+    width: auto;
     margin: auto 20px;
-    padding-top: 30px; */
-/* } */
+    padding-top: 30px;
+} 
 
-/* adassign p{
+.adassign p{
     border-radius: 5px;
     padding: 5px 20px;
     border: solid 2px;
-} */
+}
 
 /* box inside the white */
 .adassign{

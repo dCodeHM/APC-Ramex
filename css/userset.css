@@ -1,3 +1,4 @@
+
 /* USER PROFILE IMAGE PICTURE*/
 .adminicon{ 
   margin-bottom: 0px;
@@ -48,18 +49,13 @@
 
 /* white background inside center box */
 .usercontent{
-  /* TANGGALIN KAPAG OKAY NA YUNG white*/
+  position: relative;
   display: flex;
   border-radius: 10px;
   height: fit-content;
-  width: fit-content;
-  min-width: 100%;
-  min-height: 100%;
   width:  100%;
   text-align: right;
   margin: auto;
-  text-align: center; 
-  position: relative; /* Positioning the table absolutely */
   min-height: 15%;
 }
 
@@ -152,7 +148,9 @@
   border-bottom: 1px dotted black;
   height: 25px;
   right: 130px;
-  top: 50px;
+  top: 35px;
+  margin-bottom: 5px;
+  width: auto;
 }
 
 /* on hover text */
@@ -262,23 +260,27 @@
 }
 /* user input */
 .useredit input[type=text]{
+  position: relative;
   border-style: solid;
   border-radius: 5px;
-  border-color: black;
+  border-color: #57a004;
   padding: 5px 10px 10px 10px;
   font-size: 15px;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: bold;
+  width: 75.5vh;
 }
 
 .useredit input[type=password]{
+  position: relative;
   border-style: solid;
   border-radius: 5px;
-  border-color: black;
+  border-color: #57a004;
   padding: 5px 10px 10px 10px;
-  font-size: 15px;
+  font-size: 15px;  
   font-family: Arial, Helvetica, sans-serif;
   font-weight: bold;
+  width: 75.5vh;
 }
 
 /* JAVASCRIPT ERROR */
