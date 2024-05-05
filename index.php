@@ -5,6 +5,12 @@ include("config/db.php");
 include("config/functions.php");
 
 $user_data = check_login($conn);
+
+// Check if the user is logged in and is an Admin
+if (!isset($_SESSION['account_id']) || $_SESSION['role'] !== 'Executive Director') {
+    header("Location: login.php"); // Redirect to login page if not logged in or not an Admin
+    exit(); // Ensure script stops executing after redirection
+}
 ?>
 
 <!DOCTYPE html>
