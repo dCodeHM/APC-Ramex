@@ -2,13 +2,6 @@
 session_start();
 include("config/db.php");
 
-
-// // Check if the user is not logged in
-// if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-//     // Redirect to the login page
-//     header("Location: login.php");
-//     exit;
-// }
                     if(isset($_SESSION['status']))
                     {
                         ?>
@@ -55,7 +48,7 @@ include("config/db.php");
 
 <ul class="right-header">
     <li class="logo">
-        <a href="index.php"><img id="logo" src="img/logo.png"></a>
+        <a href="professoruser.php"><img id="logo" src="img/logo.png"></a>
     </li>
 </ul>
 
@@ -155,7 +148,7 @@ include("config/db.php");
 
 <div class="sidebar">
     <div class="back_button">
-        <a href="index.php">
+        <a href="professoruser.php">
         <img src="img/back.png">
         </a>
     </div>

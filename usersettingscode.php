@@ -1,53 +1,46 @@
 <?php
 session_start();
 
-$_SESSION;
-$conn = mysqli_connect("localhost","root","","ramexdb");
+$conn = mysqli_connect("localhost", "root", "", "ramexdb");
 $id = $_SESSION['account_id'];
+
+// Fetch the current user's role
 $sql = "SELECT * FROM account WHERE account_id = '$id' LIMIT 1"; 
+$result = mysqli_query($conn, $sql);
 
+if ($result && mysqli_num_rows($result) > 0) {
+    $user_data = mysqli_fetch_assoc($result);
+    $current_role = $user_data['role'];
+} else {
+    die("User not found.");
+}
 
-//UPDATING DATA
-if(isset($_POST['update_stud_data']))//update_stud_data is the button name for update
-{
-
-    //['updateVALUE'] is the name of of each class in the user 
-    // $password = $_POST['updatePassword'];
+// Updating Data
+if(isset($_POST['update_stud_data'])) { // update_stud_data is the button name for update
     $firstname = $_POST['updateFirstname'];
     $lastname = $_POST['updateLastname'];
-    // $role = $_POST['updateRole'];
 
-    //=$result = mysqli_query($conn, "SELECT * FROM student WHERE id=1");
-
-    $query = "UPDATE account SET first_name='$firstname', last_name='$lastname'  WHERE account_id= '$id'";
-    //  pwd='$password',
-    // roles='$role'
+    $query = "UPDATE account SET first_name='$firstname', last_name='$lastname' WHERE account_id='$id'";
     $query_run = mysqli_query($conn, $query);
 
-    if($query_run)
-    {
+    if($query_run) {
         $_SESSION['status'] = "Data Updated Successfully";
-        header("Location: usersettings.php");
-    }
-    else
-    {
-        $_SESSION['status'] = "Not Updated";
-        header("Location: usersettings.php");
-    }
-
-
-    $result = mysqli_query($conn, $sql);
-
-    if ($result) {
-        $row = mysqli_fetch_assoc($result); // Assuming single row retrieval
-    // Proceed to display the data in HTML inputs
     } else {
-    // Handle query error (e.g., display error message)
+        $_SESSION['status'] = "Not Updated";
     }
 
-    // <input type = "" value
-
+    // Redirect based on role after updating the data
+    switch ($current_role) {
+        case 'Executive Director':
+        case 'Program Director':
+            header("Location: adminusersettings.php");
+            exit;
+        case 'Professor':
+        case 'Unassigned':
+            header("Location: usersettings.php");
+            exit;
+        default:
+            header("Location: unauthorized_access.php");
+            exit;
+    }
 }
-?>
-
-?>

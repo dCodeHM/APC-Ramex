@@ -16,7 +16,7 @@ function countExecutiveDirectors($conn) {
 
 if (isset($_POST['input'])) {
     $input = $_POST['input'];
-    $query = "SELECT * FROM account WHERE user_email LIKE '{$input}%' OR first_name LIKE '{$input}%' OR last_name LIKE '{$input}%' OR role LIKE '{$input}%'";
+    $query = "SELECT * FROM account WHERE user_email LIKE '{$input}%' OR first_name LIKE '{$input}%' OR last_name LIKE '{$input}%' OR role LIKE '{$input}%' OR program_name LIKE '{$input}%'";
 
     $result = mysqli_query($conn, $query);
 
@@ -31,6 +31,7 @@ if (isset($_POST['input'])) {
                         <th>Last Name</th>
                         <th>First Name</th>
                         <th>User Role</th>
+                        <th>User Program</th>
                         <th>User Email</th>
                         <th>Action</th>
                     </tr>
@@ -43,6 +44,7 @@ if (isset($_POST['input'])) {
                         $role = $row['role'];
                         $email = $row['user_email'];
                         $id = $row['account_id'];
+                        $program= $row['program_name'];
                         ?>
                         <tr>
                             <td><?php echo $lname; ?></td>
@@ -67,7 +69,25 @@ if (isset($_POST['input'])) {
                                         <button type="button" class="btn btn-primary" disabled>Update Denied</button>
                                     <?php endif; ?>
                                 </form>
-                            </td>
+
+                                <td style="text-align: center">
+                                <form action="adminsetcode.php" method="post">
+                                    <input type="hidden" name="user_id" value="<?= $id; ?>">
+                                    <select name="user_program" class="rolebutton">
+                                        <?php
+                                        $sql = "SELECT * FROM program_name";
+                                        $program_data = mysqli_query($conn, $sql);
+                                        
+                                        while ($program_row = mysqli_fetch_assoc($program_data)) {
+                                            $selected = ($program == $program_row["program_name"]) ? "selected" : "";
+                                            echo "<option value='" . $program_row["program_name"] . "' $selected>" . $program_row["program_name"] . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                        <button type="submit" class="btn btn-primary" name="update_program_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new program?')">Update</button>
+                                </form>
+                                    </td>
+                                    </td>
                             <td><?php echo $email; ?></td>
                             <td style="text-align: center">
                                 <form action="adminsetcode.php" method="post">
