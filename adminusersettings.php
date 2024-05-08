@@ -217,11 +217,8 @@ include("config/db.php");
             <div class="adminline">
                 <div class="table">
                     <div class="usercontent">
-                        <p>
-                            
-                            <b style="position:relative; left: 15px; top: 5px">
-                                School Role
-                            </b>
+                        <p style="position:relative; left: 15px; top: 5px">
+                            <b>School Role</b>
                         </p>
     
                         <div class="adassign">
@@ -282,6 +279,7 @@ include("config/db.php");
                             <p style="position:relative; left: 15px; top: 5px">
                             <b>Email Address</b>
                             </p>
+
                             <div class="adassign">
                                     <p style="position:relative; right: 107px" name="userEmail" class="form-control">
                                     <?php echo $row['user_email']; ?>

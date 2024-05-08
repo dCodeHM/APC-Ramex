@@ -143,19 +143,7 @@ body{
 
 }
 /* white background inside center box */
-.tablecontent {
-    display: block;
-    background-color: #ffffff;
-    border-radius: 10px;
-    height: 100px;
-    width:  97%;
-    min-width: 50rem;
-    text-align: right;
-    margin: 15px auto;
-    justify-content: space-between;
-    /* min-width: 100vh;
-    min-height: 15%; */
-}
+
 
 .programtitle{
     font-size:small;
