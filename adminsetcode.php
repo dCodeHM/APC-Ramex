@@ -18,7 +18,7 @@ if (isset($_POST['update_admin_data'])) {
     // Prepare and execute the SQL update statement
     $query = "UPDATE account SET role=? WHERE account_id=?";
     $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, 'si', $role, $id);
+    mysqli_stmt_bind_param($stmt, 'si', $role, $id);    
 
     $query_run = mysqli_stmt_execute($stmt);
 

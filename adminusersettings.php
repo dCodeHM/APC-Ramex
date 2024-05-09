@@ -216,7 +216,7 @@ include("config/db.php");
             <form id = "form" action = "usersettingscode.php" method = "POST" >
             <div class="adminline">
                 <div class="table">
-                    <div class="usercontent">
+                    < class="usercontent">
                         <p style="position:relative; left: 15px; top: 5px">
                             <b>School Role</b>
                         </p>
@@ -226,6 +226,7 @@ include("config/db.php");
                                     <?php echo $row['role']; ?>
                                     </p>
                                 </div>
+                                
                         
                                 <div class="tooltip" style="position:relative; right: 100px;">
                                 <img  lass="information" src ="./img/information.png">

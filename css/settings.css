@@ -87,6 +87,18 @@ body{
     display: flex;
 }
 
+.emright{
+    position: fixed;
+    top: 0rem;
+    left: 5rem;
+    height:100%;
+    width: 95vw;
+    margin-right: 50rem;
+    min-height: 50rem;
+    text-align: center;
+    display: flex;
+}
+
 .container{
     width: 90%;
     margin: auto;
@@ -129,6 +141,11 @@ body{
 
 .adminline{
     border-top: 5px solid #343A40;
+}
+
+.emline{
+    border-top: 5px solid #343A40;
+    width: 100px;
 }
 
 .table{

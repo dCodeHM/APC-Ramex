@@ -79,6 +79,7 @@ html {
     min-width: 20rem;
     height: 100%;
     transition: 0.5s;
+    
 }
 
 .space{
@@ -100,6 +101,39 @@ html {
 }
 
 .box a{
+    color: #000000;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.embox img{
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+    min-height: 40rem;
+    min-width: 40rem;
+}
+
+.embox{
+    float: left;
+    position:relative;
+    display: block;
+    width: 100%;
+    min-width: 20rem;
+    height: 100%;
+    transition: 0.5s;    
+}
+
+.space{
+    margin: 2rem;
+}
+
+.embox:hover{/*BOXES HOVER*/
+    transform: scale(1.05);
+    z-index: 2;
+}
+
+.embox a{
     color: #000000;
     text-decoration: none;
     font-size: 20px;
