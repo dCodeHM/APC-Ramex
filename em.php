@@ -163,7 +163,7 @@ $id = $_SESSION['account_id'];
         </div>
 
         <div class="userhead">
-            <p style="font-size: 50px; padding-top: 10px"> Exam Maker</p>
+            <p style="font-size: 50px; padding-bottom: 50px"> Exam Maker</p>
         </div>
         </div>
 
@@ -173,7 +173,7 @@ $id = $_SESSION['account_id'];
     <div class="system-list">
 
         <div class="embox">
-            <a href="sa.html" class="fill-div">
+            <a href="myexams.php" class="fill-div">
             <img src="./img/MyExams.png">
             </a>
         </div>
@@ -181,7 +181,7 @@ $id = $_SESSION['account_id'];
         <div class=space></div>
          
         <div class="embox">
-            <a href="em.php" class="fill-div">
+            <a href="examlibrary.php" class="fill-div">
             <img src="./img/ExamLibrary.png">
             </a>
         </div>

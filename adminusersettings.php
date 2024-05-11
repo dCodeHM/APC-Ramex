@@ -216,9 +216,12 @@ include("config/db.php");
             <form id = "form" action = "usersettingscode.php" method = "POST" >
             <div class="adminline">
                 <div class="table">
-                    < class="usercontent">
-                        <p style="position:relative; left: 15px; top: 5px">
-                            <b>School Role</b>
+                    <div class="usercontent">
+                        <p>
+                            
+                            <b style="position:relative; left: 15px; top: 5px">
+                                School Role
+                            </b>
                         </p>
     
                         <div class="adassign">
@@ -226,7 +229,6 @@ include("config/db.php");
                                     <?php echo $row['role']; ?>
                                     </p>
                                 </div>
-                                
                         
                                 <div class="tooltip" style="position:relative; right: 100px;">
                                 <img  lass="information" src ="./img/information.png">
@@ -280,7 +282,6 @@ include("config/db.php");
                             <p style="position:relative; left: 15px; top: 5px">
                             <b>Email Address</b>
                             </p>
-
                             <div class="adassign">
                                     <p style="position:relative; right: 107px" name="userEmail" class="form-control">
                                     <?php echo $row['user_email']; ?>
