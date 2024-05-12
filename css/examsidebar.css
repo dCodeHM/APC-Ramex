@@ -1,0 +1,128 @@
+.column{
+    display: flex;
+    width: 100%;
+    position: fixed;
+    /* border: #00000000 solid; */
+}
+
+.left{
+    width: 3%;
+    height: 90.3vh;
+    background-color: #343A40;
+}
+
+.sidenav{
+    /* padding: 500px 0px 20px 10px; */
+    margin: auto;
+    text-align: center;
+    display: grid;
+}
+
+.back{
+    margin-top: 0;
+    padding: 10px;
+}
+
+.help{
+    margin-bottom: 0;
+    padding-top: 700px;
+}
+
+.mid{
+    width: 30%;
+    height:92vh;
+    background-color: #454C52;
+    text-align: center;
+    overflow: scroll;
+}
+
+.midnav{
+    padding: 10px;
+}
+
+.midbutton{
+    text-decoration: none;
+}
+
+.midbutton p{
+    background-color: #ffffff;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.active p{
+    background-color: #E7AF41;
+    color: white;
+}
+
+.midbutton p:hover{
+    background-color: #E7AF41;
+    color: white;
+}
+
+.question_library{
+    position: relative;
+    top: -.6rem;
+    /* bottom: 3rem; */
+    right: .7rem;
+    color: #f4f4f4;
+    font-weight: bold;
+    background-color: #454C52;
+    border-radius: 10px;
+    /* border: 2px solid #000000; */
+    padding: 10px;
+    width: 45%;
+}
+
+.exam_settings{
+    position: relative;
+    top: -3.3rem;
+    /* bottom: 3rem; */
+    left: 12.9rem;
+    color: #f4f4f4;
+    font-weight: bold;
+    background-color: #343A40;
+    border-radius: 10px;
+    /* border: 2px solid #000000; */
+    padding: 10px;
+    width: 46%;
+}
+
+.topic_questions {
+    position: relative;
+    bottom: 1rem;
+    /* left: 1rem; */
+    background-color: #f4f4f4;
+    /* border-radius: 10px; */
+    border: 2px solid #000000;
+    padding: 10px;
+    margin-top: 1rem;
+    width: 95%;
+}
+
+.topic_title {
+    position: relative;
+    right: 4rem;
+    top: -.5rem;
+    font-size: 18px;
+    font-weight: bold;
+    color: #848484;
+}
+
+.questions {
+    /* float: left; */
+    border: 2px solid #000000;
+    margin-top: .5rem;
+}
+
+.questions button {
+    position: relative;
+}
+
+.midhead p{
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 700;
+}

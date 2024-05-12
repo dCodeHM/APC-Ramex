@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <meta name="author" content="APC AcademX">
+        <title>APC AcademX | Welcome</title>
+        <link rel="stylesheet" href="./css/examheader.css">
+        <link rel="stylesheet" href="./css/examsidebar.css">
+        <link rel="stylesheet" href="./css/exammain.css">
+    </head>
+
+    <body>
+
+        <header>
+            <div class="container1">
+                <div id="branding">
+                    <a href="index.html"><img src="./img/APC AcademX Logo.png"></a>
+                </div>
+
+                <nav>
+                    <ul>
+                        <li class="username"><h3>Einstein Yong</h3></li>
+
+                        <li class="notification">
+                            <a href="#"><img src="./img/Notification.png"></a>
+                            <ul class="dropdown">
+                                <img src="./img/Notification Title.png">
+                            </ul>
+                        </li>
+
+                        <li class="user">
+                            <a href="#"><img src="./img/LOGO (2) 1.png"></a>
+                            <ul class="dropdown">
+                                <h3>ADMIN</h3>
+                                <p>PROFESSOR</p>
+                                <a href="usersettings.html" class="settings"><li>Settings⚙️</li></a>
+                                <a href="test.html" class="logout"><li>Logout[➡</li></a>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+
+            </div>
+        
+        </header>
+
+        <div class="column">
+    
+            <div class="left">
+        
+                <div class="sidenav" id="bar">
+                    
+                    <div class="back">
+                        <a href="index.html">
+                            <img src="./img/Exam Maker (5) 6.png">
+                        </a>
+                    </div>
+                    
+                    <div class="help">
+                        <a href="#">
+                            <img src="./img/Help.png"> 
+                        </a>
+                    </div>
+                
+                </div>
+            </div>
+
+            <!-- Question Library and Exam Settings -->
+            <div class="mid">
+
+                <div class="midnav">
+        
+                    <div class="question_library">Question Library</div>
+        
+                    <div class="exam_settings">Exam Settings</div>
+
+                    <div class="topic_questions">
+
+                        <p class="topic_title">V Processor Management</p>
+
+                        <div class="questions" onclick="insertQuestion(event)">
+
+                            <p id="question1">What event occurs when no space is enough for any waiting process, even if partitions are available?</p>
+
+                        </div>
+
+                        <div class="questions" onclick="insertQuestion(event)">
+
+                            <p id="question2">This is the term used for base register under MMU.</p>
+
+                        </div>
+
+                        <div class="questions" onclick="insertQuestion(event)">
+
+                            <p id="question3">What strategy produces the largest leftover hole, which may be more useful than the smallest leftover hole?</p>
+
+                        </div>
+
+                        <div class="questions" onclick="insertQuestion(event)">
+
+                            <p id="question4">This item keeps in memory only those instructions and data that are needed at any given time.</p>
+
+                        </div>
+
+                        <div class="questions" onclick="insertQuestion(event)">
+
+                            <p id="question5">It is the moving of process upwards in the main memory so that the free memory locations may be grouped together in one large block.</p>
+
+                        </div>
+
+                    </div>
+                    
+                    <div class="topic_questions">
+
+                        <p class="topic_title">> Operating System Fundamentals</p>
+
+                    </div>
+        
+                </div>
+
+            </div>
+
+            <div id="exambody">
+
+                <div id="main-container">
+                    
+                    <div class="title">
+                        <span class="title_bold">Topic:</span>
+                        <span class="topic">Processor Management</span><br>
+                    </div>
+
+                    <div class="line"></div>
+
+                    <div class="section1">
+                        <div id="section_number">I</div>
+
+                        <div class="instructions">
+                            <span>Instructions</span><br>
+                            <td><input class="textbox" type="text" name="f1" /></td>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+
+                        <div class="question_number">1</div>
+
+                        <div class="question">
+
+                            <td><input id="textbox" type="text" name="f1" /></td>
+
+                            <!-- <p>It contains temporary data (such as subroutine parameters, return addresses, and local variables).</p> -->
+
+                            <form class="answer-options1">
+
+                                <div class="answer">
+                                    <input type="checkbox" id="answer1" name="answer1" value="1">
+                                    <label for="answer1"> A Process Stack </label><br>
+                                </div>
+                                
+                                <div class="answer">
+                                    <input type="checkbox" id="answer2" name="answer2" value="2">
+                                    <label for="answer2"> B Data Section </label><br>
+                                </div>
+
+                                <div class="answer">
+                                    <input type="checkbox" id="answer3" name="answer3" value="3">
+                                    <label for="answer3"> C Program Counter </label><br>
+                                </div>
+
+                                <div class="answer">
+                                    <input type="checkbox" id="answer4" name="answer4" value="4">
+                                    <label for="answer4"> D Process State </label><br>
+                                </div>
+
+                            </form>
+
+                            <div class="question_points">
+                                <form action="/action_page.php">
+                                    <label for="points">Question Points:</label>
+                                    <select id="points" name="points">
+                                      <option value="1">1</option>
+                                      <option value="2">2</option>
+                                      <option value="3">3</option>
+                                      <option value="4">4</option>
+                                    </select>
+                                  </form>
+                            </div>
+
+                            <div class="learning_outcomes">
+                                <form action="/action_page.php">
+                                    <label for="clo">Learning Outcomes:</label>
+                                    <select id="clo" name="clo">
+                                      <option value="1">CLO 1</option>
+                                      <option value="2">CLO 2</option>
+                                      <option value="3">CLO 3</option>
+                                      <option value="4">CLO 4</option>
+                                    </select>
+                                  </form>
+                            </div>
+
+                            <div class="difficulty">
+                                <form action="/action_page.php">
+                                    <label for="difficulty">Difficulty:</label>
+                                    <select id="difficulty" name="difficulty">
+                                      <option value="easy">EASY</option>
+                                      <option value="average">AVERAGE</option>
+                                      <option value="difficult">DIFFICULT</option>
+                                    </select>
+                                  </form>
+                            </div>
+
+                        </div>           
+
+                    </div>
+
+                </div>
+
+                <div class="buttons">
+                    <button id="section" onclick="addSection()">+ ADD SECTION</button>
+                    <button id="question" onclick="addQuestion()">+ ADD QUESTION</button>
+                </div>
+                
+            </div>
+
+        </div>
+
+        <script src="./exammaker.js"></script>
+
+    </body>
+
+</html>
