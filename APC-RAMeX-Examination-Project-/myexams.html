@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="./css/adminstyle.css">
+<link rel="stylesheet" href="./css/style.css">
+<link rel="stylesheet" href="./css/emstyle.css">
+<link rel="stylesheet" href="./css/myexamstyle.css">
+<script src="myexams.js"></script>
+
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <meta name="author" content="APC AcademX">
+        <title>APC AcademX | Exam Maker</title>
+        <link rel="stylesheet" href="./css/style.css">
+        <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
+    </head>
+
+    <body>
+        
+        <header> 
+            <!-- nav -->
+            <div class="container1">
+            
+                <div id="branding">
+                    <a href="index.html"><img src="./img/APC AcademX Logo.png"></a>
+                    <a href="sa.html"><img id="saheader" src="./img/Student Assessment Header.png"></a>
+                    <a href="ca.html"><img id="caheader" src="./img/Course Assessment Header.png"></a>
+                    <a href="em.html"><img id="emactive" src="./img/Exam Maker Active.png"></a>
+        
+                    <!--
+                        Sheesh
+                    -->
+                </div>
+        
+                <nav>
+                    <ul>
+                        <li class="username"><h3>Einstein Yong</h3></li>
+        
+                        <li class="notification">
+                            <a href="#"><img src="./img/Notification.png"></a>
+                            <ul class="dropdown">
+                                <img src="./img/Notification Title.png">
+                            </ul>
+                        </li>
+        
+                        <li class="user">
+                            <a href="#"><img src="./img/LOGO (2) 1.png"></a>
+                            <ul class="dropdown">
+                                <h3>ADMIN</h3>
+                                <p>PROFESSOR</p>
+                                <a href="usersettings.html" class="settings"><li>Settings⚙️</li></a>
+                                <a href="test.html" class="logout"><li>Logout[➡</li></a>
+                            </ul>
+                        </li>
+        
+                    </ul>
+                </nav>
+        
+            </div>
+        
+        </header>
+
+        <div class="column">
+    
+            <div class="left">
+        
+                <div class="sidenav" id="bar">
+                    
+                    <div class="back">
+                        <a href="em.html">
+                            <img src="./img/Exam Maker (5) 6.png">
+                        </a>
+                    </div>
+                    
+                    <div class="help">
+                        <a href="#">
+                            <img src="./img/Help.png"> 
+                        </a>
+                    </div>
+                
+                </div>
+            </div>
+
+            <!--header-->
+            <div class="containerem">
+
+                <div class="rightemhead">
+
+                    <div class="adminmehead"> 
+                        <p> My Exams </p>
+                    </div>
+
+                    <button class="addbutt" onclick="showPopup()">
+                        <i class="fa-solid fa-circle-plus"></i>
+                    </button>
+                    <script src="./myexams.js"></script>
+
+                    <div class="popup-hidden">
+                        <div class="popup_bg"></div>
+                        <div class="Add_popup">
+                            <div class="popup_tc">
+                                <li><h1><b>Create a Course Folder</b></h1></li>
+                                <li><img src="img/Folder.png" style="margin: 5px; width: 4rem;"></li>
+                            </div>
+                            <div class="popup_ic">
+                            <p class="prog">Program</p>
+                                <input type="text" class="program" oninput="updateprogram(this.value)"/>
+                            <p class="course">Course Code</p>
+                                <input type="text" class="course_code" oninput="updatecourse(this.value)"/>
+                            </div>
+                       
+                            <a href="myexams.html"><button id="cancel">Cancel</button></a>
+                            <button id="create" onclick="createBox()">Create</button>
+                    </div>
+                 </div>
+                    <div class="searchicon " style="position:relative; left: 45%">
+                        <input type="text" class="searchbar" >
+                    </div>
+                </div>
+
+                <!--line-->
+                <div class="adminemline">
+                </div>     
+            
+
+                <!--boxes-->
+                <section id="emservices">            
+                    <div class="container2">        
+                        <div class="mebox">
+                            <div class="boxme">
+                                <a href="topic.html" class="fill-div">
+                                <button class="dots" onclick="showsmallPopup()">...</button>
+                                <img src="./img/GRAPHYS LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">GRAPHYS</p>
+                                </a>
+                            </div>
+
+                            <div class="boxme">
+                                <a href="#" class="fill-div">
+                                <button class="dots">...</button>
+                                <img src="./img/PROGLOD LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">PROGLOD</p>
+                                </a>
+                            </div>
+
+                            <div class="boxme">
+                                <a href="#" class="fill-div">
+                                <button class="dots">...</button>
+                                <img src="./img/OPRSYS LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">OPRSYST</p>
+                                </a>
+                            </div>
+
+                            <div class="boxme">
+                                <a href="#" class="fill-div">
+                                <button class="dots">...</button>
+                                <img src="./img/DATASTRC LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">DATSTRC</p>
+                                </a>
+                            </div>
+
+                            <div class="boxme">
+                                <a href="#" class="fill-div">
+                                <button class="dots">...</button>
+                                <img src="./img/ECON LOGO.png" style="margin-left: 75px">
+                                <p style="color: #848484;">ECONOMC</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </body>
+</html>
