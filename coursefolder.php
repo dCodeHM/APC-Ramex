@@ -1,4 +1,5 @@
 <?php
+
 $course_subject_id = 0;
 $course_subject = '';
 $course_code = '';
