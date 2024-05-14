@@ -1,6 +1,7 @@
 <?php 
 session_start();
 include("config/db.php");
+include("config/functions.php");
 
 // // Check if the user is not logged in
 // if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -8,27 +9,28 @@ include("config/db.php");
 //     header("Location: login.php");
 //     exit;
 // }
-                    if(isset($_SESSION['status']))
-                    {
-                        ?>
-                        
-                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <strong>Hey!</strong> <?php echo $_SESSION['status']; ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        <?php
-                        unset($_SESSION['status']);
-                    }
-                ?>
+if(isset($_SESSION['status']))
+{
+?>
+
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Hey!</strong> <?php echo $_SESSION['status']; ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php
+    unset($_SESSION['status']);
+}
+?>
 <?php                           
-                                $id = $_SESSION['account_id'];
-                                $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
-                                $gotResults = mysqli_query($conn, $sql);
-                                if ($gotResults){
-                                if(mysqli_num_rows($gotResults)>0){
-                                    while($row = mysqli_fetch_array($gotResults)){
-                                    // print_r($row['first_name']);
-                            ?>
+        $id = $_SESSION['account_id'];
+        $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
+        $gotResults = mysqli_query($conn, $sql);
+
+        if ($gotResults){
+        if(mysqli_num_rows($gotResults)>0){
+            while($row = mysqli_fetch_array($gotResults)){
+            // print_r($row['first_name']);
+?>
 <!DOCTYPE html>
 <html >
     <head>
