@@ -1,0 +1,476 @@
+body{
+    font: 15px/1.5 Arial, Helvetica, sans-serif;
+    padding: 0;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+/* Header */
+header{
+    background: #293A82;
+    color: #ffffff;
+    padding-top: 0;
+    min-height: 90px;
+}
+
+header a{
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 20px;
+}
+
+header ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+header li{
+    float: left;
+    display: inline;
+    position: relative;
+    padding: 0 20px 30px 20px;
+}
+
+header .user{
+    padding: 0 0 30px 0;
+}
+
+header .notification{
+    padding: 7px 20px 20px 10px;
+}
+
+header .notification img{
+    padding: 0 0 0 20px;
+}
+
+header .username{
+    padding: 0 30px 0 0;
+}
+
+header li ul.dropdown li{
+    display: block;
+}
+
+header li ul.dropdown{
+    width: 100%;
+    background: #ffffff;
+    border: #000000 solid;
+    margin: 0 0px 100px -250px;
+    padding: 10px 200px 10px 10px;
+    position: absolute;
+    z-index: 999;
+    display: none;
+    align-items: center;
+}
+
+header li ul.dropdown h3{
+    color: #000000;
+    margin: 10px 60px 10px 30px;
+    padding: 10px 100px 10px 80px;
+    position: relative;
+    display: inline-block;
+}
+
+header li ul.dropdown p{
+    color: #000000;
+    margin: 10px 60px 10px 15px;
+    padding: 10px 100px 10px 80px;
+    position: relative;
+    display: inline-block;
+}
+
+header .settings li{
+    padding: 20px 100px 20px 70px;
+    margin: 10px 50px 10px 10px;
+    position: relative;
+    background: url(../img/Settings.png) no-repeat;
+    
+}
+
+header .settings li:hover{
+    background: url(../img/Settings\ Hover.png) no-repeat;
+}
+
+header .logout li{
+    padding: 20px 100px 20px 70px;
+    margin: 10px 50px 10px 10px;
+    position: relative;
+    background: url('../img/Logout.png') no-repeat;
+}
+
+header .logout li:hover{
+    background: url(../img/Settings\ Hover.png) no-repeat;
+}
+
+/* header li:active ul.dropdown{
+    display: block;
+} */
+
+nav ul ul li a:focus,
+nav ul ul li a:active {
+    color: var(--link-active-color);
+}
+
+nav a:hover,
+nav a:focus,
+nav a:active,
+nav a:focus:hover,
+nav a:active:hover {
+    color: var(--link-active-color);
+}
+
+nav ul li:focus > ul,
+nav ul li:active > ul {
+    display: inherit;
+}
+
+nav a:focus + ul,
+nav a:active + ul {
+    display: inherit;
+}
+
+header #branding{
+    float: left;
+}
+
+header #branding img{
+    margin-top: 20px;
+    width: 230px;
+    margin-bottom: 0;
+}
+
+header #branding #saheader{
+    margin-top: 10px;
+    width: 130px;
+    min-height: 10%;
+    margin-bottom: 0;
+}
+
+header #branding #caheader{
+    margin-top: 10px;
+    width: 130px;
+    min-height: 10%;
+    margin-bottom: 0;
+}
+
+header #branding #emheader{
+    margin-top: 10px;
+    width: 130px;
+    min-height: 10%;
+    margin-bottom: 0;
+}
+
+header nav{
+    float: right;
+    margin-top: 20px;
+}
+
+/* Navbar */
+.navbar{
+    width: auto;
+    height: 60px;
+    background-color: #293A82;
+    display: flex;
+}
+
+.branding{
+    margin: auto 0;
+}
+
+.branding img{
+    width: auto;
+    height: 50px;
+    padding: 5px;
+    
+}
+
+.navbuts{
+    display: flex;
+    width: 30%;
+    margin: auto;
+    margin-left: 2%;
+}
+
+.navbutton{
+    margin: auto;
+    padding: 0;
+    align-items: center;
+}
+
+
+.navbutton img{
+    width: auto;
+    height: 45px;
+    margin: auto;
+}
+
+.adminname{
+    width: 20%;
+    display: flex;
+}
+
+.column{
+    display: flex;
+    width: 100%;
+}
+
+.left{
+    width:5%;
+    height:92vh;
+    background-color: #343A40;
+}
+
+.sidenav{
+    /* padding: 500px 0px 20px 10px; */
+    margin: auto;
+    text-align: center;
+    display: grid;
+}
+
+.back{
+    margin-top: 0;
+    padding: 10px;
+}
+
+.help{
+    margin-bottom: 0;
+    padding-top: 530px;
+}
+
+.mid{
+    width: 20%;
+    height:92vh;
+    background-color: #454C52;
+    text-align: center;
+}
+
+.midnav{
+    padding: 10px;
+}
+
+.midbutton{
+    text-decoration: none;
+}
+
+.midbutton p{
+    background-color: #ffffff;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.active p{
+    background-color: #E7AF41;
+    color: white;
+}
+
+.midbutton p:hover{
+    background-color: #E7AF41;
+    color: white;
+}
+
+.midhead{
+    padding: 5px;
+}
+
+.midhead p{
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.line{
+    border-top: 5px solid white;
+}
+
+.right{
+
+    height:86vh;
+    width: 75%;
+    text-align: center;
+}
+
+.container{
+    width:80%;
+    margin: auto;
+}
+
+.righthead{
+    display: flex;
+    height: 120px;
+    align-items: center;
+}
+
+/* Admin Settings */
+.adminhead{
+    width: 50%;
+    text-align: right;
+    margin-left: 0;
+}
+
+.adminhead p{
+    font-size: 40px;
+    font-weight: 700;
+    text-align: left;
+    color: #343A40;
+}
+
+/* User Settings */
+.userhead{
+    width: 50%;
+    text-align: right;
+    margin-left: 0;
+}
+
+.userhead p{
+    font-size: 40px;
+    font-weight: 700;
+    text-align: left;
+    color: #343A40;
+}
+
+/* Program List */
+.programlisthead{
+    width: 50%;
+    text-align: right;
+    margin-left: 0;
+}
+
+.programlisthead p{
+    font-size: 40px;
+    font-weight: 700;
+    text-align: left;
+    color: #343A40;
+}
+
+.search{
+    background-color: #ffffff;
+    padding: 10px;
+    align-items: center;
+    border: solid 3px;
+    height: 30px;
+    width: 40%;
+    border-radius: 5px;
+    display: flex;
+    text-align: center;
+    margin: auto;
+}
+
+.searchbar{
+    border-width: 0;
+    height: 30px;
+    width: 280px;
+    border-radius: 5px;
+}
+
+.searchicon i{
+    font-size: 30px;
+    padding: 10px;
+}
+
+.adminline{
+    border-top: 5px solid black;
+    border-radius: 5px;
+}
+
+.userline{
+    border-top: 5px solid black;
+    border-radius: 5px;
+}
+
+.table{
+    background-color: #EDEDED;
+    border: #000000;
+    height: 60vh;
+    margin-top: 20px;
+    border-radius: 10px;
+    border: solid 3px;
+    text-align: center;
+    
+}
+
+.tablecontent{
+    display: flex;
+    background-color: #ffffff;
+    border-radius: 10px;
+    height: fit-content;
+    width: 90%;
+    text-align: center;
+    margin: 10px auto;
+    
+}
+
+.adminame{
+    padding: 5px 20px;
+    text-align: left;
+    width: 40%;
+    margin: auto;
+    line-height: 5px;
+}
+
+.adname{
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.adrequest{
+    width: 10%;
+    margin: auto;
+}
+
+.adrequest p{
+    background-color: #E7AF41;
+    padding: 2px ;
+    border-radius: 50px;
+}
+
+.adassign{
+    text-align: left;
+    width: 40%;
+    margin: auto 20px;
+}
+
+.adassign p{
+    border-radius: 5px;
+    padding: 5px 20px;
+    border: solid 2px;
+}
+
+.adremove{
+    width: 20%;
+    margin: auto;
+}
+
+.adremove a{
+    color: #343A40;
+}
+
+.info{
+    width: 100%;
+    display: flex;
+    margin: auto;
+    text-align: justify; /* For Edge */
+    text-align-last: right;
+}
+
+.rolesinfo{
+    width: 100%;
+    font-size: 20px;
+    padding: 5px;
+    margin: 0;
+}
+
+.rolesinfo a{
+    text-decoration: none;
+    color: #343A40;
+}
+
+.rolesinfo a:hover{
+    text-decoration: underline;
+    color: #343A40;
+
+}
+

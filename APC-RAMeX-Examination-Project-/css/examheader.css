@@ -1,0 +1,126 @@
+.container1{
+    width: 90%;
+    margin: auto;
+    overflow: visible;
+    position: fixed;
+}
+
+/* Header */
+header{
+    background: #293A82;
+    color: #ffffff;
+    padding-top: 0;
+    min-height: 90px;
+}
+
+header a{
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 20px;
+}
+
+header ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+header li{
+    float: left;
+    display: inline;
+    position: relative;
+    padding: 0 20px 0 20px;
+}
+
+header .user{
+    padding: 0 0 0 0;
+}
+
+header .notification{
+    padding: 7px 20px 0 10px;
+}
+
+header .notification img{
+    padding: 0 0 0 20px;
+}
+
+header .username{
+    padding: 0 30px 0 0;
+}
+
+header li ul.dropdown li{
+    display: block;
+}
+
+header li ul.dropdown{
+    width: 100%;
+    background: #ffffff;
+    border: #000000 solid;
+    margin: 0 0px 100px -250px;
+    padding: 10px 200px 10px 10px;
+    position: absolute;
+    z-index: 999;
+    display: none;
+    align-items: center;
+}
+
+header li ul.dropdown h3{
+    color: #000000;
+    margin: 10px 60px 10px 30px;
+    padding: 10px 100px 10px 80px;
+    position: relative;
+    display: inline-block;
+}
+
+header li ul.dropdown p{
+    color: #000000;
+    margin: 10px 60px 10px 15px;
+    padding: 10px 100px 10px 80px;
+    position: relative;
+    display: inline-block;
+}
+
+header .settings li{
+    padding: 20px 100px 20px 70px;
+    margin: 10px 50px 10px 10px;
+    position: relative;
+    background: url(../img/Settings.png) no-repeat;
+    
+}
+
+header .settings li:hover{
+    background: url(../img/Settings\ Hover.png) no-repeat;
+}
+
+header .logout li{
+    padding: 20px 100px 20px 70px;
+    margin: 10px 50px 10px 10px;
+    position: relative;
+    background: url('../img/Logout.png') no-repeat;
+}
+
+header .logout li:hover{
+    background: url(../img/Settings\ Hover.png) no-repeat;
+}
+
+header li:hover ul.dropdown{
+    display: block;
+}
+
+header #branding{
+    float: left;
+}
+
+header #branding img{
+    margin-top: 20px;
+    width: 230px;
+    margin-bottom: 0;
+}
+
+header nav{
+    position: relative;
+    float: right;
+    margin-top: 17px;
+    left: 10rem;
+}
