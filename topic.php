@@ -73,7 +73,6 @@ $courseFolderName = $courseCode;
 <body>
     <!--OTHER CODE -->
     <navigation class="navbar">
-
         <ul class="right-header">
             <li class="logo">
                 <a href="index.php"><img id="logo" src="img/logo.png"></a>
@@ -190,7 +189,7 @@ $courseFolderName = $courseCode;
 
     <div>
 
-        <!-- Header -->
+        <!-- Header + w/ TailwindCSS -->
         <div class="ml-[50px] p-10">
             <div class="mt-[70px] flex gap-4 justify-between items-center mb-10">
                 <div>
