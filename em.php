@@ -6,15 +6,35 @@ include("config/functions.php");
 
 $user_data = check_login($conn);
 
+if (isset($_SESSION['status'])) {
+echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
+<strong>Hey!</strong>' . $_SESSION['status'] . '
+<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
+unset($_SESSION['status']);
+}
+
 $id = $_SESSION['account_id'];
-                                $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
-                                $gotResults = mysqli_query($conn, $sql);
-                                if ($gotResults){
-                                if(mysqli_num_rows($gotResults)>0){
-                                    while($row = mysqli_fetch_array($gotResults)){
-                                    // print_r($row['first_name']);
+$sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
+$gotResults = mysqli_query($conn, $sql);
+if ($gotResults){
+if(mysqli_num_rows($gotResults)>0){
+while($row = mysqli_fetch_array($gotResults)){
+// print_r($row['first_name']);
 
+// Assuming $user_data contains information about the user's role
+$user_role = $user_data['role'];
 
+// Check the user's role and set the redirection URL accordingly
+if ($user_role == 'Executive Director') {
+    $redirect_url = 'index.php'; // Redirect admin users to admin homepage
+} elseif ($user_role == 'Program Director') {
+    $redirect_url = 'index.php'; // Redirect professor users to professor homepage
+} elseif ($user_role == 'Professor') {
+    $redirect_url = 'professoruser.php'; // Redirect professor users to professor homepage
+} else {
+    $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
+}
 ?>
 
 <!DOCTYPE html>
@@ -41,10 +61,10 @@ $id = $_SESSION['account_id'];
         <navigation class = "navbar">
                                         
         <ul class="right-header">
-    <li class="logo">
-        <a href="index.php"><img id="logo" src="img/logo.png"></a>
-    </li>
-    </ul>
+        <li class="logo">
+            <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
+        </li>
+        </ul>
 
             <ul class = "left-header">
             <?php
@@ -193,7 +213,6 @@ $id = $_SESSION['account_id'];
     
     <script src="https://kit.fontawesome.com/9e5ba2e3f5.js" crossorigin="anonymous"></script>
     <script src="js/header.js"></script>
-    
     </body>
     <?php
                                 }

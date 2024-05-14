@@ -49,7 +49,7 @@ if ($gotResults) {
                 <navigation class="navbar">
                     <ul class="right-header">
                         <li class="logo">
-                            <a href="professoruser.php"><img id="logo" src="img/logo.png"></a>
+                            <a href="unassigneduser.php"><img id="logo" src="img/logo.png"></a>
                         </li>
                     </ul>
 
@@ -170,7 +170,7 @@ if ($gotResults) {
                         </div>
 
                         <div class="buttonmid">
-                            <a href="usersettings.php" class="midbutton active">
+                            <a href="unassignedsettings.php" class="midbutton active">
                                 <p> User Profile </p>
                             </a>
                         </div>

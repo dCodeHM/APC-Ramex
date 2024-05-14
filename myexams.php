@@ -10,36 +10,49 @@ $account_id = $_SESSION['account_id'];
 $sql = "SELECT * FROM  account WHERE account_id = '$account_id' LIMIT 1";
 $gotResults = mysqli_query($conn, $sql);
 if ($gotResults) {
-    if (mysqli_num_rows($gotResults) > 0) {
-        while ($row = mysqli_fetch_array($gotResults)) {
-            // print_r($row['first_name']);
+if (mysqli_num_rows($gotResults) > 0) {
+while ($row = mysqli_fetch_array($gotResults)) {
+// print_r($row['first_name']);
 
-            $update = isset($_GET['update']) && $_GET['update'] === 'true';
+$update = isset($_GET['update']) && $_GET['update'] === 'true';
 
-            if (!isset($_SESSION['account_id'])) {
-                // Redirect to the login page if the user is not logged in
-                echo '<script>alert("User is not logged in, directing to login page.")</script>';
-                echo "<script> window.location.assign('login.php'); </script>";
-                exit();
-            }
+if (!isset($_SESSION['account_id'])) {
+// Redirect to the login page if the user is not logged in
+echo '<script>alert("User is not logged in, directing to login page.")</script>';
+echo "<script> window.location.assign('login.php'); </script>";
+exit();
+}
 
-            // Display the user-specific information
+// Display the user-specific information
 
-            $result = mysqli_query($conn, $sql); // Replace with data from the database
-            if ($result) {
-                $row = mysqli_fetch_array($result);
-                $user_email = $row['user_email'];
-                $pwd = $row['pwd'];
-                $first_name = $row['first_name'];
-                $last_name = $row['last_name'];
-                $role = $row['role'];
-            }
-            // Assuming $course_code is the course folder name
-            if (isset($course_code)) {
-                $_SESSION['course_folder_name'] = $course_code;
-            }
-            require('coursefolder.php');
+$result = mysqli_query($conn, $sql); // Replace with data from the database
+if ($result) {
+$row = mysqli_fetch_array($result);
+$user_email = $row['user_email'];
+$pwd = $row['pwd'];
+$first_name = $row['first_name'];
+$last_name = $row['last_name'];
+$role = $row['role'];
+}
+// Assuming $course_code is the course folder name
+if (isset($course_code)) {
+$_SESSION['course_folder_name'] = $course_code;
+}
+require('coursefolder.php');
 
+// Assuming $user_data contains information about the user's role
+$user_role = $user_data['role'];
+
+// Check the user's role and set the redirection URL accordingly
+if ($user_role == 'Executive Director') {
+    $redirect_url = 'index.php'; // Redirect admin users to admin homepage
+} elseif ($user_role == 'Program Director') {
+    $redirect_url = 'index.php'; // Redirect professor users to professor homepage
+} elseif ($user_role == 'Professor') {
+    $redirect_url = 'professoruser.php'; // Redirect professor users to professor homepage
+} else {
+    $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
+}
 ?>
 
             <!DOCTYPE html>
@@ -65,10 +78,10 @@ if ($gotResults) {
                 <navigation class="navbar">
 
                     <ul class="right-header">
-                        <li class="logo">
-                            <a href="index.php"><img id="logo" src="img/logo.png"></a>
-                        </li>
-                    </ul>
+        <li class="logo">
+            <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
+        </li>
+    </ul>
 
                     <ul class="left-header">
                         <?php

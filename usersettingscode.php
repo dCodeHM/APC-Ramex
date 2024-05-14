@@ -36,8 +36,10 @@ if(isset($_POST['update_stud_data'])) { // update_stud_data is the button name f
             header("Location: adminusersettings.php");
             exit;
         case 'Professor':
-        case 'Unassigned':
             header("Location: usersettings.php");
+            exit;
+        case 'Unassigned':
+            header("Location: unassignedsettings.php");
             exit;
         default:
             header("Location: unauthorized_access.php");

@@ -115,7 +115,7 @@ $user_data = check_login($conn);
         <ul class="user-drop dropdown" id="user-drop" style="display: none;">
             <h3>Admin</h3>
             <p>School Role</p>
-            <a href="usersettings.php" class="settings"><span>Settings</span></a>
+            <a href="unassignedsettings.php" class="settings"><span>Settings</span></a>
             <a href="logout.php" class="logout"><span>Logout</span></a>
         </ul>
     </li>

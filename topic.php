@@ -3,6 +3,8 @@ session_start();
 include("config/db.php");
 include("config/functions.php");
 
+$user_data = check_login($conn);
+
 if (!isset($_SESSION['account_id'])) {
     // Redirect to the login page if the user is not logged in
     echo '<script>alert("User is not logged in, directing to login page.")</script>';
@@ -10,8 +12,29 @@ if (!isset($_SESSION['account_id'])) {
     exit();
 }
 
-
 $account_id = $_SESSION['account_id'];
+
+$id = $_SESSION['account_id'];
+$sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
+$gotResults = mysqli_query($conn, $sql);
+if ($gotResults){
+if(mysqli_num_rows($gotResults)>0){
+while($row = mysqli_fetch_array($gotResults)){
+// print_r($row['first_name']);
+
+// Assuming $user_data contains information about the user's role
+$user_role = $user_data['role'];
+
+// Check the user's role and set the redirection URL accordingly
+if ($user_role == 'Executive Director') {
+    $redirect_url = 'index.php'; // Redirect admin users to admin homepage
+} elseif ($user_role == 'Program Director') {
+    $redirect_url = 'index.php'; // Redirect professor users to professor homepage
+} elseif ($user_role == 'Professor') {
+    $redirect_url = 'professoruser.php'; // Redirect professor users to professor homepage
+} else {
+    $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
+}
 
 
 // Display the user-specific information
@@ -24,12 +47,12 @@ if ($result) {
     $first_name = $row['first_name'];
     $last_name = $row['last_name'];
     $role = $row['role'];
+
 }
 
-require('topicfolder.php');
-?>
 
-<?php
+require('topicfolder.php');
+
 // Retrieve the course code from the URL parameter
 $courseCode = isset($_GET['course_code']) ? $_GET['course_code'] : '';
 
@@ -37,15 +60,15 @@ $courseCode = isset($_GET['course_code']) ? $_GET['course_code'] : '';
 
 // Set the course code as the header text
 $courseFolderName = $courseCode;
-?>
 
-<?php
 // Retrieve the course code AND course_subject_id from the URL parameter
 $courseCode = isset($_GET['course_code']) ? $_GET['course_code'] : '';
 $course_subject_id = isset($_GET['course_subject_id']) ? $_GET['course_subject_id'] : 0; // Get course_subject_id
 
 // Set the course code as the header text
 $courseFolderName = $courseCode;
+
+
 ?>
 
 <!DOCTYPE html>
@@ -75,7 +98,7 @@ $courseFolderName = $courseCode;
     <navigation class="navbar">
         <ul class="right-header">
             <li class="logo">
-                <a href="index.php"><img id="logo" src="img/logo.png"></a>
+            <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
             </li>
         </ul>
 
@@ -344,5 +367,10 @@ $courseFolderName = $courseCode;
         }
     }
 </script>
+<?php 
+}
+}
+}
+?>
 
 </html>
