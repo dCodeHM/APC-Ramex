@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 include("config/db.php");
 include("config/functions.php");
@@ -34,6 +39,10 @@ $result = $stmt->get_result();
 $exam = $result->fetch_assoc();
 
 $exam_id = $exam['exam_id'];
+
+if (empty($exam_id)) {
+    die("Exam ID is not set.");
+}
 
 // Fetch the questions linked to the exam_id
 $sql = "SELECT * FROM question WHERE exam_id = ? ORDER BY `order`";
@@ -127,6 +136,9 @@ if (isset($_POST['save_exam'])) {
         }
     }
 
+    // Update existing instructions
+
+
     // Insert new questions
     if (isset($_POST['new_question_text'])) {
         $new_question_texts = $_POST['new_question_text'];
@@ -146,7 +158,7 @@ if (isset($_POST['save_exam'])) {
                 if ($_FILES['new_question_image']['error'][$index] === UPLOAD_ERR_OK) {
                     $new_question_image = file_get_contents($_FILES['new_question_image']['tmp_name'][$index]);
                     $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, `order`) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        VALUES (?, ?, ?, ?, ?, ?, ?)";
                     $stmt = $conn->prepare($sql);
                     if (!$stmt) {
                         die("Error preparing statement: " . $conn->error);
@@ -157,13 +169,27 @@ if (isset($_POST['save_exam'])) {
                 }
             } else {
                 $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, `order`) 
-                        VALUES (?, ?, ?, ?, ?, ?)";
+                    VALUES (?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     die("Error preparing statement: " . $conn->error);
                 }
                 $stmt->bind_param("isssii", $exam_id, $new_question_text, $new_clo_id, $new_difficulty, $new_points, $new_order);
             }
+            if (!$stmt->execute()) {
+                die("Error executing statement: " . $stmt->error);
+            }
+
+            // Get the inserted question_id
+            $new_question_id = $conn->insert_id;
+
+            // Save to question library
+            $sql = "INSERT INTO question_library (question_text, question_image, clo_id, difficulty, question_points, course_subject_id) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                die("Error preparing statement: " . $conn->error);
+            }
+            $stmt->bind_param("ssssii", $new_question_text, $new_question_image, $new_clo_id, $new_difficulty, $new_points, $course_subject_id);
             if (!$stmt->execute()) {
                 die("Error executing statement: " . $stmt->error);
             }
@@ -206,7 +232,6 @@ if (isset($_POST['save_exam'])) {
     <title>APC AcademX | Welcome</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
 
     <script>
         $(document).ready(function() {
@@ -397,33 +422,41 @@ if (isset($_POST['save_exam'])) {
             <div class="question_library text-center font-semibold text-lg">Question Library</div>
             <div class="exam_settings text-center font-semibold text-lg">Exam Settings</div>
             <div class="topic_questions">
-                <p class="topic_title text-yellow-400 font-semibold">V Processor Management</p>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg" onclick="insertQuestion(event)">
-                    <p>What event occurs when no space is enough for any waiting process, even if partitions are available?</p>
-                </div>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg mt-4" onclick="insertQuestion(event)">
-                    <p>This is the term used for base register under MMU.</p>
-                </div>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg mt-4" onclick="insertQuestion(event)">
-                    <p>What strategy produces the largest leftover hole, which may be more useful than the smallest leftover hole?</p>
-                </div>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg mt-4" onclick="insertQuestion(event)">
-                    <p>This item keeps in memory only those instructions and data that are needed at any given time.</p>
-                </div>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg mt-4" onclick="insertQuestion(event)">
-                    <p>It is the moving of process upwards in the main memory so that the free memory locations may be grouped together in one large block.</p>
-                </div>
-            </div>
-            <div class="topic_questions">
-                <p class="topic_title text-yellow-400 font-semibold">> Operating System Fundamentals</p>
+                <p class="topic_title text-yellow-400 font-semibold">
+                    <!-- Get topic `course_topic_id` in the URL -->
+                    <?php
+                    $sql = "SELECT course_topics FROM prof_course_topic WHERE course_topic_id = ?";
+                    $stmt = $conn->prepare($sql);
+                    if (!$stmt) {
+                        die("Error preparing statement: " . $conn->error);
+                    }
+                    $stmt->bind_param("i", $course_topic_id);
+                    if (!$stmt->execute()) {
+                        die("Error executing statement: " . $stmt->error);
+                    }
+                    $result = $stmt->get_result();
+
+                    $topic = $result->fetch_assoc();
+                    echo "> " . $topic['course_topics'];
+                    ?>
+                </p>
+
+                <?php
+                $sql = "SELECT * FROM question_library";
+                $result = $conn->query($sql);
+                while ($row = $result->fetch_assoc()) {
+                    echo "<div class='questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg mt-4' onclick='insertQuestion(event)'>{$row['question_text']} ({$row['difficulty']})</div>";
+                }
+                ?>
             </div>
         </div>
+    </div>
     </div>
 
     <section class="ml-[400px] mt-[70px] px-20 py-10">
         <form class="w-full" method="POST" action="" enctype="multipart/form-data">
             <h2 class="font-semibold mb-2">Exam Details</h2>
-            <input class="mb-4 outline outline-zinc-600 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
+            <input class="mb-4 outline outline-zinc-600 outline-1 py-2 px-4 rounded-lg w-full" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
             <h3 class="w-full font-semibold mb-2">Questions
                 <span class="text-base font-normal text-gray-400 ml-1">Total Questions: <?php echo $questions_result->num_rows; ?></span>
             </h3>
@@ -457,7 +490,7 @@ if (isset($_POST['save_exam'])) {
                     if ($item['type'] === 'question') {
                         $question = $item['data'];
                 ?>
-                        <div class="bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
+                        <div class="bg-white shadow-xl p-6 gap-4 outline-zinc-600 rounded-md outline outline-1 flex flex-col relative">
                             <div class="flex flex-col">
                                 <label class="mb-2" for="question_id">Question ID</label>
                                 <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_id[]" value="<?php echo htmlspecialchars($question['question_id']); ?>" readonly>
@@ -539,7 +572,7 @@ if (isset($_POST['save_exam'])) {
                                 <label class="mb-2" for="instruction_text">Instruction Text</label>
                                 <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="instruction_text[]"><?php echo htmlspecialchars($instruction['instruction_text']); ?></textarea>
                             </div>
-                            <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
+                            <!-- <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>"> -->
                             <input type="hidden" name="instruction_order[]" value="<?php echo htmlspecialchars($instruction['order']); ?>">
                             <p class="absolute right-[100%] py-2 px-4 rounded-l-lg -z-10 outline outline-1 outline-zinc-200 bg-yellow-400 text-white"><?php echo $instructionOrder; ?></p>
                         </div>

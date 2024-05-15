@@ -215,8 +215,7 @@ $courseFolderName = $courseCode;
             <div class="popup-hidden">
                 <div class="popup_bg"></div>
                 <div class="Add_popup">
-                    <!-- Inside the form -->
-                    ...
+
                     <form action="topicfolder.php" method="post">
                         <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
                         <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
@@ -247,22 +246,9 @@ $courseFolderName = $courseCode;
                             <input class="input" type="number" name="difficulty" placeholder="Enter difficulty level" required><br />
                         </div>
 
-                        <div class="inputcolumn">
-                            <label class="label" for="reuse_questions">Reuse Questions from Library</label>
-                            <select name="reuse_questions[]" multiple>
-                                <?php
-                                $sql = "SELECT * FROM question_library";
-                                $result = $conn->query($sql);
-                                while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='{$row['question_library_id']}'>{$row['question_text']} ({$row['difficulty']})</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
 
                         <button type="submit" name="create_exam">Create Exam</button>
                     </form>
-                    ...
 
                 </div>
             </div>
