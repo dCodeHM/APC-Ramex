@@ -10,9 +10,7 @@ if (!isset($_SESSION['account_id'])) {
     exit();
 }
 
-
 $account_id = $_SESSION['account_id'];
-
 
 // Display the user-specific information
 $sql = "SELECT * FROM account WHERE account_id = $account_id";
@@ -26,20 +24,15 @@ if ($result) {
     $role = $row['role'];
 }
 
-require('topicfolder.php');
-?>
+// require('topicfolder.php');
 
-<?php
 // Retrieve the course code from the URL parameter
 $courseCode = isset($_GET['course_code']) ? $_GET['course_code'] : '';
 
 // Optionally, you may sanitize and validate the course code here
-
 // Set the course code as the header text
 $courseFolderName = $courseCode;
-?>
 
-<?php
 // Retrieve the course code AND course_subject_id from the URL parameter
 $courseCode = isset($_GET['course_code']) ? $_GET['course_code'] : '';
 $course_subject_id = isset($_GET['course_subject_id']) ? $_GET['course_subject_id'] : 0; // Get course_subject_id
@@ -218,57 +211,57 @@ $courseFolderName = $courseCode;
             <div class="popup-hidden">
                 <div class="popup_bg"></div>
                 <div class="Add_popup">
+                    <!-- Inside the form -->
+                    ...
                     <form action="topicfolder.php" method="post">
-                        <!-- Add a hidden input field to indicate action -->
-                        <input type="hidden" name="action" id="action" value="add">
-
-                        <?php if ($update == true) : ?>
-                            <p class="heading">Update Course Topic Information<img src="img/Exam.png" style="margin: 5px; width: 4rem;"></p>
-                        <?php else : ?>
-                            <p class="heading">Create an Exam<img src="img/Exam.png" style="margin: 5px; width: 4rem;"></p>
-                        <?php endif; ?>
-
                         <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
-
                         <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
 
                         <div class="inputcolumn">
                             <label class="label" for="course_topics">Course Topic</label>
-                            <input class="input" type="text" name="course_topics" placeholder="Your Course Topics" value="<?php echo $course_topics ?>" required><br />
+                            <input class="input" type="text" name="course_topics" placeholder="Your Course Topics" required><br />
                         </div>
                         <div class="inputcolumn">
-                            <label class="label" for="difficulty">Easy</label>
-                            <input class="input" type="number" name="difficulty" placeholder="How many Easy question/s?" value="<?php echo $difficulty ?>" required><br />
+                            <label class="label" for="easy_questions">Easy</label>
+                            <input class="input" type="number" name="easy_questions" placeholder="How many Easy question/s?" required><br />
                         </div>
                         <div class="inputcolumn">
-                            <label class="label" for="difficulty">Normal</label>
-                            <input class="input" type="number" name="difficulty" placeholder="How many Normal question/s?" value="<?php echo $difficulty ?>" required><br />
+                            <label class="label" for="normal_questions">Normal</label>
+                            <input class="input" type="number" name="normal_questions" placeholder="How many Normal question/s?" required><br />
                         </div>
                         <div class="inputcolumn">
-                            <label class="label" for="difficulty">Hard</label>
-                            <input class="input" type="number" name="difficulty" placeholder="How many Hard question/s?" value="<?php echo $difficulty ?>" required><br />
+                            <label class="label" for="hard_questions">Hard</label>
+                            <input class="input" type="number" name="hard_questions" placeholder="How many Hard question/s?" required><br />
                         </div>
                         <div class="inputcolumn">
-                            <label class="label" for="course_code">How many questions would you like to add?</label>
-                            <input class="input" type="number" name="course_code" placeholder="Your difficulty" value="<?php echo $course_code ?>" required><br />
+                            <label class="label" for="total_questions">Total Questions</label>
+                            <input class="input" type="number" name="total_questions" placeholder="Total Questions" required><br />
                         </div>
 
-                        <input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
-                        <input type="hidden" name="course_topic_id" value="<?php echo $course_subject_id ?>" readonly><br />
-
-                        <?php if ($update == true) : ?>
-                            <button class="update" type="submit" name="update">Update</button>
-                        <?php else : ?>
-                            <button class="save" type="submit" name="save">Create</button>
-                        <?php endif; ?>
-                        <div class="cancelbutton">
-                            <a class="cancel" href="topic.php?course_code=<?php echo urlencode($courseFolderName); ?>">Cancel</a>
+                        <div class="inputcolumn">
+                            <label class="label" for="difficulty">Difficulty</label>
+                            <input class="input" type="number" name="difficulty" placeholder="Enter difficulty level" required><br />
                         </div>
+
+                        <div class="inputcolumn">
+                            <label class="label" for="reuse_questions">Reuse Questions from Library</label>
+                            <select name="reuse_questions[]" multiple>
+                                <?php
+                                $sql = "SELECT * FROM question_library";
+                                $result = $conn->query($sql);
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<option value='{$row['question_library_id']}'>{$row['question_text']} ({$row['difficulty']})</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <button type="submit" name="create_exam">Create Exam</button>
                     </form>
+                    ...
+
                 </div>
             </div>
-
-
 
             <!--boxes-->
             <?php
@@ -288,7 +281,7 @@ $courseFolderName = $courseCode;
                     <?php while ($row = $result->fetch_assoc()) : ?>
                         <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6">
                             <!-- Topics -->
-                            <a href="exam_view.php?course_topics=<?php echo urlencode($row['course_topics']); ?>&course_subject_id=<?php echo $course_subject_id ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
+                            <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>">
                                 <h2 class="font-semibold text-4xl text-zinc-700">
                                     <?php echo $row['course_topics']; ?></h2>
                                 <!-- Date Created -->
@@ -342,6 +335,16 @@ $courseFolderName = $courseCode;
             const update = updateParam === 'true';
             showEditPopup(courseTopicId, update);
         }
+    }
+
+    function logFormData(event) {
+        event.preventDefault(); // Prevent form submission for now
+        const formData = new FormData(event.target);
+        for (const [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        // After logging, you can submit the form if needed:
+        // event.target.submit();
     }
 </script>
 
