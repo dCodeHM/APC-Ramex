@@ -52,7 +52,7 @@ if (isset($_POST['input'])) {
                             <td style="text-align: center">
                                 <form action="adminsetcode.php" method="post">
                                     <input type="hidden" name="user_id" value="<?= $id; ?>">
-                                    <select name="user_role" class="rolebutton" <?= ($execDirectorCount <= 1 && $role === 'Executive Director') ? 'disabled' : '' ?>>
+                                    <select name="user_role" style = "font-size: 10px;"class="rolebutton" <?= ($execDirectorCount <= 1 && $role === 'Executive Director') ? 'disabled' : '' ?>>
                                         <?php
                                         $sql = "SELECT * FROM role";
                                         $role_data = mysqli_query($conn, $sql);
@@ -64,7 +64,7 @@ if (isset($_POST['input'])) {
                                         ?>
                                     </select>
                                     <?php if ($execDirectorCount > 1 || $role !== 'Executive Director'): ?>
-                                        <button type="submit" class="btn btn-primary" name="update_admin_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new role?')">Update</button>
+                                        <button type="submit" class="btn btn-primary" name="update_admin_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new role?')" style = "font-size: 10px;">Update</button>
                                     <?php else: ?>
                                         <button type="button" class="btn btn-primary" disabled>Update Denied</button>
                                     <?php endif; ?>
@@ -73,7 +73,7 @@ if (isset($_POST['input'])) {
                                 <td style="text-align: center">
                                 <form action="adminsetcode.php" method="post">
                                     <input type="hidden" name="user_id" value="<?= $id; ?>">
-                                    <select name="user_program" class="rolebutton">
+                                    <select name="user_program" class="rolebutton" style = "font-size: 10px;">
                                         <?php
                                         $sql = "SELECT * FROM program_name";
                                         $program_data = mysqli_query($conn, $sql);
@@ -84,7 +84,7 @@ if (isset($_POST['input'])) {
                                         }
                                         ?>
                                     </select>
-                                        <button type="submit" class="btn btn-primary" name="update_program_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new program?')">Update</button>
+                                        <button type="submit" class="btn btn-primary" name="update_program_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new program?')" style = "font-size: 10px;">Update</button>
                                 </form>
                                     </td>
                                     </td>
@@ -93,7 +93,7 @@ if (isset($_POST['input'])) {
                                 <form action="adminsetcode.php" method="post">
                                     <input type="hidden" name="user_delete" value="<?= $id; ?>">
                                     <?php if ($execDirectorCount > 1 || $role !== 'Executive Director'): ?>
-                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete <?= $fname . ' ' . $lname; ?>?')">Delete</button>
+                                        <button type="submit" class="btn btn-danger" style = "font-size: 10px;" name="delete_admin_data" onclick="return confirm('Are you sure you want to delete <?= $fname . ' ' . $lname; ?>?')">Delete</button>
                                     <?php else: ?>  
                                         <button type="button" class="btn btn-danger" disabled>Deletion Denied</button>
                                     <?php endif; ?>

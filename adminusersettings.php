@@ -1,6 +1,7 @@
 <?php 
 session_start();
 include("config/db.php");
+include("config/functions.php");
 
 // // Check if the user is not logged in
 // if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
@@ -8,27 +9,27 @@ include("config/db.php");
 //     header("Location: login.php");
 //     exit;
 // }
-                    if(isset($_SESSION['status']))
-                    {
-                        ?>
-                        
-                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <strong>Hey!</strong> <?php echo $_SESSION['status']; ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        <?php
-                        unset($_SESSION['status']);
-                    }
-                ?>
+if(isset($_SESSION['status']))
+{
+?>
+
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>  
+    <?php
+    unset($_SESSION['status']);
+}
+?>
 <?php                           
-                                $id = $_SESSION['account_id'];
-                                $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
-                                $gotResults = mysqli_query($conn, $sql);
-                                if ($gotResults){
-                                if(mysqli_num_rows($gotResults)>0){
-                                    while($row = mysqli_fetch_array($gotResults)){
-                                    // print_r($row['first_name']);
-                            ?>
+        $id = $_SESSION['account_id'];
+        $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
+        $gotResults = mysqli_query($conn, $sql);
+
+        if ($gotResults){
+        if(mysqli_num_rows($gotResults)>0){
+            while($row = mysqli_fetch_array($gotResults)){
+            // print_r($row['first_name']);
+?>
 <!DOCTYPE html>
 <html >
     <head>
@@ -246,20 +247,25 @@ include("config/db.php");
 
                             </div>
 
-                    <!-- FIRST NAME WITH DATABASE -->
-                    <div class="usercontent">
-                            <p>
-                            <b style="position:relative; left: 15px; top: 10px" >First Name</b>
-                            </p>
-                            <div class="useredit">
-                                <p style="position:relative; right: 95px"> 
-                                <input type="text" 
-                                id = "firstName" name="updateFirstname" class="form-control" value="<?php echo $row['first_name']; ?>">
-                                <div class = "error">
+                            <!-- FIRST NAME WITH DATABASE -->
+                            <div class="usercontent">
+                                <p>
+                                    <b style="position:relative; left: 15px; top: 10px">First Name</b>
+                                </p>
+                                <div class="useredit">
+                                    <p style="position:relative; right: 95px">
+                                        <input type="text" id="firstName" name="updateFirstname" class="form-control" value="<?php echo htmlspecialchars($row['first_name']); ?>" oninput="validateInput(this)">
+                                        <div class="error"></div>
+                                    </p>                        
                                 </div>
-                                </p>                        
                             </div>
-                    </div>
+
+                            <script>
+                                function validateInput(input) {
+                                    input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
+                                }
+                            </script>
+
                     
                     <!-- LAST NAME WITH DATABASE -->
                     <div class="usercontent">
@@ -270,9 +276,8 @@ include("config/db.php");
                             <div class="useredit">
                             <p style="position:relative; right: 93px">
                             <input type="text" 
-                            id = "lastName" name="updateLastname" class="form-control" value="<?php echo $row['last_name']; ?>">
-                            <div class = "error">
-                            </div>
+                            id = "lastName" name="updateLastname" class="form-control" value="<?php echo htmlspecialchars($row['last_name']); ?>" oninput="validateInput(this)">
+                            <div class="error"></div>
                             </p>                        
                         </div>
                     </div>
@@ -324,16 +329,23 @@ include("config/db.php");
                         
                     </div>  
                 </div>
-                            <!-- SUBMIT BUTTON -->
-                            <div class="form-group mb-3">
-                                <button type="submit" onclick="alert('Your profile has been updated')" name="update_stud_data" class="updatebtn" style = "vertical-align:middle">Update</button>
-                            </div>
+                                <!-- SUBMIT BUTTON -->
+                                <div class="form-group mb-3">
+                                    <button type="submit" onclick="return confirmUpdate()" name="update_stud_data" class="updatebtn" style="vertical-align:middle">Update</button>
+                                </div>
                     </div>
         </form>            
     </div>
 
 <script>
-
+    function confirmUpdate() {
+        if (confirm('Do you want to update your profile?')) {
+            alert('Your profile has been updated');
+            return true; // Proceed with form submission
+        } else {
+            return false; // Cancel form submission
+        }
+    }
 </script>
 
 </div>

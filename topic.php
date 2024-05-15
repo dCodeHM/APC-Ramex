@@ -3,6 +3,8 @@ session_start();
 include("config/db.php");
 include("config/functions.php");
 
+$user_data = check_login($conn);
+
 if (!isset($_SESSION['account_id'])) {
     // Redirect to the login page if the user is not logged in
     echo '<script>alert("User is not logged in, directing to login page.")</script>';
@@ -39,6 +41,8 @@ $course_subject_id = isset($_GET['course_subject_id']) ? $_GET['course_subject_i
 
 // Set the course code as the header text
 $courseFolderName = $courseCode;
+
+
 ?>
 
 <!DOCTYPE html>
@@ -68,7 +72,7 @@ $courseFolderName = $courseCode;
     <navigation class="navbar">
         <ul class="right-header">
             <li class="logo">
-                <a href="index.php"><img id="logo" src="img/logo.png"></a>
+                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
             </li>
         </ul>
 
@@ -347,5 +351,7 @@ $courseFolderName = $courseCode;
         // event.target.submit();
     }
 </script>
+<?php
+?>
 
 </html>

@@ -1,43 +1,43 @@
 <?php
 session_start();
+include("config/db.php");
+include("config/functions.php");
 
-$conn = mysqli_connect("localhost", "root", "", "ramexdb");
-$id = $_SESSION['account_id'];
+$user_data = check_login($conn);
 
-// Fetch the current user's role
-$sql = "SELECT * FROM account WHERE account_id = '$id' LIMIT 1"; 
-$result = mysqli_query($conn, $sql);
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_stud_data'])) {
+    $firstname = trim($_POST['updateFirstname']);
+    $lastname = trim($_POST['updateLastname']);
+    
+    // Server-side validation: allow only alphabetic characters and spaces
+    if (preg_match('/^[a-zA-Z\s]+$/', $firstname) && preg_match('/^[a-zA-Z\s]+$/', $lastname)) {
+        $id = $_SESSION['account_id'];
+        $stmt = $conn->prepare("UPDATE account SET first_name = ?, last_name = ? WHERE account_id = ?");
+        $stmt->bind_param("ssi", $firstname, $lastname, $id);
+        
+        if ($stmt->execute()) {
+            $_SESSION['status'] = "Data Updated Successfully";
+        } else {
+            $_SESSION['status'] = "Not Updated";
+        }
 
-if ($result && mysqli_num_rows($result) > 0) {
-    $user_data = mysqli_fetch_assoc($result);
-    $current_role = $user_data['role'];
-} else {
-    die("User not found.");
-}
-
-// Updating Data
-if(isset($_POST['update_stud_data'])) { // update_stud_data is the button name for update
-    $firstname = $_POST['updateFirstname'];
-    $lastname = $_POST['updateLastname'];
-
-    $query = "UPDATE account SET first_name='$firstname', last_name='$lastname' WHERE account_id='$id'";
-    $query_run = mysqli_query($conn, $query);
-
-    if($query_run) {
-        $_SESSION['status'] = "Data Updated Successfully";
+        $stmt->close();
     } else {
-        $_SESSION['status'] = "Not Updated";
+        $_SESSION['status'] = "Invalid input. Only alphabetic characters and spaces are allowed.";
     }
 
     // Redirect based on role after updating the data
+    $current_role = $user_data['role']; // Assuming role is stored in $user_data
     switch ($current_role) {
         case 'Executive Director':
         case 'Program Director':
             header("Location: adminusersettings.php");
             exit;
         case 'Professor':
-        case 'Unassigned':
             header("Location: usersettings.php");
+            exit;
+        case 'Unassigned':
+            header("Location: unassignedsettings.php");
             exit;
         default:
             header("Location: unauthorized_access.php");
