@@ -149,4 +149,43 @@
     text-decoration: underline;
   }
 
+/* ADMIN INFORMATION ON BOTTOM RIGHT */
+
+.info {
+  position: relative;
+  display: inline-block;
+}
+
+.info .rolesinfo {
+  visibility: hidden;
+  width: 200px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.info .rolesinfo::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.info:hover .rolesinfo {
+  visibility: visible;
+  opacity: 1;
+}
 

@@ -28,7 +28,6 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         <meta name="viewport" content="width=device-width">
         <meta name="author" content="APC AcademX">
         <title>APC AcademX | Admin Settings</title>
-        <link rel="stylesheet" href="./css/adminstyle.css">
 
         <link rel="stylesheet" href="css/settings.css">
         <link rel="stylesheet" href="css/header.css">
@@ -36,6 +35,10 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         <link rel="stylesheet" href="css/adminset.css">
         <link rel="stylesheet" href="css/boxset.css">
         <link rel="stylesheet" href="css/searchdesign.css">
+        <!-- for admin Information -->
+        <link rel="stylesheet" href="css/adminstyle.css">
+
+
 
         <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
 </head>
@@ -210,10 +213,16 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
                         <!-- THIS IS TABLE FOR SEARCHING and TABLE -->
                         <div id = "searchresult"></div> 
 
-                <div class="info">
-                <div class="rolesinfo">
-                    <a href="#"><i class="fa-solid fa-circle-info"></i>  Admin Information </a>
-                </div>
+                        <div class="info">
+                    <div class="rolesinfo">
+                        <p>Admin Information:</p>
+                        <ul>
+                            <li>Manage user accounts</li>
+                            <li>Assign roles and programs</li>
+                            <li>Monitor system activities</li>
+                        </ul>
+                    </div>
+                    <a href="#"><i class="fa-solid fa-circle-info"></i>Admin Information</a>
                 </div>
              </div>
             </form>

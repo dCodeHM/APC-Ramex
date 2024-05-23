@@ -194,11 +194,9 @@ $courseFolderName = $courseCode;
                     <h1 class="text-7xl font-medium"><?php echo $courseFolderName; ?></h1>
                 </div>
 
-                <?php if (!$update) : ?>
                     <button class="addbutt" onclick="showPopup()">
                         <i class="fa-solid fa-circle-plus"></i>
                     </button>
-                <?php endif; ?>
             </div>
 
 
@@ -321,8 +319,9 @@ $courseFolderName = $courseCode;
         document.getElementById("action").value = "edit";
         document.querySelector("form").action = `topicfolder.php?edit=${course_topic_id}`;
         // Optionally, you can pre-fill form fields here
-        // Set the value of the $update PHP variable based on the update parameter
-        $update = update;
+        // Set the value of the $update PHP variable based on the   update parameter
+        <?php if ($update) : 
+        ?>document.getElementById("update").value = "true";<?php endif; ?>
     }
 
     function handleAction(select) {

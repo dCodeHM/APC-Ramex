@@ -156,7 +156,7 @@
 /* on hover text */
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 25em;
+  width: 30em;
   height: auto;
   background-color: rgb(255, 255, 255);
   color: #000000;

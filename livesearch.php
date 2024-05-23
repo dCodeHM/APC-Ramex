@@ -44,7 +44,7 @@ if (isset($_POST['input'])) {
                         $role = $row['role'];
                         $email = $row['user_email'];
                         $id = $row['account_id'];
-                        $program= $row['program_name'];
+                        $program = $row['program_name'];
                         ?>
                         <tr>
                             <td><?php echo $lname; ?></td>
@@ -52,7 +52,7 @@ if (isset($_POST['input'])) {
                             <td style="text-align: center">
                                 <form action="adminsetcode.php" method="post">
                                     <input type="hidden" name="user_id" value="<?= $id; ?>">
-                                    <select name="user_role" style = "font-size: 10px;"class="rolebutton" <?= ($execDirectorCount <= 1 && $role === 'Executive Director') ? 'disabled' : '' ?>>
+                                    <select name="user_role" style="font-size: 10px;" class="rolebutton" <?= ($execDirectorCount <= 1 && $role === 'Executive Director') ? 'disabled' : '' ?> onchange="toggleProgramFields(this, '<?= $id; ?>')">
                                         <?php
                                         $sql = "SELECT * FROM role";
                                         $role_data = mysqli_query($conn, $sql);
@@ -64,16 +64,16 @@ if (isset($_POST['input'])) {
                                         ?>
                                     </select>
                                     <?php if ($execDirectorCount > 1 || $role !== 'Executive Director'): ?>
-                                        <button type="submit" class="btn btn-primary" name="update_admin_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new role?')" style = "font-size: 10px;">Update</button>
+                                        <button type="submit" class="btn btn-primary" name="update_admin_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new role?')" style="font-size: 10px;">Update</button>
                                     <?php else: ?>
                                         <button type="button" class="btn btn-primary" disabled>Update Denied</button>
                                     <?php endif; ?>
                                 </form>
-
-                                <td style="text-align: center">
+                            </td>
+                            <td style="text-align: center">
                                 <form action="adminsetcode.php" method="post">
                                     <input type="hidden" name="user_id" value="<?= $id; ?>">
-                                    <select name="user_program" class="rolebutton" style = "font-size: 10px;">
+                                    <select name="user_program" class="rolebutton program-select-<?= $id; ?>" style="font-size: 10px;" <?= ($role === 'Professor') ? 'disabled' : '' ?>>
                                         <?php
                                         $sql = "SELECT * FROM program_name";
                                         $program_data = mysqli_query($conn, $sql);
@@ -84,16 +84,15 @@ if (isset($_POST['input'])) {
                                         }
                                         ?>
                                     </select>
-                                        <button type="submit" class="btn btn-primary" name="update_program_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new program?')" style = "font-size: 10px;">Update</button>
+                                    <button type="submit" class="btn btn-primary program-button-<?= $id; ?>" name="update_program_data" onclick="return confirm('Are you sure you want to update <?= $fname . ' ' . $lname; ?> to a new program?')" style="font-size: 10px;" <?= ($role === 'Professor') ? 'disabled' : '' ?>>Update</button>
                                 </form>
-                                    </td>
-                                    </td>
+                            </td>
                             <td><?php echo $email; ?></td>
                             <td style="text-align: center">
                                 <form action="adminsetcode.php" method="post">
                                     <input type="hidden" name="user_delete" value="<?= $id; ?>">
                                     <?php if ($execDirectorCount > 1 || $role !== 'Executive Director'): ?>
-                                        <button type="submit" class="btn btn-danger" style = "font-size: 10px;" name="delete_admin_data" onclick="return confirm('Are you sure you want to delete <?= $fname . ' ' . $lname; ?>?')">Delete</button>
+                                        <button type="submit" class="btn btn-danger" style="font-size: 10px;" name="delete_admin_data" onclick="return confirm('Are you sure you want to delete <?= $fname . ' ' . $lname; ?>?')">Delete</button>
                                     <?php else: ?>  
                                         <button type="button" class="btn btn-danger" disabled>Deletion Denied</button>
                                     <?php endif; ?>
@@ -106,6 +105,21 @@ if (isset($_POST['input'])) {
                 </tbody>
             </table>
         </div>
+        <script>
+            function toggleProgramFields(selectElement, userId) {
+                var selectedRole = selectElement.value;
+                var programSelect = document.querySelector('.program-select-' + userId);
+                var programButton = document.querySelector('.program-button-' + userId);
+
+                if (selectedRole === 'Professor') {
+                    programSelect.disabled = true;
+                    programButton.disabled = true;
+                } else {
+                    programSelect.disabled = false;
+                    programButton.disabled = false;
+                }
+            }
+        </script>
         <?php
     } else {
         echo "No results found";

@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("config/db.php");
+include("config/functions.php");
 
 if (isset($_SESSION['status'])) {
 ?>
@@ -24,7 +25,6 @@ if ($gotResults) {
 ?>
             <!DOCTYPE html>
             <html>
-
             <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width" , initial-scale="1">
@@ -40,7 +40,6 @@ if ($gotResults) {
                 <link rel="stylesheet" href="css/settings.css">
                 <script defer src="./usersettingAction.js"></script>
                 <script src="https://cdn.tailwindcss.com"></script>
-
 
             </head>
 
@@ -151,7 +150,7 @@ if ($gotResults) {
                 <!-- Main Sidebar -->
                 <div class="sidebar">
                     <div class="back_button">
-                        <a href="professoruser.php">
+                        <a href="unassigneduser.php">
                             <img src="img/back.png">
                         </a>
                     </div>
@@ -186,7 +185,6 @@ if ($gotResults) {
                     <div class="w-full bg-zinc-400 h-1 mb-6">
                     </div>
 
-
                     <form class="bg-zinc-100 outline outline-1 outline-zinc-200 rounded-xl" id="form" action="usersettingscode.php" method="POST">
                         <div class="flex-col flex p-10 gap-6">
 
@@ -209,6 +207,8 @@ if ($gotResults) {
                                             2. <span class="underline">Professor</span> - Has access to the Student Assessment and Exam Maker
                                             <br><br>
                                             3. <span class="underline">Executive Director (EX-D)</span> - Has access to the Student Assessment, Course Assessment, Exam Maker, and Admin Settings
+                                            <br><br>
+                                            4. <span class="underline">Program Director</span> - Has access to the Student Assessment, Course Assessment, Exam Maker, and Admin Settings
                                         </div>
                                     </i>
                                     <script>
@@ -296,25 +296,6 @@ if ($gotResults) {
                                 </script>
                             </div>
 
-
-
-                            <!-- 
-                            <div class="tooltip" style="position:relative; right: 100px;">
-                                <img lass="information" src="./img/information.png">
-                                <span class="tooltiptext">
-                                    <img src="./img/information.png" width="10px">
-                                    <b>Role information</b>
-                                    <br>
-                                    <span><b>1. Unassigned</b> - Has no access
-                                        <span><br><b>2. Professor</b> - Has access to the Student Assessment and Exam Maker.
-                                            <span><br><b>3. Executive Director (EX-D)</b> - Has access to the Student Assessment, Course Assessment, Exam Maker, and Admin Settings.
-                                            </span>
-                                        </span>
-                                    </span>
-                            </div> -->
-
-                        </div>
-
                         <!-- Submit Button -->
                         <div class="form-group mb-3">
                             <button type="submit" onclick="alert('Your profile has been updated')" name="update_stud_data" class="updatebtn" style="vertical-align:middle">Update</button>
@@ -323,7 +304,6 @@ if ($gotResults) {
 
 
                 </main>
-
                 <script src="https://kit.fontawesome.com/9e5ba2e3f5.js" crossorigin="anonymous"></script>
                 <script src="js/header.js"></script>
             </body>
