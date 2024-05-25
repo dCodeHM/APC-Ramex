@@ -76,6 +76,7 @@ $courseFolderName = $courseCode;
     <link rel="stylesheet" href="./css/sidebar.css">
     <link rel="stylesheet" href="./css/header.css">
     <link rel="stylesheet" href="./css/homepage.css">
+    <link rel="stylesheet" href="./css/helpbutton.css">
     <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./myexams.js"></script>
@@ -191,8 +192,8 @@ $courseFolderName = $courseCode;
                     <img src="img/back.png">
                 </a>
             </div>
-            <div class="help_button">
-                <img src="img/help.png">
+            <div class="help_buttonte">
+                <img src="img/help.png" alt="Help Icon">
             </div>
         </div>
     </navigation>
@@ -272,10 +273,6 @@ $courseFolderName = $courseCode;
         window.location.href = url;
     }
 </script>
-
-
-
-
             <!--boxes-->
             <?php
 

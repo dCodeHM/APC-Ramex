@@ -244,6 +244,7 @@ if (isset($_POST['save_exam'])) {
     <link rel="stylesheet" href="./css/sidebar.css">
     <link rel="stylesheet" href="./css/header.css">
     <link rel="stylesheet" href="./css/examsettings.css">
+    <link rel="stylesheet" href="./css/helpbutton.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
@@ -473,8 +474,8 @@ if (isset($_POST['save_exam'])) {
                     <img src="img/back.png">
                 </a>
             </div>
-            <div class="help_button">
-                <img src="img/help.png">
+            <div class="help_buttonec">
+                <img src="img/help.png" alt="Help Icon">
             </div>
         </div>
     </navigation>

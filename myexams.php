@@ -70,6 +70,7 @@ if ($user_role == 'Executive Director') {
                 <link rel="stylesheet" href="./css/sidebar.css">
                 <link rel="stylesheet" href="./css/header.css">
                 <link rel="stylesheet" href="./css/homepage.css">
+                <link rel="stylesheet" href="./css/helpbutton.css">
                 <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
             </head>
 
@@ -181,11 +182,11 @@ if ($user_role == 'Executive Director') {
                     <div class="sidebar">
                         <div class="back_button">
                             <a href="em.php">
-                                <img src="img/back.png">
+                                <img src="img/back.png" style="padding-left: 5px">
                             </a>
                         </div>
-                        <div class="help_button">
-                            <img src="img/help.png">
+                        <div class="help_buttonme">
+                            <img src="img/help.png" alt="Help Icon">
                         </div>
                     </div>
                 </navigation>

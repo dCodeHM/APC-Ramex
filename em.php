@@ -52,6 +52,8 @@ if ($user_role == 'Executive Director') {
         <link rel="stylesheet" href="./css/sidebar.css">
         <link rel="stylesheet" href="./css/adminstyle.css">
         <link rel="stylesheet" href="./css/userset.css">
+        <link rel="stylesheet" href="./css/homepage.css">
+        <link rel="stylesheet" href="./css/helpbutton.css">
         
         <link rel="shortcut icon" type="x-icon" href="./img/icon.png">
     </head>
@@ -162,14 +164,15 @@ if ($user_role == 'Executive Director') {
 </ul>
 
 <div class="sidebar">
-    <div class="back_button">
+    <div class="back_button" style="padding-left: 5px">
         <a href="<?php echo $redirect_url; ?>">
         <img src="img/back.png">
         </a>
     </div>
-    <div class="help_button">
-        <img src="img/help.png">
+    <div class="help_buttonem">
+        <img src="img/help.png" alt="Help Icon">
     </div>
+
 </div>
 </navigation>
 
