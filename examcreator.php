@@ -26,6 +26,20 @@ if ($result) {
     $role = $row['role'];
 }
 
+// Assuming $user_data contains information about the user's role
+$user_role = $user_data['role'];
+
+// Check the user's role and set the redirection URL accordingly
+if ($user_role == 'Executive Director') {
+    $redirect_url = 'index.php'; // Redirect admin users to admin homepage
+} elseif ($user_role == 'Program Director') {
+    $redirect_url = 'index.php'; // Redirect professor users to professor homepage
+} elseif ($user_role == 'Professor') {
+    $redirect_url = 'professoruser.php'; // Redirect professor users to professor homepage
+} else {
+    $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
+}
+
 // Retrieve the course_topic_id from the URL
 $course_topic_id = isset($_GET['course_topic_id']) ? intval($_GET['course_topic_id']) : 0;
 
@@ -354,7 +368,7 @@ if (isset($_POST['save_exam'])) {
     <navigation class="navbar">
         <ul class="right-header">
             <li class="logo">
-                <a href="myexams.php"><img id="logo" src="img/logo.png"></a>
+                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
             </li>
         </ul>
 

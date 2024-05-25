@@ -26,6 +26,20 @@ if ($result) {
     $role = $row['role'];
 }
 
+// Assuming $user_data contains information about the user's role
+$user_role = $user_data['role'];
+
+// Check the user's role and set the redirection URL accordingly
+if ($user_role == 'Executive Director') {
+    $redirect_url = 'index.php'; // Redirect admin users to admin homepage
+} elseif ($user_role == 'Program Director') {
+    $redirect_url = 'index.php'; // Redirect professor users to professor homepage
+} elseif ($user_role == 'Professor') {
+    $redirect_url = 'professoruser.php'; // Redirect professor users to professor homepage
+} else {
+    $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
+}
+
 // require('topicfolder.php');
 
 // Retrieve the course code from the URL parameter
@@ -173,7 +187,7 @@ $courseFolderName = $courseCode;
 
         <div class="sidebar">
             <div class="back_button">
-                <a href="em.php">
+                <a href="myexams.php">
                     <img src="img/back.png">
                 </a>
             </div>
@@ -211,59 +225,56 @@ $courseFolderName = $courseCode;
             </section>
 
             <div class="popup-hidden">
-                <div class="popup_bg"></div>
-                <div class="Add_popup">
-                    <!-- Inside the form -->
-                    ...
-                    <form action="topicfolder.php" method="post">
-                        <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
-                        <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
+    <div class="popup_bg"></div>
+    <div class="Add_popup">
+        <!-- Inside the form -->
+        <form action="topicfolder.php" method="post" id="createExamForm">
+            <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
+            <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
 
-                        <div class="inputcolumn">
-                            <label class="label" for="course_topics">Course Topic</label>
-                            <input class="input" type="text" name="course_topics" placeholder="Your Course Topics" required><br />
-                        </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="easy_questions">Easy</label>
-                            <input class="input" type="number" name="easy_questions" placeholder="How many Easy question/s?" required><br />
-                        </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="normal_questions">Normal</label>
-                            <input class="input" type="number" name="normal_questions" placeholder="How many Normal question/s?" required><br />
-                        </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="hard_questions">Hard</label>
-                            <input class="input" type="number" name="hard_questions" placeholder="How many Hard question/s?" required><br />
-                        </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="total_questions">Total Questions</label>
-                            <input class="input" type="number" name="total_questions" placeholder="Total Questions" required><br />
-                        </div>
-
-                        <div class="inputcolumn">
-                            <label class="label" for="difficulty">Difficulty</label>
-                            <input class="input" type="number" name="difficulty" placeholder="Enter difficulty level" required><br />
-                        </div>
-
-                        <div class="inputcolumn">
-                            <label class="label" for="reuse_questions">Reuse Questions from Library</label>
-                            <select name="reuse_questions[]" multiple>
-                                <?php
-                                $sql = "SELECT * FROM question_library";
-                                $result = $conn->query($sql);
-                                while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='{$row['question_library_id']}'>{$row['question_text']} ({$row['difficulty']})</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-
-                        <button type="submit" name="create_exam">Create Exam</button>
-                    </form>
-                    ...
-
-                </div>
+            <div class="inputcolumn">
+                <label class="label" for="course_topics">Course Topic</label>
+                <input class="input" type="text" name="course_topics" placeholder="Your Course Topics" required><br />
             </div>
+            <div class="inputcolumn">
+                <label class="label" for="easy_questions">Easy</label>
+                <input class="input" type="number" name="easy_questions" placeholder="How many Easy question/s?" required><br />
+            </div>
+            <div class="inputcolumn">
+                <label class="label" for="normal_questions">Normal</label>
+                <input class="input" type="number" name="normal_questions" placeholder="How many Normal question/s?" required><br />
+            </div>
+            <div class="inputcolumn">
+                <label class="label" for="hard_questions">Hard</label>
+                <input class="input" type="number" name="hard_questions" placeholder="How many Hard question/s?" required><br />
+            </div>
+
+            <button type="submit" name="create_exam">Create Exam</button>
+            <!-- Cancel button -->
+            <button type="button" onclick="goBack()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function goBack() {
+        // Extract parameters from the current URL
+        var urlParams = new URLSearchParams(window.location.search);
+        var courseSubjectId = urlParams.get('course_subject_id');
+        var courseCode = urlParams.get('course_code');
+
+        // Construct the new URL
+        var url = 'http://localhost/topic.php';
+        url += '?course_subject_id=' + courseSubjectId;
+        url += '&course_code=' + courseCode;
+
+        // Redirect to the new URL
+        window.location.href = url;
+    }
+</script>
+
+
+
 
             <!--boxes-->
             <?php

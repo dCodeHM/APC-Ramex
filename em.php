@@ -163,7 +163,7 @@ if ($user_role == 'Executive Director') {
 
 <div class="sidebar">
     <div class="back_button">
-        <a href="index.php">
+        <a href="<?php echo $redirect_url; ?>">
         <img src="img/back.png">
         </a>
     </div>
