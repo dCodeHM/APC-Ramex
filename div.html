@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./css/examsettings.css">
+</head>
+<body>
+  <div class="main_container">
+    <div class="buttons">
+      <button id="btn_diva" class="button">DIV A</button>
+      <button id="btn_divb" class="button">DIV B</button>
+    </div>
+
+    <!-- div 1 -->
+    <div class="diva" id="diva">
+      Content A
+    </div>
+
+    <!-- div 2 -->
+    <div class="divb" id="divb">
+      Content B<br>
+      <!-- Add more content to demonstrate scrolling -->
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.<br>
+      Vivamus lacinia odio vitae vestibulum vestibulum.<br>
+      Cras venenatis euismod malesuada.<br>
+      Nullam quis risus eget urna mollis ornare vel eu leo.<br>
+      Integer posuere erat a ante venenatis dapibus posuere velit aliquet.<br>
+      Aenean lacinia bibendum nulla sed consectetur.<br>
+      Vestibulum id ligula porta felis euismod semper.<br>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.<br>
+      Vivamus lacinia odio vitae vestibulum vestibulum.<br>
+      Cras venenatis euismod malesuada.<br>
+      Nullam quis risus eget urna mollis ornare vel eu leo.<br>
+      Integer posuere erat a ante venenatis dapibus posuere velit aliquet.<br>
+      Aenean lacinia bibendum nulla sed consectetur.<br>
+      Vestibulum id ligula porta felis euismod semper.<br>
+    </div>
+  </div>
+
+  <script>
+    var btn_diva = document.getElementById("btn_diva");
+    var btn_divb = document.getElementById("btn_divb");
+    var diva = document.getElementById("diva");
+    var divb = document.getElementById("divb");
+
+    function activateButton(activeButton) {
+      // Remove the active class from all buttons
+      document.querySelectorAll('.button').forEach(button => {
+        button.classList.remove('active');
+      });
+      // Add the active class to the clicked button
+      activeButton.classList.add('active');
+    }
+
+    btn_diva.addEventListener("click", () => {
+      diva.style.display = "flex";
+      divb.style.display = "none";
+      activateButton(btn_diva);
+    });
+
+    btn_divb.addEventListener("click", () => {
+      diva.style.display = "none";
+      divb.style.display = "flex";
+      activateButton(btn_divb);
+    });
+
+    // Display DIV A and set button DIV A as active on initial load
+    window.addEventListener('load', () => {
+      diva.style.display = "flex";
+      divb.style.display = "none";
+      activateButton(btn_diva);
+    });
+  </script>
+</body>
+</html>

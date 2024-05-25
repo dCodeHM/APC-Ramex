@@ -3,6 +3,29 @@ session_start();
 include("config/db.php");
 include("config/functions.php");
 
+$user_data = check_login($conn);
+
+if (!isset($_SESSION['account_id'])) {
+    // Redirect to the login page if the user is not logged in
+    echo '<script>alert("User is not logged in, directing to login page.")</script>';
+    echo "<script> window.location.assign('login.php'); </script>";
+    exit();
+}
+
+$account_id = $_SESSION['account_id'];
+
+// Display the user-specific information
+$sql = "SELECT * FROM account WHERE account_id = $account_id";
+$result = mysqli_query($conn, $sql); // Replace with data from the database
+if ($result) {
+    $row = mysqli_fetch_array($result);
+    $user_email = $row['user_email'];
+    $pwd = $row['pwd'];
+    $first_name = $row['first_name'];
+    $last_name = $row['last_name'];
+    $role = $row['role'];
+}
+
 // Retrieve the course_topic_id from the URL
 $course_topic_id = isset($_GET['course_topic_id']) ? intval($_GET['course_topic_id']) : 0;
 
@@ -204,6 +227,9 @@ if (isset($_POST['save_exam'])) {
     <meta name="viewport" content="width=device-width">
     <meta name="author" content="APC AcademX">
     <title>APC AcademX | Welcome</title>
+    <link rel="stylesheet" href="./css/sidebar.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/examsettings.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
@@ -319,106 +345,189 @@ if (isset($_POST['save_exam'])) {
             box-sizing: border-box;
             padding: 0;
             margin: 0;
-
         }
     </style>
 </head>
 
 <body>
-    <nav class="bg-blue-900 text-white fixed top-0 w-full flex items-center justify-between py-2 px-4 z-50">
-
-        <ul class="flex items-center space-x-4">
-            <li>
-                <a href="index.php">
-                    <img id="logo" src="img/logo.png" class="h-12">
-                </a>
+        <!--OTHER CODE -->
+    <navigation class="navbar">
+        <ul class="right-header">
+            <li class="logo">
+                <a href="myexams.php"><img id="logo" src="img/logo.png"></a>
             </li>
         </ul>
 
-        <ul class="flex items-center space-x-4">
+        <ul class="left-header">
             <?php
-            // if (isset($_SESSION['user'])) {
-            //     $userData = $_SESSION['user'];
-            //     echo "<li class='username'><h3 class='text-xl font-medium'>$userData</h3></li>";
-            // } else {
-            //     echo "<li class='username'><h3 class='text-xl font-medium'>$row[first_name] $row[last_name]</h3></li>";
-            // }
+            // Check if the session variable exists
+            if (isset($_SESSION['user'])) {
+                // Retrieve data from the session variable
+                $userData = $_SESSION['user'];
+
+                // // Access specific data from the session variable
+                // $username = $userData['username'];
+                // $email = $userData['email'];
+
+                // Output the retrieved data in HTML text
+                echo "<li class='username'><h3>$userData</h3></li>";
+            } else {
+                // Session variable does not exist or user is not logged in
+                echo "<li class='username'><h3>$row[first_name] $row[last_name]</h3></li>";
+            }
             ?>
 
-            <li class="relative">
-                <a href="#" id="toggleNotif">
-                    <img id="notification" src="img/notification.png" class="h-8">
-                </a>
-                <ul class="absolute left-1/2 transform -translate-x-1/2 mt-2 bg-gray-200 rounded-lg shadow-lg w-80 hidden" id="notif-drop">
-                    <h3 class="text-gray-900 text-xl font-semibold px-4 py-2">Notifications</h3>
-                    <hr class="border-gray-400 mx-4">
-                    <div class="p-4">
-                        <div class="mb-4">
-                            <label class="block">
-                                <p class="text-sm font-medium text-gray-900">Sergio Peruda</p>
-                                <p class="text-xs text-gray-600">5/22/24</p>
+
+            <li class="notification">
+                <a href="#" id="toggleNotif"><img id="notification" src="img/notification.png"></a>
+                <ul class="notif-drop dropdown" id="notif-drop" style="display: none;">
+                    <h3>Notifications</h3>
+                    <hr>
+                    <div class="notif-list">
+                        <div class="notif">
+                            <label id="notifname">
+                                <p class="notifname">Sergio Peruda</p>
+                                <p class="notifdate">5/22/24</p>
                             </label>
-                            <label class="block">
-                                <p class="text-sm text-gray-700">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                            <label id="notifname">
+                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
                             </label>
-                        </div>
-                        <!-- Repeat the .mb-4 div for each notification -->
+                        </div>;
+                        <div class="notif">
+                            <label id="notifname">
+                                <p class="notifname">Sergio Peruda</p>
+                                <p class="notifdate">5/22/24</p>
+                            </label>
+                            <label id="notifname">
+                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                            </label>
+                        </div>;
+                        <div class="notif">
+                            <label id="notifname">
+                                <p class="notifname">Sergio Peruda</p>
+                                <p class="notifdate">5/22/24</p>
+                            </label>
+                            <label id="notifname">
+                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                            </label>
+                        </div>;
+                        <div class="notif">
+                            <label id="notifname">
+                                <p class="notifname">Sergio Peruda</p>
+                                <p class="notifdate">5/22/24</p>
+                            </label>
+                            <label id="notifname">
+                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                            </label>
+                        </div>;
+                        <div class="notif">
+                            <label id="notifname">
+                                <p class="notifname">Sergio Peruda</p>
+                                <p class="notifdate">5/22/24</p>
+                            </label>
+                            <label id="notifname">
+                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                            </label>
+                        </div>;
+                        <div class="notif">
+                            <label id="notifname">
+                                <p class="notifname">Sergio Peruda</p>
+                                <p class="notifdate">5/22/24</p>
+                            </label>
+                            <label id="notifname">
+                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
+                            </label>
+                        </div>;
                     </div>
                 </ul>
             </li>
 
-            <li class="relative">
-                <a href="#" id="toggleUser">
-                    <img id="profile" src="img/profile.png" class="h-8">
-                </a>
-                <ul class="absolute left-1/2 transform -translate-x-1/2 mt-2 bg-gray-200 rounded-lg shadow-lg w-56 hidden" id="user-drop">
-                    <h3 class="text-gray-900 text-xl font-semibold px-4 py-2">Admin</h3>
-                    <p class="text-gray-700 text-sm px-4">School Role</p>
-                    <a href="userprofile.php" class="block text-center text-blue-600 hover:underline py-2">Settings</a>
-                    <a href="logout.php" class="block text-center text-red-600 hover:underline py-2">Logout</a>
+            <li class="user">
+                <a href="#" id="toggleUser"><img id="profile" src="img/profile.png"></a>
+                <ul class="user-d   rop dropdown" id="user-drop" style="display: none;">
+                    <h3>Admin</h3>
+                    <p>School Role</p>
+                    <a href="adminusersettings.php" class="settings"><span>Settings</span></a>
+                    <a href="logout.php" class="logout"><span>Logout</span></a>
                 </ul>
             </li>
         </ul>
-    </nav>
 
-    <div class="fixed top-[0px] pt-[calc(64px+32px)] overflow-y-scroll left-0 flex flex-col space-y-4 bg-gray-700 text-white h-full py-8 px-4 shadow-lg">
-        <div class="back_button">
-            <a href="index.php">
-                <img src="img/back.png" class="h-8">
-            </a>
-        </div>
-        <div class="help_button">
-            <img src="img/help.png" class="h-8">
-        </div>
-    </div>
-
-    <div class="fixed top-[0px] pt-[calc(64px+32px)] left-[64px] bg-gray-500 text-white h-full max-w-[340px] py-8 px-8 overflow-y-scroll">
-        <div class="space-y-4">
-            <div class="question_library text-center font-semibold text-lg">Question Library</div>
-            <div class="exam_settings text-center font-semibold text-lg">Exam Settings</div>
-            <div class="topic_questions">
-                <p class="topic_title text-yellow-400 font-semibold">V Processor Management</p>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg" onclick="insertQuestion(event)">
-                    <p>What event occurs when no space is enough for any waiting process, even if partitions are available?</p>
-                </div>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg mt-4" onclick="insertQuestion(event)">
-                    <p>This is the term used for base register under MMU.</p>
-                </div>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg mt-4" onclick="insertQuestion(event)">
-                    <p>What strategy produces the largest leftover hole, which may be more useful than the smallest leftover hole?</p>
-                </div>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg mt-4" onclick="insertQuestion(event)">
-                    <p>This item keeps in memory only those instructions and data that are needed at any given time.</p>
-                </div>
-                <div class="questions cursor-pointer bg-white text-black p-4 rounded-lg shadow-lg mt-4" onclick="insertQuestion(event)">
-                    <p>It is the moving of process upwards in the main memory so that the free memory locations may be grouped together in one large block.</p>
-                </div>
+        <div class="sidebar">
+            <div class="back_button">
+                <a href="em.php">
+                    <img src="img/back.png">
+                </a>
             </div>
-            <div class="topic_questions">
-                <p class="topic_title text-yellow-400 font-semibold">> Operating System Fundamentals</p>
+            <div class="help_button">
+                <img src="img/help.png">
             </div>
         </div>
+    </navigation>
+
+
+    <!-- QUESTION Library -->
+
+    <div class="main_container">
+    <div class="buttons">
+        <button id="btn_diva" class="button">
+            <img src="./img/book.png" alt="Icon"> Question Library
+        </button>
+        <button id="btn_divb" class="button">
+            <img src="./img/examsettings.png" alt="Icon"> Exam Settings
+        </button>
     </div>
+
+    <!-- div 1 -->
+    <div class="diva" id="diva">
+      Content A
+    </div>
+
+    <!-- div 2 -->
+    <div class="divb" id="divb">
+        <div class = "settingsbuttonONE">
+            <button id="previewBTN" class ="prevBTN">1</button>
+            <button id="downloadBTN" class ="downBTN">2</button>
+            <button id="savedButton" class ="savedBTN">3</button>
+            <button id="uploadBTN" class ="uploadBTN">4</button>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    var btn_diva = document.getElementById("btn_diva");
+    var btn_divb = document.getElementById("btn_divb");
+    var diva = document.getElementById("diva");
+    var divb = document.getElementById("divb");
+
+    function activateButton(activeButton) {
+      // Remove the active class from all buttons
+      document.querySelectorAll('.button').forEach(button => {
+        button.classList.remove('active');
+      });
+      // Add the active class to the clicked button
+      activeButton.classList.add('active');
+    }
+
+    btn_diva.addEventListener("click", () => {
+      diva.style.display = "flex";
+      divb.style.display = "none";
+      activateButton(btn_diva);
+    });
+
+    btn_divb.addEventListener("click", () => {
+      diva.style.display = "none";
+      divb.style.display = "flex";
+      activateButton(btn_divb);
+    });
+
+    // Display DIV A and set button DIV A as active on initial load
+    window.addEventListener('load', () => {
+      diva.style.display = "flex";
+      divb.style.display = "none";
+      activateButton(btn_diva);
+    });
+  </script>
 
     <section class="ml-[400px] mt-[70px] px-20 py-10">
         <form class="w-full" method="POST" action="" enctype="multipart/form-data">
