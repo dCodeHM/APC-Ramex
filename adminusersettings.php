@@ -39,7 +39,7 @@ if ($gotResults) {
                 <link rel="stylesheet" href="css/boxset.css">
                 <link rel="stylesheet" href="css/settings.css">
                 <script defer src="./usersettingAction.js"></script>
-                <script src="https://cdn.tailwindcss.com"></script>
+                <script defer src="./js/css.js"></script>
 
             </head>
 

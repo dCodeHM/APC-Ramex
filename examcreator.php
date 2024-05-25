@@ -655,7 +655,10 @@ if (isset($_POST['save_exam'])) {
     <section class="ml-[400px] mt-[70px] px-20 py-10">
         <form class="w-full" method="POST" action="" enctype="multipart/form-data">
             <h2 class="font-semibold mb-2">Exam Details</h2>
-            <input class="mb-4 outline outline-zinc-600 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
+            <!-- <input class="mb-4 outline outline-zinc-600 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>"> -->
+            <div class="mb-4 outline outline-zinc-600 outline-1 py-2 px-4 rounded-lg">
+                <?php echo htmlspecialchars($exam['exam_name']); ?>
+            </div>
             <h3 class="w-full font-semibold mb-2">Questions
                 <span class="text-base font-normal text-gray-400 ml-1">Total Questions: <?php echo $questions_result->num_rows; ?></span>
             </h3>
