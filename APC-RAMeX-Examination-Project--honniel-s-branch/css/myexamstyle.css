@@ -112,19 +112,18 @@ header #branding #emactive {
 /* for the pop up */
 .popup-hidden {
     display: none;
+}   
 
-}
-
-.popup_bg {
-    display: block;
+THIS IS FOR THE COLORIZATION OF THE POPUP BACKGROUND
+/* .popup_bg { */
+    /* display: block;
     position: relative;
-    background-color: #343A40;
-    opacity: 85%;
+    opacity: 100%;
     height: 100%;
     width: 100%;
     z-index: 10;
-    overflow-x: hidden;
-}
+    overflow-x: hidden; */
+/* } */
 
 /*Add Course popup*/
 
@@ -174,7 +173,7 @@ header #branding #emactive {
 }
 
 .prog {
-    font: Noto Sans;
+
     font-size: 0.85rem;
     width: 10rem;
     height: 1rem;
@@ -254,7 +253,7 @@ header #branding #emactive {
     cursor: pointer;
 }
 
-#cancel {
+/* #cancel {
     width: 200px;
     height: 55px;
     right: 14rem;
@@ -273,7 +272,7 @@ header #branding #emactive {
     background: #EDEDED;
     color: #343A40;
     width: 100%;
-}
+} */
 
 /* searchbar */
 .searchbar {

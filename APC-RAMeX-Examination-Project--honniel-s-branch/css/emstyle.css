@@ -1,3 +1,11 @@
+.body{
+  font: 15px/1.5 Arial, Helvetica, 'Noto Sans', sans-serif !important;
+  padding: 0;
+  margin: 0;
+  background-color: #f4f4f4;
+  align-content: center;
+}
+
 header #branding #emactive{
   margin-top: 10px;
   width: 65px;
@@ -101,10 +109,6 @@ header #branding #emactive{
   padding: 15px;
 }
 
-.inputcolumn {
-  display: flex;
-}
-
 .label {
   color: #334fec;
   font-size: 15px;
@@ -153,35 +157,19 @@ header #branding #emactive{
   position: fixed;
   top: 50%;
   left: 50%;
+  width: 400px;
   transform: translate(-50%, -50%);
   background-color: white;
-  padding: 20px;
+  /* padding: 50px; */
+  padding-right: 40px;
+  padding-left: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   border-radius: 5px;
   z-index: 10000;
   /* Make sure the popup is above the overlay */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   /* Add a shadow for depth */
-}
-
-.save {
-  width: 200px;
-  height: 55px;
-  right: 1rem;
-  bottom: 1rem;
-  position: absolute;
-  background: #343A40;
-  color: #FFFFFF;
-  text-decoration: bold;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
-  cursor: pointer;
-
-}
-
-.save:hover {
-  color: #334fec;
-  background-color: #dfdfdf;
-  border-radius: 10px;
 }
 
 .update {
@@ -204,31 +192,61 @@ header #branding #emactive{
   border-radius: 10px;
 }
 
-.cancelbutton {
-  width: 100%;
-  text-align: center;
-  text-decoration: none;
+.actionbuttons {
+  display: flex;
+  justify-content:end; /* Center the button horizontally */
+  align-items: center; /* Center the button vertically */
+  height: 100%; /* Ensure the div takes the full height if necessary */
+}
 
+.button-gap {
+  margin: 0 10px; /* Adjust the margin for the desired gap */
+}
+
+.save {
+  padding: 8px 35px;
+  font-size: 16px;
+  color: white;
+  background-color: #343A40; /* Red background */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none; /* Remove underline from text */
+  display: inline-block; /* Ensure the button is inline-block */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+
+}
+
+.save:hover {
+    background-color: #4c4d4f; /* Darker red on hover */
 }
 
 .cancel {
-  width: 200px;
-  height: 55px;
-  right: 14rem;
-  bottom: 1rem;
-  position: absolute;
-  background: #EDEDED;
-  color: #343A40;
-  text-decoration: bold;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  padding: 8px 35px;
+  font-size: 16px;
+  color: rgb(0, 0, 0);
+  background-color: #f0f0f0; /* Red background */
+  border: none;
   border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none; /* Remove underline from text */
+  display: inline-block; /* Ensure the button is inline-block */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 }
 
-.cancel.hover {
-  text-decoration: none;
-  background: #EDEDED;
-  color: #343A40;
-  width: 100%;
+.cancel:hover {
+  background-color: #928f8f; /* Darker red on hover */
 }
-</style>
+
+.folderIcon {
+  width: 20%;  /* Set the width to 20% of its container */
+  max-width: 100%;  /* Set a maximum width to control the size */
+  height: auto;  /* Maintain the aspect ratio */
+  image-rendering: -webkit-optimize-contrast; /* WebKit (Safari, Chrome) */
+  image-rendering: optimize-contrast; /* CSS4 and Firefox */
+}
+

@@ -222,9 +222,11 @@ if ($user_role == 'Executive Director') {
                             <div class="system-list">
 
                             </div>
+                            <!-- HIDDEN IS TO NOT DISPLAY IMMEDIATELY THE PLUS SIGN -->
                             <div class="popup-hidden">
-                                <div class="popup_bg"></div>
-                                <div class="Add_popup">
+                                <!-- POPUP-BG - this is for the black background behind the pop-up-hidden -->
+                                <div class="popup_bg">
+                                    <div class="Add_popup" >
                                     <form action="coursefolder.php" method="post">
                                         <!-- Add a hidden input field to indicate action -->
                                         <input type="hidden" name="action" id="action" value="add">
@@ -232,9 +234,12 @@ if ($user_role == 'Executive Director') {
                                         <input type="hidden" name="update" value="<?php echo isset($_GET['update']) ? $_GET['update'] : 'false'; ?>">
 
                                         <?php if ($update == true) : ?>
-                                            <p class="heading">Update Course Folder Information<img src="img/Folder.png" style="margin: 5px; width: 4rem;"></p>
+                                            <p class="heading">Update Course Folder Information<img src="img/folder.png"></p>
                                         <?php else : ?>
-                                            <p class="heading">Create a Course Folder<img src="img/Folder.png" style="margin: 5px; width: 4rem;"></p>
+                                            <div style="display: flex; align-items: center">
+                                            <img src="img/folder.png">
+                                            <p class="heading">Create a Course Folder</p>
+                                            </div>
                                         <?php endif; ?>
 
                                         <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
@@ -242,7 +247,8 @@ if ($user_role == 'Executive Director') {
                                         <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
 
                                         <div class="inputcolumn">
-                                            <label class="label" for="program_name">Program Name</label><br />
+                                            <div>
+                                            <label class="labelName" for="program_name">Program Name</label><br />
                                             <select class="input" name="program_name" required>
                                                 <option value="" disabled selected>None Selected</option>
                                                 <?php
@@ -260,11 +266,13 @@ if ($user_role == 'Executive Director') {
                                                 }
                                                 ?>
                                             </select>
-                                            <br />
+                                            </div>
+                                            <br/>
                                         </div>
 
                                         <div class="inputcolumn">
-                                            <label class="label" for="course_code">Course Code</label>
+
+                                            <label class="labelName" for="course_code">Course Code</label>
                                             <select class="input" name="course_code" required>
                                                 <option value="" disabled selected>None Selected</option>
                                                 <?php
@@ -282,6 +290,7 @@ if ($user_role == 'Executive Director') {
                                                 }
                                                 ?>
                                             </select>
+                                        
                                         </div>
 
                                         <input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
@@ -290,12 +299,17 @@ if ($user_role == 'Executive Director') {
                                         <?php if ($update == true) : ?>
                                             <button class="update" type="submit" name="update">Update</button>
                                         <?php else : ?>
-                                            <button class="save" type="submit" name="save">Create</button>
-                                        <?php endif; ?>
-                                        <div class="cancelbutton">
+                                            <div class="actionbuttons">
+                                                <button class="cancel" onclick="window.location.href='myexams.php'" name = "cancel">Cancel</button>
+                                                <span class="button-gap"></span> <!-- Add a span for the gap -->
+                                                <button class="save" type="submit" name="save">Create</button>
+                                                <?php endif; ?>      
+                                            </div>
+                                        <!-- <div class="cancelbutton">
                                             <a class="cancel" href="myexams.php">Cancel</a>
-                                        </div>
+                                        </div> -->
                                     </form>
+                                </div>
                                 </div>
                             </div>
                             <!--line-->

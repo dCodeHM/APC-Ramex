@@ -19,8 +19,8 @@
   display: flex;
 }
 
-.label {
-  color: #334fec;
+.labelName {
+  color: #343A40;
   font-size: 15px;
   width: 50%;
 }
@@ -51,31 +51,19 @@
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
-.popup_bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  /* Adjust the opacity to darken/lighten */
-  z-index: 9999;
-  /* Make sure the overlay is above everything else */
-}
-
-.Add_popup {
-  position: fixed;
+/* .Add_popup { */
+  /* position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
   padding: 20px;
   border-radius: 5px;
-  z-index: 10000;
+  z-index: 10000; */
   /* Make sure the popup is above the overlay */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); */
   /* Add a shadow for depth */
-}
+/* } */
 
 .save {
   width: 200px;
@@ -118,30 +106,11 @@
   border-radius: 10px;
 }
 
-.cancelbutton {
+.inputcolumn{
   width: 100%;
-  text-align: center;
-  text-decoration: none;
-
+  min-width: 100%;
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
 }
 
-.cancel {
-  width: 200px;
-  height: 55px;
-  right: 14rem;
-  bottom: 1rem;
-  position: absolute;
-  background: #EDEDED;
-  color: #343A40;
-  text-decoration: bold;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.cancel.hover {
-  text-decoration: none;
-  background: #EDEDED;
-  color: #343A40;
-  width: 100%; 
-}
