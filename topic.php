@@ -26,6 +26,20 @@ if ($result) {
     $role = $row['role'];
 }
 
+// Assuming $user_data contains information about the user's role
+$user_role = $user_data['role'];
+
+// Check the user's role and set the redirection URL accordingly
+if ($user_role == 'Executive Director') {
+    $redirect_url = 'index.php'; // Redirect admin users to admin homepage
+} elseif ($user_role == 'Program Director') {
+    $redirect_url = 'index.php'; // Redirect professor users to professor homepage
+} elseif ($user_role == 'Professor') {
+    $redirect_url = 'professoruser.php'; // Redirect professor users to professor homepage
+} else {
+    $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
+}
+
 // require('topicfolder.php');
 
 // Retrieve the course code from the URL parameter
@@ -62,6 +76,7 @@ $courseFolderName = $courseCode;
     <link rel="stylesheet" href="./css/sidebar.css">
     <link rel="stylesheet" href="./css/header.css">
     <link rel="stylesheet" href="./css/homepage.css">
+    <link rel="stylesheet" href="./css/helpbutton.css">
     <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./myexams.js"></script>
@@ -72,7 +87,7 @@ $courseFolderName = $courseCode;
     <navigation class="navbar">
         <ul class="right-header">
             <li class="logo">
-                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
+                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/APC AcademX Logo.png"></a>
             </li>
         </ul>
 
@@ -173,12 +188,12 @@ $courseFolderName = $courseCode;
 
         <div class="sidebar">
             <div class="back_button">
-                <a href="em.php">
+                <a href="myexams.php">
                     <img src="img/back.png">
                 </a>
             </div>
-            <div class="help_button">
-                <img src="img/help.png">
+            <div class="help_buttonte">
+                <img src="img/help.png" alt="Help Icon">
             </div>
         </div>
     </navigation>
@@ -203,68 +218,65 @@ $courseFolderName = $courseCode;
             <!-- Search bar -->
             <section class="flex gap-4 items-center mb-6">
                 <div class="outline outline-1 outline-zinc-200 rounded-lg w-full">
-                    <input type="text" class="border-transparent p-4 w-full" placeholder="Search here...">
+                    <input type="text" class="border-transparent p-4 w-full"  id = "topicSearch" placeholder="Search here...">
                 </div>
+<!-- 
+                <div class="searchicon" style="position:relative; left: 45%">
+                        <input type="text" class="searchbar" id="topicSearch" placeholder="Search topics...">
+                    </div> -->
                 <button class="max-w-fit flex gap-4 items-center bg-[#293A82] py-4 px-6 rounded-xl text-white">
                     Search <i class="fa-solid fa-search"></i>
                 </button>
             </section>
 
             <div class="popup-hidden">
-                <div class="popup_bg"></div>
-                <div class="Add_popup">
-                    <!-- Inside the form -->
-                    ...
-                    <form action="topicfolder.php" method="post">
-                        <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
-                        <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
+    <div class="popup_bg"></div>
+    <div class="Add_popup">
+        <!-- Inside the form -->
+        <form action="topicfolder.php" method="post" id="createExamForm">
+            <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
+            <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
 
-                        <div class="inputcolumn">
-                            <label class="label" for="course_topics">Course Topic</label>
-                            <input class="input" type="text" name="course_topics" placeholder="Your Course Topics" required><br />
-                        </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="easy_questions">Easy</label>
-                            <input class="input" type="number" name="easy_questions" placeholder="How many Easy question/s?" required><br />
-                        </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="normal_questions">Normal</label>
-                            <input class="input" type="number" name="normal_questions" placeholder="How many Normal question/s?" required><br />
-                        </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="hard_questions">Hard</label>
-                            <input class="input" type="number" name="hard_questions" placeholder="How many Hard question/s?" required><br />
-                        </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="total_questions">Total Questions</label>
-                            <input class="input" type="number" name="total_questions" placeholder="Total Questions" required><br />
-                        </div>
-
-                        <div class="inputcolumn">
-                            <label class="label" for="difficulty">Difficulty</label>
-                            <input class="input" type="number" name="difficulty" placeholder="Enter difficulty level" required><br />
-                        </div>
-
-                        <div class="inputcolumn">
-                            <label class="label" for="reuse_questions">Reuse Questions from Library</label>
-                            <select name="reuse_questions[]" multiple>
-                                <?php
-                                $sql = "SELECT * FROM question_library";
-                                $result = $conn->query($sql);
-                                while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='{$row['question_library_id']}'>{$row['question_text']} ({$row['difficulty']})</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-
-                        <button type="submit" name="create_exam">Create Exam</button>
-                    </form>
-                    ...
-
-                </div>
+            <div class="inputcolumn">
+                <label class="label" for="course_topics">Course Topic</label>
+                <input class="input" type="text" name="course_topics" placeholder="Your Course Topics" required><br />
+            </div>
+            <div class="inputcolumn">
+                <label class="label" for="easy_questions">Easy</label>
+                <input class="input" type="number" name="easy_questions" placeholder="How many Easy question/s?" required><br />
+            </div>
+            <div class="inputcolumn">
+                <label class="label" for="normal_questions">Normal</label>
+                <input class="input" type="number" name="normal_questions" placeholder="How many Normal question/s?" required><br />
+            </div>
+            <div class="inputcolumn">
+                <label class="label" for="hard_questions">Hard</label>
+                <input class="input" type="number" name="hard_questions" placeholder="How many Hard question/s?" required><br />
             </div>
 
+            <button type="submit" name="create_exam">Create Exam</button>
+            <!-- Cancel button -->
+            <button type="button" onclick="goBack()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function goBack() {
+        // Extract parameters from the current URL
+        var urlParams = new URLSearchParams(window.location.search);
+        var courseSubjectId = urlParams.get('course_subject_id');
+        var courseCode = urlParams.get('course_code');
+
+        // Construct the new URL
+        var url = 'http://localhost/ramex/topic.php';
+        url += '?course_subject_id=' + courseSubjectId;
+        url += '&course_code=' + courseCode;
+
+        // Redirect to the new URL
+        window.location.href = url;
+    }
+</script>
             <!--boxes-->
             <?php
 
@@ -279,13 +291,12 @@ $courseFolderName = $courseCode;
                 <p class="header">You have no topic folders.</p>
 
             <?php } else { ?>
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-4" >
                     <?php while ($row = $result->fetch_assoc()) : ?>
-                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6">
+                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6" id = "CourseNameBox">
                             <!-- Topics -->
-                            <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>&exam_id=
-                            ">
-                                <h2 class="font-semibold text-4xl text-zinc-700">
+                            <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>">
+                                <h2 class="font-semibold text-4xl text-zinc-700" id="topicBox">
                                     <?php echo $row['course_topics']; ?></h2>
                                 <!-- Date Created -->
                                 <p class="text-md text-gray-500">Date Created: <?php echo $row['date_created']; ?></p>
@@ -351,6 +362,22 @@ $courseFolderName = $courseCode;
         // After logging, you can submit the form if needed:
         // event.target.submit();
     }
+
+document.getElementById('topicSearch').addEventListener('input', function() {
+    const searchQuery = this.value.toLowerCase().trim();
+    const courseBoxes = document.querySelectorAll('topicBOX'); // Select all course boxes
+    // #topicBox > div
+    courseBoxes.forEach(courseBox => {
+        const courseName = courseBox.querySelector('CourseNameBox').textContent.toLowerCase();
+        // #CourseNameBox
+        // Check if the course name contains the search query
+        if (courseName.includes(searchQuery)) {
+            courseBox.style.display = 'flex'; // Show the course box
+        } else {
+            courseBox.style.display = 'none'; // Hide the course box
+        }
+    });
+});
 </script>
 <?php
 ?>

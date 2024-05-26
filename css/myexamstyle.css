@@ -27,12 +27,11 @@ header #branding #emactive {
 }
 
 .adminmehead {
-    width: 20%;
-    text-align: right;
-    margin-left: 0;
+    width: 100%;
+    text-align: center;
 
     p {
-        margin: auto;
+        margin-left: 20px;
     }
 }
 
@@ -50,6 +49,7 @@ header #branding #emactive {
     font-size: 46px;
     font-weight: 700;
     text-align: left;
+    size: 50px;
     color: #343A40;
 }
 
@@ -112,19 +112,18 @@ header #branding #emactive {
 /* for the pop up */
 .popup-hidden {
     display: none;
+}   
 
-}
-
-.popup_bg {
-    display: block;
+THIS IS FOR THE COLORIZATION OF THE POPUP BACKGROUND
+/* .popup_bg { */
+    /* display: block;
     position: relative;
-    background-color: #343A40;
-    opacity: 85%;
+    opacity: 100%;
     height: 100%;
     width: 100%;
     z-index: 10;
-    overflow-x: hidden;
-}
+    overflow-x: hidden; */
+/* } */
 
 /*Add Course popup*/
 
@@ -174,7 +173,7 @@ header #branding #emactive {
 }
 
 .prog {
-    font: Noto Sans;
+
     font-size: 0.85rem;
     width: 10rem;
     height: 1rem;
@@ -254,7 +253,7 @@ header #branding #emactive {
     cursor: pointer;
 }
 
-#cancel {
+/* #cancel {
     width: 200px;
     height: 55px;
     right: 14rem;
@@ -273,24 +272,22 @@ header #branding #emactive {
     background: #EDEDED;
     color: #343A40;
     width: 100%;
-}
+} */
 
 /* searchbar */
 .searchbar {
     width: 400px;
-    min-width: 100%;
-    min-height: 100%;
+    height: 45px;
     padding: 12px 20px;
-    margin: 8px 0;
-    left: 100px;
     box-sizing: border-box;
     border: 3px solid #000000;
     -webkit-transition: 0.5s;
-    transition: 0.5s;
+    transition: 0.5s;   
     outline: none;
     max-width: 100%;
     max-height: 100%;
-    border-radius: 5px;
+    border-radius: 10px;
+    margin-right: 90px;
 }
 
 /* for the dots */

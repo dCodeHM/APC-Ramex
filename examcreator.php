@@ -30,6 +30,20 @@ if ($result) {
     $role = $row['role'];
 }
 
+// Assuming $user_data contains information about the user's role
+$user_role = $user_data['role'];
+
+// Check the user's role and set the redirection URL accordingly
+if ($user_role == 'Executive Director') {
+    $redirect_url = 'index.php'; // Redirect admin users to admin homepage
+} elseif ($user_role == 'Program Director') {
+    $redirect_url = 'index.php'; // Redirect professor users to professor homepage
+} elseif ($user_role == 'Professor') {
+    $redirect_url = 'professoruser.php'; // Redirect professor users to professor homepage
+} else {
+    $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
+}
+
 // Retrieve the course_topic_id from the URL
 $course_topic_id = isset($_GET['course_topic_id']) ? intval($_GET['course_topic_id']) : 0;
 
@@ -282,6 +296,7 @@ if (isset($_POST['save_exam'])) {
     <link rel="stylesheet" href="./css/sidebar.css">
     <link rel="stylesheet" href="./css/header.css">
     <link rel="stylesheet" href="./css/examsettings.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/helpbutton.css?v=<?php echo time(); ?>">
 
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -296,7 +311,7 @@ if (isset($_POST['save_exam'])) {
     <navigation class="navbar">
         <ul class="right-header">
             <li class="logo">
-                <a href="myexams.php"><img id="logo" src="img/logo.png"></a>
+                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/APC AcademX Logo.png"></a>
             </li>
         </ul>
 
@@ -401,8 +416,8 @@ if (isset($_POST['save_exam'])) {
                     <img src="img/back.png">
                 </a>
             </div>
-            <div class="help_button">
-                <img src="img/help.png">
+            <div class="help_buttonec">
+                <img src="img/help.png" alt="Help Icon">
             </div>
         </div>
     </navigation>
@@ -423,14 +438,136 @@ if (isset($_POST['save_exam'])) {
         <div class="diva" id="diva">
             Content A
         </div>
+    <!-- div 2 -->
+    <div class="divb" id="divb">
+        <div class = "settingsbuttonONE">
+            <style>
+            body{
+                font: 15px/1.5 Arial, Helvetica, sans-serif;
+            }
+            .examrule {
+                width: 100%;
+                color: black;
+                background-color: white;
+                height: 400px;
+                padding: 20px; /* Adjusted padding for better spacing */
+                margin: 0 auto; /* Center the div if necessary */
+                overflow: auto; /* Adds scrollbar if content exceeds the div */
+                box-sizing: border-box; /* Includes padding and border in the width and height */
+                font: 14.1px/1.5 Arial, Helvetica, sans-serif;
+                border-radius: 7px;
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
 
-        <!-- DIV 2 -->
-        <div class="divb" id="divb">
-            <div class="settingsbuttonONE">
-                <button id="previewBTN" class="prevBTN">1</button>
-                <button id="downloadBTN" class="downBTN">2</button>
-                <button id="savedButton" class="savedBTN">3</button>
-                <button id="uploadBTN" class="uploadBTN">4</button>
+            .examrule h1 {
+                text-align: center;
+                margin-top: 0; /* Removes default top margin */
+                padding-bottom: 10px; /* Adds space below the title */
+            }
+
+            .examrule p {
+                margin: 10px 0; /* Adds vertical spacing between paragraphs */
+            }
+
+            .button-container{
+                display: flex;
+                justify-content: center; /* Centers the buttons horizontally */
+                align-items: center; /* Centers the buttons vertically if needed */
+            }
+        
+                .prevBTN {
+                width: 100%;
+                background-color: #FFFFFF;
+                border: none;
+                color: black;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                font-size: 16px;
+                margin: 4px 2px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .downBTN {
+                width: 100%;
+                background-color: #F3C44C; 
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                font-size: 16px;
+                margin: 4px 2px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .savedBTN {
+                background-color: #F3C44C; 
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                width: 100%;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .uploadBTN {
+                background-color: #F3C44C; 
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                width: 100%;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            button:hover {
+                opacity: 0.8;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            }
+            </style>
+
+            <div class="examrule">
+                <h1><b>Exam Rules</b></h1>
+                <p><b>1.</b> Read, understand, and follow every specified direction carefully.</p>
+                <p><b>2.</b> Avoid using your cellular phone during exam proper.</p>
+                <p><b>3.</b> This exam is CLOSED NOTES.</p>
+                <p><b>4.</b> Shade your answer on the answer sheet.</p>
+                <p><b>5.</b> NO ERASURE. Erasure means wrong.</p>
+                <p><b>6.</b> Strictly NO CHEATING. Anybody caught cheating will receive a FAILING MARK.</p>
+            </div>
+            <div class="button-container">
+                <button id="previewBTN" class ="prevBTN">Preview</button>
+                <button id="downloadBTN" class ="downBTN">Download</button>
+            </div>
+            
+            <div class = "button-container-lower">
+            <button id="savedBTN" class ="savedBTN">Save Progress</button>
+            </div>
+            <div class = "button-container-lower">
+            <button id="uploadBTN" class ="uploadBTN">Upload to Exam Library</button>
+
             </div>
         </div>
     </div>
@@ -438,7 +575,6 @@ if (isset($_POST['save_exam'])) {
     <section class="ml-[400px] mt-[70px] px-20 py-10">
         <form class="w-full" method="POST" enctype="multipart/form-data">
             <h2 class="font-semibold mb-2">Exam Details</h2>
-
             <input class="mb-4 outline w-full outline-zinc-300 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
             <h3 class="w-full font-semibold mb-2">Questions
                 <span class="text-base font-normal text-gray-400 ml-1" id="total-questions"></span>
