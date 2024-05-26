@@ -87,7 +87,7 @@ $courseFolderName = $courseCode;
     <navigation class="navbar">
         <ul class="right-header">
             <li class="logo">
-                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
+                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/APC AcademX Logo.png"></a>
             </li>
         </ul>
 
@@ -218,8 +218,12 @@ $courseFolderName = $courseCode;
             <!-- Search bar -->
             <section class="flex gap-4 items-center mb-6">
                 <div class="outline outline-1 outline-zinc-200 rounded-lg w-full">
-                    <input type="text" class="border-transparent p-4 w-full" placeholder="Search here...">
+                    <input type="text" class="border-transparent p-4 w-full"  id = "topicSearch" placeholder="Search here...">
                 </div>
+<!-- 
+                <div class="searchicon" style="position:relative; left: 45%">
+                        <input type="text" class="searchbar" id="topicSearch" placeholder="Search topics...">
+                    </div> -->
                 <button class="max-w-fit flex gap-4 items-center bg-[#293A82] py-4 px-6 rounded-xl text-white">
                     Search <i class="fa-solid fa-search"></i>
                 </button>
@@ -287,12 +291,12 @@ $courseFolderName = $courseCode;
                 <p class="header">You have no topic folders.</p>
 
             <?php } else { ?>
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-4" >
                     <?php while ($row = $result->fetch_assoc()) : ?>
-                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6">
+                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6" id = "CourseNameBox">
                             <!-- Topics -->
                             <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>">
-                                <h2 class="font-semibold text-4xl text-zinc-700">
+                                <h2 class="font-semibold text-4xl text-zinc-700" id="topicBox">
                                     <?php echo $row['course_topics']; ?></h2>
                                 <!-- Date Created -->
                                 <p class="text-md text-gray-500">Date Created: <?php echo $row['date_created']; ?></p>
@@ -357,6 +361,22 @@ $courseFolderName = $courseCode;
         // After logging, you can submit the form if needed:
         // event.target.submit();
     }
+
+document.getElementById('topicSearch').addEventListener('input', function() {
+    const searchQuery = this.value.toLowerCase().trim();
+    const courseBoxes = document.querySelectorAll('topicBOX'); // Select all course boxes
+    // #topicBox > div
+    courseBoxes.forEach(courseBox => {
+        const courseName = courseBox.querySelector('CourseNameBox').textContent.toLowerCase();
+        // #CourseNameBox
+        // Check if the course name contains the search query
+        if (courseName.includes(searchQuery)) {
+            courseBox.style.display = 'flex'; // Show the course box
+        } else {
+            courseBox.style.display = 'none'; // Hide the course box
+        }
+    });
+});
 </script>
 <?php
 ?>

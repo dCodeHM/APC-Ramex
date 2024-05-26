@@ -48,7 +48,7 @@ if ($gotResults) {
                 <navigation class="navbar">
                     <ul class="right-header">
                         <li class="logo">
-                            <a href="professoruser.php"><img id="logo" src="img/logo.png"></a>
+                            <a href="professoruser.php"><img id="logo" src="img/APC AcademX Logo.png"></a>
                         </li>
                     </ul>
 
