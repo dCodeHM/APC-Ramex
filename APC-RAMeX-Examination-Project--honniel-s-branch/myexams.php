@@ -196,20 +196,25 @@ if ($user_role == 'Executive Director') {
 
                     <!--header-->
                     <div class="emright">
-                        <div class="content">
+                        <div class="contentem">
 
                             <div class="righthead">
 
-                                <div class="adminmehead">
-                                    <p style="padding-left: 50px"> My Exams </p>
-                                </div>
-
-                                <?php if (!$update) : ?>
-                                    <button class="addbutt" onclick="showPopup()" style="margin-left: 300px;">
+                                <div class="adminmehead" style="margin-left: 50px ;display: flex">
+                                    <p> My Exams </p>
+                                    <?php if (!$update) : ?>
+                                    <button class="addbutt" onclick="showPopup()">
                                         <i class="fa-solid fa-circle-plus"></i>
                                     </button>
                                 <?php endif; ?>
                                 <script src="./myexams.js"></script>
+                                </div>
+
+                                
+
+                                <div class="searchicon" style="position:relative; left: 45%">
+                                    <input type="text" class="searchbar" id="live_search" placeholder="Search a Course Folder...">
+                                </div>
                             </div>
 
                             <div class="system-list">
@@ -370,6 +375,30 @@ if ($user_role == 'Executive Director') {
                         showEditPopup(urlParams.get('edit'), updateStatus);
                     }
                 }
+
+                function handleSearchInput() {
+        // Get the value of the search input
+        const searchQuery = document.getElementById("live_search").value.trim().toLowerCase();
+        // Get all course folder elements
+        const courseFolders = document.querySelectorAll(".mebox");
+
+        // Loop through each course folder
+        courseFolders.forEach(folder => {
+            // Get the text content of the course folder
+            const folderText = folder.textContent.toLowerCase();
+            // Check if the folder text contains the search query
+            if (folderText.includes(searchQuery)) {
+                // Show the folder if it matches the search query
+                folder.style.display = "block";
+            } else {
+                // Hide the folder if it does not match the search query
+                folder.style.display = "none";
+            }
+        });
+    }
+
+    // Attach an event listener to the search input
+    document.getElementById("live_search").addEventListener("input", handleSearchInput);
             </script>
 <?php
         }

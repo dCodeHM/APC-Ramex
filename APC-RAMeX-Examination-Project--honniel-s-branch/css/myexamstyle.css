@@ -28,11 +28,11 @@ header #branding #emactive {
 
 .adminmehead {
     width: 20%;
-    text-align: right;
+    text-align: center;
     margin-left: 0;
 
     p {
-        margin: auto;
+        margin-left: 20px;
     }
 }
 
@@ -277,12 +277,8 @@ header #branding #emactive {
 
 /* searchbar */
 .searchbar {
-    width: 400px;
-    min-width: 100%;
-    min-height: 100%;
+    width: 500px;
     padding: 12px 20px;
-    margin: 8px 0;
-    left: 100px;
     box-sizing: border-box;
     border: 3px solid #000000;
     -webkit-transition: 0.5s;
@@ -290,7 +286,7 @@ header #branding #emactive {
     outline: none;
     max-width: 100%;
     max-height: 100%;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 /* for the dots */
