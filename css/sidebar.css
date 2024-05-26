@@ -30,7 +30,7 @@
 }
 
 .back_button img {
-  width: 80%; /* Make the images fill the width of the sidebar */
+  width: 80%;  /* Make the images fill the width of the sidebar */
   max-width: 100%; /* Ensure the images don't exceed the width of the sidebar */
   height: auto; /* Maintain the aspect ratio of the images */
   margin: 0 auto; /* Center horizontally */

@@ -39,7 +39,7 @@ if ($gotResults) {
                 <link rel="stylesheet" href="css/boxset.css">
                 <link rel="stylesheet" href="css/settings.css">
                 <script defer src="./usersettingAction.js"></script>
-                <script src="https://cdn.tailwindcss.com"></script>
+                <script defer src="./js/css.js"></script>
 
             </head>
 
@@ -48,7 +48,7 @@ if ($gotResults) {
                 <navigation class="navbar">
                     <ul class="right-header">
                         <li class="logo">
-                            <a href="index.php"><img id="logo" src="img/logo.png"></a>
+                            <a href="index.php"><img id="logo" src="img/APC AcademX Logo.png"></a>
                         </li>
                     </ul>
 

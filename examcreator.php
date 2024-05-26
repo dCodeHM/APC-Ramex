@@ -30,6 +30,20 @@ if ($result) {
     $role = $row['role'];
 }
 
+// Assuming $user_data contains information about the user's role
+$user_role = $user_data['role'];
+
+// Check the user's role and set the redirection URL accordingly
+if ($user_role == 'Executive Director') {
+    $redirect_url = 'index.php'; // Redirect admin users to admin homepage
+} elseif ($user_role == 'Program Director') {
+    $redirect_url = 'index.php'; // Redirect professor users to professor homepage
+} elseif ($user_role == 'Professor') {
+    $redirect_url = 'professoruser.php'; // Redirect professor users to professor homepage
+} else {
+    $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
+}
+
 // Retrieve the course_topic_id from the URL
 $course_topic_id = isset($_GET['course_topic_id']) ? intval($_GET['course_topic_id']) : 0;
 
@@ -282,6 +296,7 @@ if (isset($_POST['save_exam'])) {
     <link rel="stylesheet" href="./css/sidebar.css">
     <link rel="stylesheet" href="./css/header.css">
     <link rel="stylesheet" href="./css/examsettings.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/helpbutton.css?v=<?php echo time(); ?>">
 
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -296,7 +311,7 @@ if (isset($_POST['save_exam'])) {
     <navigation class="navbar">
         <ul class="right-header">
             <li class="logo">
-                <a href="myexams.php"><img id="logo" src="img/logo.png"></a>
+                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/APC AcademX Logo.png"></a>
             </li>
         </ul>
 
@@ -401,8 +416,8 @@ if (isset($_POST['save_exam'])) {
                     <img src="img/back.png">
                 </a>
             </div>
-            <div class="help_button">
-                <img src="img/help.png">
+            <div class="help_buttonec">
+                <img src="img/help.png" alt="Help Icon">
             </div>
         </div>
     </navigation>
@@ -424,301 +439,447 @@ if (isset($_POST['save_exam'])) {
             Content A
         </div>
 
-        <!-- DIV 2 -->
-        <div class="divb" id="divb">
-            <div class="settingsbuttonONE">
-                <button id="previewBTN" class="prevBTN">1</button>
-                <button id="downloadBTN" class="downBTN">2</button>
-                <button id="savedButton" class="savedBTN">3</button>
-                <button id="uploadBTN" class="uploadBTN">4</button>
-            </div>
-        </div>
-    </div>
+        <<<<<<< HEAD <!-- DIV 2 -->
+            <div class="divb" id="divb">
+                <div class="settingsbuttonONE">
+                    <button id="previewBTN" class="prevBTN">1</button>
+                    <button id="downloadBTN" class="downBTN">2</button>
+                    <button id="savedButton" class="savedBTN">3</button>
+                    <button id="uploadBTN" class="uploadBTN">4</button>
+                    =======
+                    <!-- div 2 -->
+                    <div class="divb" id="divb">
+                        <div class="settingsbuttonONE">
+                            <style>
+                                body {
+                                    font: 15px/1.5 Arial, Helvetica, sans-serif;
+                                }
 
-    <section class="ml-[400px] mt-[70px] px-20 py-10">
-        <form class="w-full" method="POST" enctype="multipart/form-data">
-            <h2 class="font-semibold mb-2">Exam Details</h2>
+                                .examrule {
+                                    width: 100%;
+                                    color: black;
+                                    background-color: white;
+                                    height: 400px;
+                                    padding: 20px;
+                                    /* Adjusted padding for better spacing */
+                                    margin: 0 auto;
+                                    /* Center the div if necessary */
+                                    overflow: auto;
+                                    /* Adds scrollbar if content exceeds the div */
+                                    box-sizing: border-box;
+                                    /* Includes padding and border in the width and height */
+                                    font: 14.1px/1.5 Arial, Helvetica, sans-serif;
+                                    border-radius: 7px;
+                                    border-radius: 12px;
+                                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                                }
 
-            <input class="mb-4 outline w-full outline-zinc-300 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
-            <h3 class="w-full font-semibold mb-2">Questions
-                <span class="text-base font-normal text-gray-400 ml-1" id="total-questions"></span>
-                <span class="text-base font-normal text-gray-400 ml-1" id="total-points"></span>
-            </h3>
+                                .examrule h1 {
+                                    text-align: center;
+                                    margin-top: 0;
+                                    /* Removes default top margin */
+                                    padding-bottom: 10px;
+                                    /* Adds space below the title */
+                                }
 
-            <div class="flex flex-col gap-6">
-                <?php
-                $combined_result = array();
+                                .examrule p {
+                                    margin: 10px 0;
+                                    /* Adds vertical spacing between paragraphs */
+                                }
 
-                while ($question = $questions_result->fetch_assoc()) {
-                    $combined_result[] = array(
-                        'type' => 'question',
-                        'data' => $question
-                    );
-                }
+                                .button-container {
+                                    display: flex;
+                                    justify-content: center;
+                                    /* Centers the buttons horizontally */
+                                    align-items: center;
+                                    /* Centers the buttons vertically if needed */
+                                }
 
-                usort($combined_result, function ($a, $b) {
-                    return strtotime($a['data']['date_created']) - strtotime($b['data']['date_created']);
-                });
+                                .prevBTN {
+                                    width: 100%;
+                                    background-color: #FFFFFF;
+                                    border: none;
+                                    color: black;
+                                    padding: 15px 32px;
+                                    text-align: center;
+                                    text-decoration: none;
+                                    font-size: 16px;
+                                    margin: 4px 2px;
+                                    transition-duration: 0.4s;
+                                    cursor: pointer;
+                                    border-radius: 12px;
+                                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                                }
 
-                $questionOrder = 1;
-                $instructionOrder = 1;
+                                .downBTN {
+                                    width: 100%;
+                                    background-color: #F3C44C;
+                                    border: none;
+                                    color: white;
+                                    padding: 15px 32px;
+                                    text-align: center;
+                                    text-decoration: none;
+                                    font-size: 16px;
+                                    margin: 4px 2px;
+                                    transition-duration: 0.4s;
+                                    cursor: pointer;
+                                    border-radius: 12px;
+                                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                                }
 
-                foreach ($combined_result as $item) {
-                    if ($item['type'] === 'question') {
-                        $question = $item['data'];
-                ?>
-                        <div class="bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
-                            <div class="flex w-full justify-between">
-                                <div class="flex flex-col">
-                                    <label class="mb-2" for="question_id">Question ID</label>
-                                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_id[]" value="<?php echo htmlspecialchars($question['question_id']); ?>" readonly>
+                                .savedBTN {
+                                    background-color: #F3C44C;
+                                    border: none;
+                                    color: white;
+                                    padding: 15px 32px;
+                                    text-align: center;
+                                    width: 100%;
+                                    text-decoration: none;
+                                    display: inline-block;
+                                    font-size: 16px;
+                                    margin: 4px 2px;
+                                    transition-duration: 0.4s;
+                                    cursor: pointer;
+                                    border-radius: 12px;
+                                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                                }
 
+                                .uploadBTN {
+                                    background-color: #F3C44C;
+                                    border: none;
+                                    color: white;
+                                    padding: 15px 32px;
+                                    text-align: center;
+                                    width: 100%;
+                                    text-decoration: none;
+                                    display: inline-block;
+                                    font-size: 16px;
+                                    margin: 4px 2px;
+                                    transition-duration: 0.4s;
+                                    cursor: pointer;
+                                    border-radius: 12px;
+                                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                                }
 
+                                button:hover {
+                                    opacity: 0.8;
+                                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                                }
+                            </style>
+
+                            <div class="examrule">
+                                <h1><b>Exam Rules</b></h1>
+                                <p><b>1.</b> Read, understand, and follow every specified direction carefully.</p>
+                                <p><b>2.</b> Avoid using your cellular phone during exam proper.</p>
+                                <p><b>3.</b> This exam is CLOSED NOTES.</p>
+                                <p><b>4.</b> Shade your answer on the answer sheet.</p>
+                                <p><b>5.</b> NO ERASURE. Erasure means wrong.</p>
+                                <p><b>6.</b> Strictly NO CHEATING. Anybody caught cheating will receive a FAILING MARK.</p>
+                            </div>
+                            <div class="button-container">
+                                <button id="previewBTN" class="prevBTN">Preview</button>
+                                <button id="downloadBTN" class="downBTN">Download</button>
+                            </div>
+
+                            <div class="button-container-lower">
+                                <button id="savedBTN" class="savedBTN">Save Progress</button>
+                            </div>
+                            <div class="button-container-lower">
+                                <button id="uploadBTN" class="uploadBTN">Upload to Exam Library</button>
+                                >>>>>>> test
+                            </div>
+                        </div>
+                    </div>
+
+                    <section class="ml-[400px] mt-[70px] px-20 py-10">
+                        <form class="w-full" method="POST" enctype="multipart/form-data">
+                            <h2 class="font-semibold mb-2">Exam Details</h2>
+                            <<<<<<< HEAD <input class="mb-4 outline w-full outline-zinc-300 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
+                                =======
+                                <!-- <input class="mb-4 outline outline-zinc-600 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>"> -->
+                                <div class="mb-4 outline outline-zinc-600 outline-1 py-2 px-4 rounded-lg">
+                                    <?php echo htmlspecialchars($exam['exam_name']); ?>
                                 </div>
-                                <svg class="trash-icon" data-question-id="<?php echo $question['question_id']; ?>" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2">
-                                    <path d="M3 6h18" />
-                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                    <line x1="10" x2="10" y1="11" y2="17" />
-                                    <line x1="14" x2="14" y1="11" y2="17" />
-                                </svg>
-                            </div>
+                                >>>>>>> test
+                                <h3 class="w-full font-semibold mb-2">Questions
+                                    <span class="text-base font-normal text-gray-400 ml-1" id="total-questions"></span>
+                                    <span class="text-base font-normal text-gray-400 ml-1" id="total-points"></span>
+                                </h3>
 
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="question_text">Question Text
-                                    <?php if (empty($question['question_text'])) : ?>
-                                        <span class="text-red-400">No Question Text*</span>
-                                    <?php endif; ?>
-                                </label>
-                                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_text[]"><?php echo htmlspecialchars($question['question_text']); ?></textarea>
-                            </div>
-
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="question_image">Question Image
-                                    <?php if (empty($question['question_image'])) : ?>
-                                        <span class="text-red-400">No Question Image*</span>
-                                    <?php endif; ?>
-                                </label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="question_image[]">
-
-                                <?php if (!empty($question['question_image'])) : ?>
+                                <div class="flex flex-col gap-6">
                                     <?php
-                                    $imgData = base64_encode($question['question_image']);
-                                    $src = 'data:image/jpeg;base64,' . $imgData;
+                                    $combined_result = array();
+
+                                    while ($question = $questions_result->fetch_assoc()) {
+                                        $combined_result[] = array(
+                                            'type' => 'question',
+                                            'data' => $question
+                                        );
+                                    }
+
+                                    usort($combined_result, function ($a, $b) {
+                                        return strtotime($a['data']['date_created']) - strtotime($b['data']['date_created']);
+                                    });
+
+                                    $questionOrder = 1;
+                                    $instructionOrder = 1;
+
+                                    foreach ($combined_result as $item) {
+                                        if ($item['type'] === 'question') {
+                                            $question = $item['data'];
                                     ?>
-                                    <img src="<?php echo $src; ?>" alt="Question Image" style="max-width: 200px; max-height: 200px;">
-                                <?php endif; ?>
-                            </div>
+                                            <div class="bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
+                                                <div class="flex w-full justify-between">
+                                                    <div class="flex flex-col">
+                                                        <label class="mb-2" for="question_id">Question ID</label>
+                                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_id[]" value="<?php echo htmlspecialchars($question['question_id']); ?>" readonly>
 
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="clo_id">CLO ID
-                                    <?php if (empty($question['clo_id'])) : ?>
-                                        <span class="text-red-400">No CLO ID*</span>
-                                    <?php endif; ?>
-                                </label>
-                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="clo_id[]">
-                                    <option value="1" <?php if ($question['clo_id'] == 1) echo 'selected'; ?>>1</option>
-                                    <option value="2" <?php if ($question['clo_id'] == 2) echo 'selected'; ?>>2</option>
-                                    <option value="3" <?php if ($question['clo_id'] == 3) echo 'selected'; ?>>3</option>
-                                    <option value="4" <?php if ($question['clo_id'] == 4) echo 'selected'; ?>>4</option>
-                                    <option value="5" <?php if ($question['clo_id'] == 5) echo 'selected'; ?>>5</option>
-                                </select>
-                            </div>
 
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="difficulty">Difficulty
-                                    <?php if (empty($question['difficulty'])) : ?>
-                                        <span class="text-red-400">No Difficulty*</span>
-                                    <?php endif; ?>
-                                </label>
-                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="difficulty[]">
-                                    <option value="E" <?php if ($question['difficulty'] == 'E') echo 'selected'; ?>>Easy</option>
-                                    <option value="N" <?php if ($question['difficulty'] == 'N') echo 'selected'; ?>>Normal</option>
-                                    <option value="H" <?php if ($question['difficulty'] == 'H') echo 'selected'; ?>>Hard</option>
-                                </select>
-                            </div>
+                                                    </div>
+                                                    <svg class="trash-icon" data-question-id="<?php echo $question['question_id']; ?>" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2">
+                                                        <path d="M3 6h18" />
+                                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                                        <line x1="10" x2="10" y1="11" y2="17" />
+                                                        <line x1="14" x2="14" y1="11" y2="17" />
+                                                    </svg>
+                                                </div>
 
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="question_points">Question Points
-                                    <?php if (empty($question['question_points'])) : ?>
-                                        <span class="text-red-400">No Question Points*</span>
-                                    <?php endif; ?>
-                                </label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 existing-question-points" type="number" name="question_points[]" value="<?php echo htmlspecialchars($question['question_points']); ?>">
-                            </div>
+                                                <div class="flex flex-col">
+                                                    <label class="mb-2" for="question_text">Question Text
+                                                        <?php if (empty($question['question_text'])) : ?>
+                                                            <span class="text-red-400">No Question Text*</span>
+                                                        <?php endif; ?>
+                                                    </label>
+                                                    <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_text[]"><?php echo htmlspecialchars($question['question_text']); ?></textarea>
+                                                </div>
 
-                            <!-- Display question choices -->
-                            <h3 class="font-semibold mt-4">Choices</h3>
-                            <?php
-                            $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
-                            $stmt = $conn->prepare($sql);
-                            if (!$stmt) {
-                                die("Error preparing statement: " . $conn->error);
-                            }
+                                                <div class="flex flex-col">
+                                                    <label class="mb-2" for="question_image">Question Image
+                                                        <?php if (empty($question['question_image'])) : ?>
+                                                            <span class="text-red-400">No Question Image*</span>
+                                                        <?php endif; ?>
+                                                    </label>
+                                                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="question_image[]">
 
-                            $stmt->bind_param("i", $question['answer_id']);
-                            if (!$stmt->execute()) {
-                                die("Error executing statement: " . $stmt->error);
-                            }
+                                                    <?php if (!empty($question['question_image'])) : ?>
+                                                        <?php
+                                                        $imgData = base64_encode($question['question_image']);
+                                                        $src = 'data:image/jpeg;base64,' . $imgData;
+                                                        ?>
+                                                        <img src="<?php echo $src; ?>" alt="Question Image" style="max-width: 200px; max-height: 200px;">
+                                                    <?php endif; ?>
+                                                </div>
 
-                            $choices_result = $stmt->get_result();
+                                                <div class="flex flex-col">
+                                                    <label class="mb-2" for="clo_id">CLO ID
+                                                        <?php if (empty($question['clo_id'])) : ?>
+                                                            <span class="text-red-400">No CLO ID*</span>
+                                                        <?php endif; ?>
+                                                    </label>
+                                                    <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="clo_id[]">
+                                                        <option value="1" <?php if ($question['clo_id'] == 1) echo 'selected'; ?>>1</option>
+                                                        <option value="2" <?php if ($question['clo_id'] == 2) echo 'selected'; ?>>2</option>
+                                                        <option value="3" <?php if ($question['clo_id'] == 3) echo 'selected'; ?>>3</option>
+                                                        <option value="4" <?php if ($question['clo_id'] == 4) echo 'selected'; ?>>4</option>
+                                                        <option value="5" <?php if ($question['clo_id'] == 5) echo 'selected'; ?>>5</option>
+                                                    </select>
+                                                </div>
 
-                            while ($choice = $choices_result->fetch_assoc()) {
-                            ?>
-                                <div class="choice flex gap-4 items-center">
-                                    <div class="flex items-center w-[140px]">
-                                        <input class="mr-2" type="checkbox" name="new_is_correct[]" value="A">
-                                        <label for="is_correct">Correct Answer</label>
-                                    </div>
-                                    <p class="font-semibold">A</p>
-                                    <div class="flex flex-col w-full">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                                    </div>
+                                                <div class="flex flex-col">
+                                                    <label class="mb-2" for="difficulty">Difficulty
+                                                        <?php if (empty($question['difficulty'])) : ?>
+                                                            <span class="text-red-400">No Difficulty*</span>
+                                                        <?php endif; ?>
+                                                    </label>
+                                                    <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="difficulty[]">
+                                                        <option value="E" <?php if ($question['difficulty'] == 'E') echo 'selected'; ?>>Easy</option>
+                                                        <option value="N" <?php if ($question['difficulty'] == 'N') echo 'selected'; ?>>Normal</option>
+                                                        <option value="H" <?php if ($question['difficulty'] == 'H') echo 'selected'; ?>>Hard</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="flex flex-col">
+                                                    <label class="mb-2" for="question_points">Question Points
+                                                        <?php if (empty($question['question_points'])) : ?>
+                                                            <span class="text-red-400">No Question Points*</span>
+                                                        <?php endif; ?>
+                                                    </label>
+                                                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 existing-question-points" type="number" name="question_points[]" value="<?php echo htmlspecialchars($question['question_points']); ?>">
+                                                </div>
+
+                                                <!-- Display question choices -->
+                                                <h3 class="font-semibold mt-4">Choices</h3>
+                                                <?php
+                                                $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+                                                $stmt = $conn->prepare($sql);
+                                                if (!$stmt) {
+                                                    die("Error preparing statement: " . $conn->error);
+                                                }
+
+                                                $stmt->bind_param("i", $question['answer_id']);
+                                                if (!$stmt->execute()) {
+                                                    die("Error executing statement: " . $stmt->error);
+                                                }
+
+                                                $choices_result = $stmt->get_result();
+
+                                                while ($choice = $choices_result->fetch_assoc()) {
+                                                ?>
+                                                    <div class="choice flex gap-4 items-center">
+                                                        <div class="flex items-center w-[140px]">
+                                                            <input class="mr-2" type="checkbox" name="new_is_correct[]" value="A">
+                                                            <label for="is_correct">Correct Answer</label>
+                                                        </div>
+                                                        <p class="font-semibold">A</p>
+                                                        <div class="flex flex-col w-full">
+                                                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="choice flex gap-4 items-center">
+                                                        <div class="flex items-center w-[140px]">
+                                                            <input class="mr-2" type="checkbox" name="new_is_correct[]" value="B">
+                                                            <label for="is_correct">Correct Answer</label>
+                                                        </div>
+                                                        <p class="font-semibold">B</p>
+                                                        <div class="flex flex-col w-full">
+                                                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                                                        </div>
+                                                    </div>
+                                                <?php
+                                                }
+                                                ?>
+
+                                                <input type="hidden" name="order[]" value="<?php echo htmlspecialchars($question['order']); ?>">
+                                                <p class="absolute right-[100%] py-2 px-4 rounded-l-lg -z-10 outline outline-1 outline-zinc-200 bg-yellow-400 text-white"><?php echo $questionOrder; ?></p>
+                                            </div>
+
+
+
+
+                                        <?php
+                                            $questionOrder++;
+                                        } elseif ($item['type'] === 'instruction') {
+                                            $instruction = $item['data'];
+                                        ?>
+                                            <div class="bg-yellow-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
+                                                <div class="flex flex-col">
+                                                    <label class="mb-2" for="instruction_text">Instruction Text</label>
+                                                    <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="instruction_text[]"><?php echo htmlspecialchars($instruction['instruction_text']); ?></textarea>
+                                                </div>
+                                                <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
+                                                <input type="hidden" name="instruction_order[]" value="<?php echo htmlspecialchars($instruction['order']); ?>">
+                                                <p class="absolute right-[100%] py-2 px-4 rounded-l-lg -z-10 outline outline-1 outline-zinc-200 bg-yellow-400 text-white"><?php echo $instructionOrder; ?></p>
+                                            </div>
+                                    <?php
+                                            $instructionOrder++;
+                                        }
+                                    }
+                                    ?>
                                 </div>
 
-                                <div class="choice flex gap-4 items-center">
-                                    <div class="flex items-center w-[140px]">
-                                        <input class="mr-2" type="checkbox" name="new_is_correct[]" value="B">
-                                        <label for="is_correct">Correct Answer</label>
-                                    </div>
-                                    <p class="font-semibold">B</p>
-                                    <div class="flex flex-col w-full">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                                    </div>
+                                <div id="new_questions"></div>
+
+                                <div class="mt-4">
+                                    <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button" id="add_question">Add Question</button>
+                                    <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="submit" name="save_exam">Save Exam</button>
                                 </div>
-                            <?php
+                        </form>
+                    </section>
+
+                    <script>
+                        totalQuestions = 0;
+                        totalPoints = 0;
+
+                        // ----------------------------- Helper Functions -----------------------------
+
+                        // Function to fetch total points from the API
+                        async function fetchTotalPoints() {
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const courseTopicId = urlParams.get('course_topic_id');
+
+                            var res = await fetch(`http://localhost/ramex/api/exam/get-exam-id-by-course-topic-id.php?course_topic_id=${courseTopicId}`);
+                            var data = await res.json();
+                            if (data.error) {
+                                console.error(data.error);
+                                return;
                             }
-                            ?>
+                            var examId = data;
+                            console.log("Exam ID:", examId);
 
-                            <input type="hidden" name="order[]" value="<?php echo htmlspecialchars($question['order']); ?>">
-                            <p class="absolute right-[100%] py-2 px-4 rounded-l-lg -z-10 outline outline-1 outline-zinc-200 bg-yellow-400 text-white"><?php echo $questionOrder; ?></p>
-                        </div>
+                            res = await fetch(`http://localhost/ramex/api/question/get-total-points-by-exam-id.php?exam_id=${examId}`);
+                            data = await res.json();
+                            if (data.error) {
+                                console.error(data.error);
+                                return;
+                            }
+                            var totalPointsData = data;
+                            console.log("Total Points:", totalPointsData);
 
+                            res = await fetch(`http://localhost/ramex/api/question/get-total-questions-by-exam-id.php?exam_id=${examId}`)
+                            data = await res.json();
+                            if (data.error) {
+                                console.error(data.error);
+                                return;
+                            }
+                            var totalQuestionsData = data;
+                            console.log("Total Questions:", totalQuestionsData);
 
+                            // Add totalPointsData to the totalPoints variable
+                            totalPoints = totalPointsData;
+                            document.getElementById('total-points').innerText = `(${totalPoints} Points)`;
 
+                            // Add totalQuestionsData to the totalQuestions variable
+                            totalQuestions = totalQuestionsData;
+                            document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
+                        }
 
-                    <?php
-                        $questionOrder++;
-                    } elseif ($item['type'] === 'instruction') {
-                        $instruction = $item['data'];
-                    ?>
-                        <div class="bg-yellow-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="instruction_text">Instruction Text</label>
-                                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="instruction_text[]"><?php echo htmlspecialchars($instruction['instruction_text']); ?></textarea>
-                            </div>
-                            <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
-                            <input type="hidden" name="instruction_order[]" value="<?php echo htmlspecialchars($instruction['order']); ?>">
-                            <p class="absolute right-[100%] py-2 px-4 rounded-l-lg -z-10 outline outline-1 outline-zinc-200 bg-yellow-400 text-white"><?php echo $instructionOrder; ?></p>
-                        </div>
-                <?php
-                        $instructionOrder++;
-                    }
-                }
-                ?>
-            </div>
+                        // ----------------------------- Main Script -----------------------------
 
-            <div id="new_questions"></div>
+                        // Read event for click in svg delete-question
+                        $(document).on("click", ".trash-icon", async function() {
+                            const questionId = $(this).data("question-id");
+                            const questionElement = $(this).closest(".question");
 
-            <div class="mt-4">
-                <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button" id="add_question">Add Question</button>
-                <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="submit" name="save_exam">Save Exam</button>
-            </div>
-        </form>
-    </section>
+                            if (confirm("Are you sure you want to delete this question?")) {
+                                try {
+                                    const res = await fetch(`http://localhost/ramex/api/question/delete-question-by-question-id.php?question_id=${questionId}`);
+                                    const data = await res.text();
+                                    console.log(data);
+                                    questionElement.remove();
+                                    fetchTotalPoints();
 
-    <script>
-        totalQuestions = 0;
-        totalPoints = 0;
+                                    // Reload the page
+                                    location.reload();
+                                } catch (error) {
+                                    console.error("Error deleting question:", error);
+                                }
+                            }
+                        });
 
-        // ----------------------------- Helper Functions -----------------------------
+                        // Update total points dynamically for new and existing questions
+                        $(document).on("input", ".new-question-points, .existing-question-points", function() {
+                            var newQuestionPoints = 0;
+                            $(".new-question-points, .existing-question-points").each(function() {
+                                newQuestionPoints += parseInt($(this).val() || 0);
+                            });
+                            $("#total-points").text(`(${newQuestionPoints} Points)`);
+                        });
 
-        // Function to fetch total points from the API
-        async function fetchTotalPoints() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const courseTopicId = urlParams.get('course_topic_id');
+                        $(document).on("click", ".add-choice-btn", function() {
+                            var choicesContainer = $(this).siblings(".choices-container");
+                            var choiceCount = choicesContainer.children(".choice").length;
 
-            var res = await fetch(`http://localhost/ramex/api/exam/get-exam-id-by-course-topic-id.php?course_topic_id=${courseTopicId}`);
-            var data = await res.json();
-            if (data.error) {
-                console.error(data.error);
-                return;
-            }
-            var examId = data;
-            console.log("Exam ID:", examId);
-
-            res = await fetch(`http://localhost/ramex/api/question/get-total-points-by-exam-id.php?exam_id=${examId}`);
-            data = await res.json();
-            if (data.error) {
-                console.error(data.error);
-                return;
-            }
-            var totalPointsData = data;
-            console.log("Total Points:", totalPointsData);
-
-            res = await fetch(`http://localhost/ramex/api/question/get-total-questions-by-exam-id.php?exam_id=${examId}`)
-            data = await res.json();
-            if (data.error) {
-                console.error(data.error);
-                return;
-            }
-            var totalQuestionsData = data;
-            console.log("Total Questions:", totalQuestionsData);
-
-            // Add totalPointsData to the totalPoints variable
-            totalPoints = totalPointsData;
-            document.getElementById('total-points').innerText = `(${totalPoints} Points)`;
-
-            // Add totalQuestionsData to the totalQuestions variable
-            totalQuestions = totalQuestionsData;
-            document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
-        }
-
-        // ----------------------------- Main Script -----------------------------
-
-        // Read event for click in svg delete-question
-        $(document).on("click", ".trash-icon", async function() {
-            const questionId = $(this).data("question-id");
-            const questionElement = $(this).closest(".question");
-
-            if (confirm("Are you sure you want to delete this question?")) {
-                try {
-                    const res = await fetch(`http://localhost/ramex/api/question/delete-question-by-question-id.php?question_id=${questionId}`);
-                    const data = await res.text();
-                    console.log(data);
-                    questionElement.remove();
-                    fetchTotalPoints();
-
-                    // Reload the page
-                    location.reload();
-                } catch (error) {
-                    console.error("Error deleting question:", error);
-                }
-            }
-        });
-
-        // Update total points dynamically for new and existing questions
-        $(document).on("input", ".new-question-points, .existing-question-points", function() {
-            var newQuestionPoints = 0;
-            $(".new-question-points, .existing-question-points").each(function() {
-                newQuestionPoints += parseInt($(this).val() || 0);
-            });
-            $("#total-points").text(`(${newQuestionPoints} Points)`);
-        });
-
-        $(document).on("click", ".add-choice-btn", function() {
-            var choicesContainer = $(this).siblings(".choices-container");
-            var choiceCount = choicesContainer.children(".choice").length;
-
-            if (choiceCount < 5) {
-                var choiceLetter = String.fromCharCode(65 + choiceCount);
-                var choiceHTML = `
+                            if (choiceCount < 5) {
+                                var choiceLetter = String.fromCharCode(65 + choiceCount);
+                                var choiceHTML = `
             <div class="choice flex gap-4 items-center">
                 <div class="flex items-center w-[140px]">
                     <input class="mr-2" type="checkbox" name="new_is_correct[]" value="${choiceCount}">
@@ -734,30 +895,30 @@ if (isset($_POST['save_exam'])) {
                 <button type="button" class="remove-choice-btn px-2 py-1 bg-red-500 text-white rounded-md">X</button>
             </div>
         `;
-                choicesContainer.append(choiceHTML);
-            } else {
-                alert("Maximum of 5 choices allowed.");
-            }
-        });
+                                choicesContainer.append(choiceHTML);
+                            } else {
+                                alert("Maximum of 5 choices allowed.");
+                            }
+                        });
 
-        $(document).on("click", ".remove-choice-btn", function() {
-            $(this).closest(".choice").remove();
-        });
+                        $(document).on("click", ".remove-choice-btn", function() {
+                            $(this).closest(".choice").remove();
+                        });
 
-        $(document).ready(function() {
-            fetchTotalPoints();
+                        $(document).ready(function() {
+                            fetchTotalPoints();
 
-            $("#add_question").click(function() {
-                // Increment the new order
-                totalQuestions++;
-                // Display the total questions
-                document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
+                            $("#add_question").click(function() {
+                                // Increment the new order
+                                totalQuestions++;
+                                // Display the total questions
+                                document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
 
-                var newOrder = $("#new_questions .question").length + 1;
+                                var newOrder = $("#new_questions .question").length + 1;
 
-                const html = String.raw;
+                                const html = String.raw;
 
-                var questionHTML = `
+                                var questionHTML = `
                     <div class="bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
                         <div class="flex flex-col">
                             <label class="mb-2" for="question_text">Question Text</label>
@@ -842,69 +1003,69 @@ if (isset($_POST['save_exam'])) {
                     </div>
                 `;
 
-                // Append to the new_questions div
-                $("#new_questions").append(questionHTML);
+                                // Append to the new_questions div
+                                $("#new_questions").append(questionHTML);
 
 
-            });
+                            });
 
-            // Update total points dynamically, incrementing by the new question points
-            $(document).on("input", ".new-question-points", function() {
-                var newQuestionPoints = totalPoints;
-                $(".new-question-points").each(function() {
-                    newQuestionPoints += parseInt($(this).val() || 0);
-                });
-                $("#total-points").text(`(${newQuestionPoints} Points)`);
-            });
+                            // Update total points dynamically, incrementing by the new question points
+                            $(document).on("input", ".new-question-points", function() {
+                                var newQuestionPoints = totalPoints;
+                                $(".new-question-points").each(function() {
+                                    newQuestionPoints += parseInt($(this).val() || 0);
+                                });
+                                $("#total-points").text(`(${newQuestionPoints} Points)`);
+                            });
 
-            // Remove question dynamically
-            $(document).on("click", ".remove_question", function() {
-                $(this).closest(".question").remove();
-                totalQuestions--;
-                document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
+                            // Remove question dynamically
+                            $(document).on("click", ".remove_question", function() {
+                                $(this).closest(".question").remove();
+                                totalQuestions--;
+                                document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
 
-                // Decrement the total points
-                var newQuestionPoints = totalPoints;
-                $(".new-question-points").each(function() {
-                    newQuestionPoints += parseInt($(this).val() || 0);
-                });
-                $("#total-points").text(`(${newQuestionPoints} Points)`);
-            });
-        });
+                                // Decrement the total points
+                                var newQuestionPoints = totalPoints;
+                                $(".new-question-points").each(function() {
+                                    newQuestionPoints += parseInt($(this).val() || 0);
+                                });
+                                $("#total-points").text(`(${newQuestionPoints} Points)`);
+                            });
+                        });
 
-        var btn_diva = document.getElementById("btn_diva");
-        var btn_divb = document.getElementById("btn_divb");
-        var diva = document.getElementById("diva");
-        var divb = document.getElementById("divb");
+                        var btn_diva = document.getElementById("btn_diva");
+                        var btn_divb = document.getElementById("btn_divb");
+                        var diva = document.getElementById("diva");
+                        var divb = document.getElementById("divb");
 
-        function activateButton(activeButton) {
-            // Remove the active class from all buttons
-            document.querySelectorAll('.button').forEach(button => {
-                button.classList.remove('active');
-            });
-            // Add the active class to the clicked button
-            activeButton.classList.add('active');
-        }
+                        function activateButton(activeButton) {
+                            // Remove the active class from all buttons
+                            document.querySelectorAll('.button').forEach(button => {
+                                button.classList.remove('active');
+                            });
+                            // Add the active class to the clicked button
+                            activeButton.classList.add('active');
+                        }
 
-        btn_diva.addEventListener("click", () => {
-            diva.style.display = "flex";
-            divb.style.display = "none";
-            activateButton(btn_diva);
-        });
+                        btn_diva.addEventListener("click", () => {
+                            diva.style.display = "flex";
+                            divb.style.display = "none";
+                            activateButton(btn_diva);
+                        });
 
-        btn_divb.addEventListener("click", () => {
-            diva.style.display = "none";
-            divb.style.display = "flex";
-            activateButton(btn_divb);
-        });
+                        btn_divb.addEventListener("click", () => {
+                            diva.style.display = "none";
+                            divb.style.display = "flex";
+                            activateButton(btn_divb);
+                        });
 
-        // Display DIV A and set button DIV A as active on initial load
-        window.addEventListener('load', () => {
-            diva.style.display = "flex";
-            divb.style.display = "none";
-            activateButton(btn_diva);
-        });
-    </script>
+                        // Display DIV A and set button DIV A as active on initial load
+                        window.addEventListener('load', () => {
+                            diva.style.display = "flex";
+                            divb.style.display = "none";
+                            activateButton(btn_diva);
+                        });
+                    </script>
 </body>
 
 </html>

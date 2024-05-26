@@ -65,6 +65,21 @@ html {
     margin-bottom: 1.5rem;
 }
 
+.contentem{
+    overflow: hidden;
+    display: block;
+    min-width: 120rem;
+    width: 95%;
+    min-width: 95%;
+    max-width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    margin-left: 5.2rem;
+    margin-right: auto;
+    margin-top: 10rem;
+    margin-bottom: 1.5rem;
+}
+
 .content img{
     display: block;
     width: 100%;
