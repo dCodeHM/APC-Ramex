@@ -269,7 +269,7 @@ $courseFolderName = $courseCode;
         var courseCode = urlParams.get('course_code');
 
         // Construct the new URL
-        var url = 'http://localhost/topic.php';
+        var url = 'http://localhost/ramex/topic.php';
         url += '?course_subject_id=' + courseSubjectId;
         url += '&course_code=' + courseCode;
 
