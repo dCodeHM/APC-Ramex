@@ -194,9 +194,9 @@ $courseFolderName = $courseCode;
                     <h1 class="text-7xl font-medium"><?php echo $courseFolderName; ?></h1>
                 </div>
 
-                    <button class="addbutt" onclick="showPopup()">
-                        <i class="fa-solid fa-circle-plus"></i>
-                    </button>
+                <button class="addbutt" onclick="showPopup()">
+                    <i class="fa-solid fa-circle-plus"></i>
+                </button>
             </div>
 
 
@@ -283,7 +283,8 @@ $courseFolderName = $courseCode;
                     <?php while ($row = $result->fetch_assoc()) : ?>
                         <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6">
                             <!-- Topics -->
-                            <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>">
+                            <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>&exam_id=
+                            ">
                                 <h2 class="font-semibold text-4xl text-zinc-700">
                                     <?php echo $row['course_topics']; ?></h2>
                                 <!-- Date Created -->
@@ -320,8 +321,9 @@ $courseFolderName = $courseCode;
         document.querySelector("form").action = `topicfolder.php?edit=${course_topic_id}`;
         // Optionally, you can pre-fill form fields here
         // Set the value of the $update PHP variable based on the   update parameter
-        <?php if ($update) : 
-        ?>document.getElementById("update").value = "true";<?php endif; ?>
+        <?php if ($update) :
+        ?>document.getElementById("update").value = "true";
+    <?php endif; ?>
     }
 
     function handleAction(select) {
