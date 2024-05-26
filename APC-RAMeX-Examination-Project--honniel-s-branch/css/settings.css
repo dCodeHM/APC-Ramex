@@ -1,0 +1,313 @@
+/* start copying here */
+body{
+    font: 15px/1.5 Arial, Helvetica, sans-serif;
+    padding: 0;
+    margin: 0;
+    align-content: center;
+
+    /*remove if you want it to be responsive in using the phone*/
+    /* Should stop downsizing after 1024px */
+}
+
+
+.mid{
+    background-color: #454C52;
+    text-align: center;
+    position: fixed;
+    top: 7rem;
+    left: 5rem;
+    height: 100%;
+    min-height: 50rem;
+    width: 25rem;
+    padding-top: 20px;
+    padding-bottom: 100px;
+    display: flex; /* Use flexbox */
+    flex-direction: column; /* Arrange items vertically */
+    justify-content: space-between; /* Add space between items */
+    align-items: center; /* Center items horizontally */
+}
+
+.midnav{
+    padding: 10px;
+}
+.midbutton p{
+    background-color: #ffffff;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 17px;
+    text-decoration: none;
+    text-transform: none;
+    width: 200px;
+}
+
+.active p{
+    background-color: #E7AF41;
+    color: white;
+}
+
+.midbutton p:hover{
+    background-color: #E7AF41;
+    color: white;
+}
+
+.midhead{
+    padding: 5px;
+    margin-bottom: 21px;
+}
+
+.midhead p{
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: none;
+}
+
+.line{
+    border-top: 4px solid white;
+    border-radius: 4rem;
+    margin-bottom: 30px;
+}
+
+.right{
+    position: fixed;
+    top: 0rem;
+    left: 29rem;
+    height:100%;
+    width: 80vw;
+    margin-right: 50rem;
+    min-height: 50rem;
+    text-align: center;
+    display: flex;
+}
+
+.emright{
+    position: fixed;
+    top: 0rem;
+    left: 5rem;
+    height:100%;
+    width: 95vw;
+    margin-right: 50rem;
+    min-height: 50rem;
+    text-align: center;
+    display: flex;
+}
+
+.container{
+    width: 90%;
+    margin: auto;
+    margin-top: 8rem;
+}
+
+.righthead{
+    display: flex;
+    height: 120px;
+    align-items: center;
+    min-width: 50rem;
+}
+
+.rightemhead{
+    width: 20%;
+    display: flex;
+    height: 120px;
+    align-items: center;
+    min-width: 50rem;
+    text-align: right;
+    margin-left: 0;
+
+    p{
+        margin: auto;
+    }
+}
+
+.rightemicon {
+    width: 7%;
+    padding: 5px;
+    margin: auto;
+
+    img {
+        width: 70px;
+    }
+}
+
+.buttonmid{
+    margin-bottom: 20px;
+    
+}
+
+.midbutton{
+    height: 3rem;
+    max-height: 3rem;
+}
+
+.searchbar{
+    width: 400px;
+    min-width: 100%;
+    min-height: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    left: 100px;
+    box-sizing: border-box;
+    border: 3px solid #ffffff;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 5px;
+}
+
+.adminline{
+    border-top: 5px solid #343A40;
+}
+
+.emline{
+    border-top: 5px solid #343A40;
+    width: 100px;
+}
+
+.table{
+    background-color: #EDEDED;
+    height: 60vh;
+    margin-top: 20px;
+    border: #343A40;
+    border-radius: 10px;
+    border-style: solid;
+    text-align: center;
+    position: relative; /* Positioning the table absolutely */
+
+}
+/* white background inside center box */
+
+
+.programtitle{
+    font-size:small;
+    margin-bottom: 2.2rem;
+    font-weight: 400;
+    color: #343A40;
+}
+
+.program{
+    font-size: 2.2rem;
+    margin-bottom: 2.2rem;
+    font-weight: 700;
+    color: #343A40;
+}
+
+.programfiles{
+    font-size: small;
+    font-weight: 400;
+    color: #343A40;
+}
+
+.adminame{
+    padding: 20px;
+    text-align: left;
+    width: 40rem;
+    float: left;
+
+    margin-left: 10px;
+    line-height: 5px;
+    color: #000000;
+}
+
+.adremove{
+    padding: 5px;
+    text-align: right;
+    width: 20rem;
+    margin: auto;
+    margin-right: 50px;
+    float: right;
+    margin-top: 40px;
+    line-height: 5px;
+    color: #000000;
+}
+
+.adremove button{
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #343A40;
+    /* Remove default button styles */
+    border: none;
+    outline: none; /* This removes the default focus outline */
+    background: none; /* This removes any default background */
+    cursor: pointer;
+    text-decoration: underline;
+
+}
+
+.adrequest{
+    width: 10%;
+    margin: auto;
+    text-align: center;
+    color: white;
+}
+
+.adrequest p{
+    background-color: #E7AF41;
+    padding: 2px ;
+    border-radius: 50px;
+}
+
+/* box inside the white */
+.adassign{
+    text-align: left;
+    width: auto;
+    margin: auto 20px;
+    padding-top: 30px;
+} 
+
+.adassign p{
+    border-radius: 5px;
+    padding: 5px 20px;
+    border: solid 2px;
+}
+
+/* box inside the white */
+.adassign{
+    text-align: left;
+    /* width: AUTO%; IF YOU WANT TO INCREASE DEPENDING ON THE WIDTH VALUES */
+    width: 50%;
+    margin: auto 20px;
+    padding-top: 30px;;
+}
+
+.adassign p{
+    border-radius: 5px;
+    padding: 5px 20px;
+    border: solid 2px;
+    background-color: white;
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+
+.info{
+    width: 100%;
+    display: flex;
+    margin: auto;
+    text-align: justify; /* For Edge */
+    text-align-last: right;
+}
+
+.rolesinfo{
+    width: 100%;
+    font-size: 20px;
+    padding: 5px;
+    margin: 0;
+}
+
+.rolesinfo a{
+    text-decoration: none;
+    color: #343A40;
+}
+
+.rolesinfo a:hover{
+    text-decoration: underline;
+    color: #343A40;
+
+}
+

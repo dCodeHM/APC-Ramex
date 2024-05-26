@@ -1,0 +1,116 @@
+/* General Styles */
+body {
+  font-family: sans-serif; /* Choose your preferred font family */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  background-color: #f0f0f0; /* Light background color */
+}
+
+a {
+  text-decoration: none; /* Remove underline from links */
+  color: #333; /* Darker text color for links */
+}
+
+/* Login Box Styles */
+#box {
+  width: 300px; /* Set width of the login box */
+  margin: 100px auto; /* Center the box vertically and horizontally */
+  padding: 30px; /* Add padding inside the box */
+  border: 1px solid #ccc; /* Add a light border */
+  border-radius: 5px; /* Add rounded corners */
+  background-color: #fff; /* White background for the box */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+#box h1, #box h2 {
+  text-align: center; /* Center text for headings within the box */
+  margin-bottom: 20px; /* Add space below headings */
+}
+
+#box input[type="text"], #box input[type="password"] {
+  width: 100%; /* Make input fields full width */
+  padding: 10px; /* Add padding to input fields */
+  margin-bottom: 15px; /* Add space between input fields */
+  border: 1px solid #ccc; /* Add border to input fields */
+  border-radius: 3px; /* Add rounded corners to input fields */
+}
+
+#box input[type="submit"] {
+  background-color: #4CAF50; /* Green background for submit button */
+  color: white; /* White text for submit button */
+  padding: 10px 20px; /* Add padding to submit button */
+  border: none; /* Remove border from submit button */
+  border-radius: 3px; /* Add rounded corners to submit button */
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+#box input[type="submit"]:hover {
+  background-color: #3e8e41; /* Darker green on hover for submit button */
+}
+
+/* Animation for Login Title */
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+#box h1 {
+  animation: fadeIn 1s ease-in-out; /* Add animation */
+}
+
+/* Flexbox for Login Form */
+#box form {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center form elements horizontally */
+}
+
+#box input[type="text"], #box input[type="password"], #box input[type="email"] {
+  transition: all 0.2s ease-in-out; /* Add transition for smooth animations */
+}
+
+#box input[type="text"]:hover, #box input[type="password"]:hover, #box input[type="email"]:hover {
+  border-color: #4CAF50; /* Change border color on hover */
+}
+
+#box input[type="submit"]:hover {
+  transform: scale(1.02); /* Slight scale up on hover */
+}
+
+#box {
+  /* Adjust width based on your preference */
+  width: 350px; /* Example width */
+  margin: 100px auto; /* Center the box vertically and horizontally */
+  padding: 30px; /* Add padding inside the box */
+  border: 1px solid #ccc; /* Add a light border */
+  border-radius: 5px; /* Add rounded corners */
+  background-color: #fff; /* White background for the box */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+h1 {
+  font-size: 2em; /* Example font size for the Welcome! heading */
+  text-align: center; /* Center the text */
+  margin-bottom: 20px; /* Add space below the heading */
+}
+
+h2 {
+  font-size: 1.5em; /* Example font size for the LOGIN subheading */
+  text-align: center; /* Center the text */
+  margin-bottom: 20px; /* Add space below the subheading */
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%; /* Make input fields full width */
+  padding: 10px; /* Add padding to input fields */
+  margin-bottom: 15px; /* Add space between input fields */
+  border: 1px solid #ccc; /* Add border to input fields */
+  border-radius: 3px; /* Add rounded corners to input fields */
+}
+
+input[type="submit"] {
+  background-color: #4CAF50; /* Green background for submit button */
+  color: white; /* White text for submit button */
+  padding: 10px 20px; 
+}/* Add padding

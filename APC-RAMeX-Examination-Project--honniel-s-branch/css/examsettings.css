@@ -1,0 +1,61 @@
+.main_container {
+  position: fixed;
+  top: 7rem;
+  left: 50px;
+  background: #343A40;
+  width: 360px; /* Use fixed width in pixels */
+  height: 100%;
+  min-height: 50rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.diva, .divb {
+  width: 360px; /* Use fixed width in pixels */
+  height: calc(100% - 80px); /* Adjust height to account for padding */
+  display: none;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  padding: 40px;
+}
+.diva {
+  background: #454C52;
+}
+.divb {
+  background: #454C52;
+  overflow-y: auto;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+}
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #343A40;
+  width: 200px;
+  height: 36px;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  transition: background 0.2s;
+}
+
+.button img {
+  margin-right: 5px;
+  width: 20px;
+} 
+.button:hover {
+  background: #454C52;
+  color: #E7AF42;
+}
+.button.active {
+  background: #454C52;
+  color: white;
+}

@@ -1,0 +1,76 @@
+/* Default style for search box */
+.form-control {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+/* Placeholder style */
+.form-control::placeholder {
+  color: #999;
+}
+
+.form-control {
+  position: relative;
+  width: 100%;
+  width: 500px;
+  min-width: 100%;
+  height: 50px;
+  padding: 10px 30px 10px 10px; /* Adjust padding to accommodate the icon */
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  box-sizing: border-box;
+  border-color: black;
+  border-width: medium;
+}
+
+
+.form-control > i {
+	font-size: 20px;
+	color: #777;
+}
+
+.form-control > input{
+	flex: 1;
+	height: 40px;
+	border: none;
+	outline: none;
+	font-size: 18px;
+	padding-left: 10px;
+}
+
+.searchicon {
+  position: relative;
+}
+
+.input-container {
+  position: relative;
+  display: inline-block;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 20px; /* Adjust the size of the icon */
+  height: auto;
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+  .form-control {
+    font-size: 14px; /* Adjust font size for smaller screens */
+  }
+}
+
+/* Media query for even smaller screens */
+@media screen and (max-width: 480px) {
+  .form-control {
+    font-size: 12px; /* Further adjust font size for very small screens */
+  }
+}

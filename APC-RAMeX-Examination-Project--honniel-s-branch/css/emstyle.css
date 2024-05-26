@@ -1,0 +1,234 @@
+header #branding #emactive{
+  margin-top: 10px;
+  width: 65px;
+  min-height: 10%;
+  margin-bottom: 0;
+}
+
+.containerem{
+  width:95%;
+}
+
+/* label */
+.rightemhead{
+  display: flex;
+  height: 120px;
+  align-items: center;
+  text-align: left;
+  width: 95%;
+  margin: auto;
+}
+
+.adminemline{
+  border-top: 5px solid black;
+  border-radius: 5px;
+  width: 95%;
+  margin: auto;
+}
+
+.adminemhead{
+  width: 90%;
+  text-align: right;
+  margin-left: 0;
+      p{
+          margin: auto;
+      }
+}
+
+.adminemicon{
+  width: 7%;
+  padding: 5px;
+  margin: auto;
+      img{
+          width: 70px;
+      }
+}
+
+.adminemhead p{
+  font-size: 46px;
+  font-weight: 700;
+  text-align: left;
+  color: #343A40;
+}
+
+/*2 boxes below line*/
+.embox{
+  display: block;
+  
+}
+
+#emservices{
+  width: 95%;
+  margin: auto;
+  overflow: hidden;
+}
+
+.boxem{
+  width: 90%;
+  float: left;
+  padding: 0;
+  position: relative;
+  margin: 1%;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 3px rgba(0, 0, 0, 0.3);
+      img{
+          width: 100%;
+      }
+
+      p{
+          padding: 5px 20px;
+          font-size: 18px;
+      }
+  
+}
+
+
+.heading {
+  font-weight: bold;
+  font-size: 15px;
+  text-align: center;
+}
+
+.form {
+  height: 30vh;
+  background-color: #fff;
+  border-radius: 10px;
+  width: 100%;
+  margin: auto;
+  border: 1px solid black;
+  box-shadow: #2d2d2d;
+  padding: 15px;
+}
+
+.inputcolumn {
+  display: flex;
+}
+
+.label {
+  color: #334fec;
+  font-size: 15px;
+  width: 50%;
+}
+
+.input {
+  border-radius: 10px;
+  height: 35px;
+  width: 100%;
+}
+
+.malakingbox {
+  border-radius: 8px;
+  background-color: #2d2d2d;
+  color: #fff;
+  text-align: center;
+  margin: auto;
+  width: 100%;
+  font-size: 25px;
+  font-weight: bolder;
+  padding: 25px;
+  display: block;
+  justify-content: center;
+  align-items: center;
+  float: inherit;
+  position: relative;
+  margin: 1%;
+  border-radius: 5px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.popup_bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Adjust the opacity to darken/lighten */
+  z-index: 9999;
+  /* Make sure the overlay is above everything else */
+}
+
+.Add_popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 10000;
+  /* Make sure the popup is above the overlay */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  /* Add a shadow for depth */
+}
+
+.save {
+  width: 200px;
+  height: 55px;
+  right: 1rem;
+  bottom: 1rem;
+  position: absolute;
+  background: #343A40;
+  color: #FFFFFF;
+  text-decoration: bold;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  cursor: pointer;
+
+}
+
+.save:hover {
+  color: #334fec;
+  background-color: #dfdfdf;
+  border-radius: 10px;
+}
+
+.update {
+  width: 200px;
+  height: 55px;
+  right: 1rem;
+  bottom: 1rem;
+  position: absolute;
+  background: #343A40;
+  color: #FFFFFF;
+  text-decoration: bold;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.update:hover {
+  color: #334fec;
+  background-color: #dfdfdf;
+  border-radius: 10px;
+}
+
+.cancelbutton {
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+
+}
+
+.cancel {
+  width: 200px;
+  height: 55px;
+  right: 14rem;
+  bottom: 1rem;
+  position: absolute;
+  background: #EDEDED;
+  color: #343A40;
+  text-decoration: bold;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.cancel.hover {
+  text-decoration: none;
+  background: #EDEDED;
+  color: #343A40;
+  width: 100%;
+}
+</style>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <meta name="author" content="APC AcademX">
+        <title>APC AcademX | Course Assessment</title>
+        <link rel="stylesheet" href="./css/style.css">
+    </head>
+
+    <body>
+
+        <header>
+            <div class="container1">
+
+                <div id="branding">
+                    <a href="index.php"><img src="./img/APC AcademX Logo.png"></a>
+                </div>
+
+                <nav>
+                    <ul>
+                        <li class="username"><h3>Einstein Yong</h3></li>
+
+                        <li class="notification">
+                            <a href="#"><img src="./img/Notification.png"></a>
+                            <ul class="dropdown">
+                                <img src="./img/Notification Title.png">
+                            </ul>
+                        </li>
+
+                        <li class="user">
+                            <a href="#"><img src="./img/LOGO (2) 1.png"></a>
+                            <ul class="dropdown">
+                                <h3>ADMIN</h3>
+                                <p>PROFESSOR</p>
+                                <a class="settings"><li>Settings⚙️</li></a>
+                                <a class="logout"><li>Logout[➡</li></a>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+
+            </div>
+        
+        </header>
+        
+        <script src="" async defer></script>
+    </body>
+</html>
