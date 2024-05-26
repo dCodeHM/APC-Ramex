@@ -111,10 +111,9 @@ body {
 }
 
 .right-header #logo{
-    height: 10rem; /* Adjust the height as needed */
+    height: 4rem; /* Adjust the height as needed */
     display: flex;
     margin-left: 0rem;
-    margin-top: 0.5rem;
     align-items: center; /* Align content vertically */
 }
 

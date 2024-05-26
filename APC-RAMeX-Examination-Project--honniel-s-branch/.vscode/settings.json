@@ -1,9 +1,0 @@
-{
-    "background.fullscreen": {
-        "images": [""],
-        "opacity": 1.0,
-        "size": "center",
-        "position": "center",
-        "interval": 0
-    }
-}
