@@ -48,7 +48,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
 
     <ul class="right-header">
     <li class="logo">
-        <a href="index.php"><img id="logo" src="img/logo.png"></a>
+        <a href="index.php"><img id="logo" src="img/APC AcademX Logo.png"></a>
     </li>
     </ul>
 

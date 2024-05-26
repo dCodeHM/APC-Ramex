@@ -80,9 +80,9 @@ if ($user_role == 'Executive Director') {
 
                     <ul class="right-header">
         <li class="logo">
-            <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
+            <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/APC AcademX Logo.png"></a>
         </li>
-    </ul>
+    </ul>   
 
                     <ul class="left-header">
                         <?php
@@ -203,18 +203,20 @@ if ($user_role == 'Executive Director') {
                                 <div class="adminmehead" style="margin-left: 50px ;display: flex">
                                     <p> My Exams </p>
                                     <?php if (!$update) : ?>
-                                    <button class="addbutt" onclick="showPopup()">
+                                    <button class="addbutt" onclick="showPopup()" style="margin-left: 30px">
                                         <i class="fa-solid fa-circle-plus"></i>
                                     </button>
                                 <?php endif; ?>
                                 <script src="./myexams.js"></script>
+                                
+                                <div class="searchicon" style="display: flex; align-items: center; margin-left: auto" >
+                                    <input type="text" class="searchbar" id="live_search" placeholder="Search a Course Folder...">
+                                </div>
                                 </div>
 
                                 
 
-                                <div class="searchicon" style="position:relative; left: 45%">
-                                    <input type="text" class="searchbar" id="live_search" placeholder="Search a Course Folder...">
-                                </div>
+
                             </div>
 
                             <div class="system-list">
