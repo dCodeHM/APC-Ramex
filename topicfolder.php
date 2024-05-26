@@ -45,69 +45,69 @@ if (isset($_POST['create_exam'])) {
     }
     $exam_id = $stmt->insert_id;
 
-    function getRandomQuestions($conn, $difficulty, $limit)
-    {
-        $sql = "SELECT * FROM question_library WHERE difficulty = ? ORDER BY RAND() LIMIT ?";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            die("Error preparing statement: " . $conn->error);
-        }
-        $stmt->bind_param("si", $difficulty, $limit);
-        if (!$stmt->execute()) {
-            die("Error executing statement: " . $stmt->error);
-        }
-        return $stmt->get_result();
-    }
+    // function getRandomQuestions($conn, $difficulty, $limit)
+    // {
+    //     $sql = "SELECT * FROM question_library WHERE difficulty = ? ORDER BY RAND() LIMIT ?";
+    //     $stmt = $conn->prepare($sql);
+    //     if (!$stmt) {
+    //         die("Error preparing statement: " . $conn->error);
+    //     }
+    //     $stmt->bind_param("si", $difficulty, $limit);
+    //     if (!$stmt->execute()) {
+    //         die("Error executing statement: " . $stmt->error);
+    //     }
+    //     return $stmt->get_result();
+    // }
 
-    $order = 1;
+    // $order = 1;
 
-    // Fetch and insert random easy questions
-    $easy_questions_result = getRandomQuestions($conn, 'E', $easy_questions);
-    while ($question = $easy_questions_result->fetch_assoc()) {
-        $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, `order`, date_created)
-                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            die("Error preparing statement: " . $conn->error);
-        }
-        $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $order);
-        if (!$stmt->execute()) {
-            die("Error executing statement: " . $stmt->error);
-        }
-        $order++;
-    }
+    // // Fetch and insert random easy questions
+    // $easy_questions_result = getRandomQuestions($conn, 'E', $easy_questions);
+    // while ($question = $easy_questions_result->fetch_assoc()) {
+    //     $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, `order`, date_created)
+    //             VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+    //     $stmt = $conn->prepare($sql);
+    //     if (!$stmt) {
+    //         die("Error preparing statement: " . $conn->error);
+    //     }
+    //     $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $order);
+    //     if (!$stmt->execute()) {
+    //         die("Error executing statement: " . $stmt->error);
+    //     }
+    //     $order++;
+    // }
 
-    // Fetch and insert random normal questions
-    $normal_questions_result = getRandomQuestions($conn, 'N', $normal_questions);
-    while ($question = $normal_questions_result->fetch_assoc()) {
-        $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, `order`, date_created)
-                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            die("Error preparing statement: " . $conn->error);
-        }
-        $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $order);
-        if (!$stmt->execute()) {
-            die("Error executing statement: " . $stmt->error);
-        }
-        $order++;
-    }
+    // // Fetch and insert random normal questions
+    // $normal_questions_result = getRandomQuestions($conn, 'N', $normal_questions);
+    // while ($question = $normal_questions_result->fetch_assoc()) {
+    //     $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, `order`, date_created)
+    //             VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+    //     $stmt = $conn->prepare($sql);
+    //     if (!$stmt) {
+    //         die("Error preparing statement: " . $conn->error);
+    //     }
+    //     $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $order);
+    //     if (!$stmt->execute()) {
+    //         die("Error executing statement: " . $stmt->error);
+    //     }
+    //     $order++;
+    // }
 
-    // Fetch and insert random hard questions
-    $hard_questions_result = getRandomQuestions($conn, 'H', $hard_questions);
-    while ($question = $hard_questions_result->fetch_assoc()) {
-        $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, `order`, date_created)
-                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            die("Error preparing statement: " . $conn->error);
-        }
-        $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $order);
-        if (!$stmt->execute()) {
-            die("Error executing statement: " . $stmt->error);
-        }
-        $order++;
-    }
+    // // Fetch and insert random hard questions
+    // $hard_questions_result = getRandomQuestions($conn, 'H', $hard_questions);
+    // while ($question = $hard_questions_result->fetch_assoc()) {
+    //     $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, `order`, date_created)
+    //             VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+    //     $stmt = $conn->prepare($sql);
+    //     if (!$stmt) {
+    //         die("Error preparing statement: " . $conn->error);
+    //     }
+    //     $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $order);
+    //     if (!$stmt->execute()) {
+    //         die("Error executing statement: " . $stmt->error);
+    //     }
+    //     $order++;
+    // }
 
     // Redirect to examcreator.php with the course_topic_id
     header("Location: examcreator.php?course_topic_id=$course_topic_id&course_code=$courseCode");
