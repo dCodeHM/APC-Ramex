@@ -213,56 +213,33 @@ $courseFolderName = $courseCode;
             <div class="popup-hidden">
                 <div class="popup_bg"></div>
                 <div class="Add_popup">
-                    <!-- Inside the form -->
-                    ...
-                    <form action="topicfolder.php" method="post">
-                        <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
-                        <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
+                    <h1>Create Exam</h1>
+                    <p style="color: #71717A; margin-bottom: 8px;">
+                        Create a new exam for this course folder.
+                    </p>
 
-                        <div class="inputcolumn">
-                            <label class="label" for="course_topics">Course Topic</label>
-                            <input class="input" type="text" name="course_topics" placeholder="Your Course Topics" required><br />
+                    <form action="topicfolder.php" method="post" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; align-items: center; font-size: 1.25rem;">
+                            <label style="width: 33.33%; margin-right: 8px; font-weight: bold; color: #71717A;" for="course_topics">Course Topic</label>
+                            <input style="flex-grow: 1; padding: 8px 16px; border: 1px solid #71717A; border-radius: 4px; outline: none; focus: ring-2 ring-offset-2 ring-opacity-50; ring-color: #428bca;" type="text" name="course_topics" placeholder="Your Course Topics" required>
                         </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="easy_questions">Easy</label>
-                            <input class="input" type="number" name="easy_questions" placeholder="How many Easy question/s?" required><br />
+                        <div style="display: flex; align-items: center; font-size: 1.25rem;">
+                            <label style="width: 33.33%; margin-right: 8px; font-weight: bold; color: #71717A;" for="course_topics">Easy Questions/s</label>
+                            <input style="flex-grow: 1; padding: 8px 16px; border: 1px solid #71717A; border-radius: 4px; outline: none; focus: ring-2 ring-offset-2 ring-opacity-50; ring-color: #428bca;" type="number" name="easy_questions" placeholder="How many Easy question/s?" required>
                         </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="normal_questions">Normal</label>
-                            <input class="input" type="number" name="normal_questions" placeholder="How many Normal question/s?" required><br />
+                        <div style="display: flex; align-items: center; font-size: 1.25rem;">
+                            <label style="width: 33.33%; margin-right: 8px; font-weight: bold; color: #71717A;" for="course_topics">Normal Question/s</label>
+                            <input style="flex-grow: 1; padding: 8px 16px; border: 1px solid #71717A; border-radius: 4px; outline: none; focus: ring-2 ring-offset-2 ring-opacity-50; ring-color: #428bca;" type="number" name="normal_questions" placeholder="How many Normal question/s?" required>
                         </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="hard_questions">Hard</label>
-                            <input class="input" type="number" name="hard_questions" placeholder="How many Hard question/s?" required><br />
+                        <div style="display: flex; align-items: center; font-size: 1.25rem;">
+                            <label style="width: 33.33%; margin-right: 8px; font-weight: bold; color: #71717A;" for="course_topics">Hard Question/s</label>
+                            <input style="flex-grow: 1; padding: 8px 16px; border: 1px solid #71717A; border-radius: 4px; outline: none; focus: ring-2 ring-offset-2 ring-opacity-50; ring-color: #428bca;" type="number" name="hard_questions" placeholder="How many Hard question/s?" required>
                         </div>
-                        <div class="inputcolumn">
-                            <label class="label" for="total_questions">Total Questions</label>
-                            <input class="input" type="number" name="total_questions" placeholder="Total Questions" required><br />
-                        </div>
-
-                        <div class="inputcolumn">
-                            <label class="label" for="difficulty">Difficulty</label>
-                            <input class="input" type="number" name="difficulty" placeholder="Enter difficulty level" required><br />
-                        </div>
-
-                        <div class="inputcolumn">
-                            <label class="label" for="reuse_questions">Reuse Questions from Library</label>
-                            <select name="reuse_questions[]" multiple>
-                                <?php
-                                $sql = "SELECT * FROM question_library";
-                                $result = $conn->query($sql);
-                                while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='{$row['question_library_id']}'>{$row['question_text']} ({$row['difficulty']})</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-
-                        <button type="submit" name="create_exam">Create Exam</button>
+                        <button type="submit" name="create_exam" style="background-color: #428bca; padding: 8px 16px; color: white; font-weight: bold; border: none; border-radius: 4px; outline: none; focus: ring-2 ring-offset-2 ring-opacity-50; ring-color: #316fac; font-size: 1.25rem; margin-top: 16px;">Create Exam</button>
                     </form>
-                    ...
-
                 </div>
+
+
             </div>
 
             <!--boxes-->
