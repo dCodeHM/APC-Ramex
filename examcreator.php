@@ -82,6 +82,10 @@ $questions_result = $stmt->get_result();
 
 // Handle form submission
 if (isset($_POST['save_exam'])) {
+    // Log the received form data
+    error_log("Received form data: " . print_r($_POST, true));
+    error_log("Received files: " . print_r($_FILES, true));
+
     // ----------------------------- Exam Details -----------------------------
 
     // Update exam details
@@ -147,127 +151,6 @@ if (isset($_POST['save_exam'])) {
             die("Error executing statement: " . $stmt->error);
         }
     }
-
-    // Insert new questions
-    $new_question_texts = $_POST['new_question_text'];
-    $new_clo_ids = $_POST['new_clo_id'];
-    $new_difficulties = $_POST['new_difficulty'];
-    $new_question_points = $_POST['new_question_points'];
-
-    foreach ($new_question_texts as $question_index => $new_question_text) {
-        // Prepare question data
-        $question_text = mysqli_real_escape_string($conn, $new_question_text);
-        $clo_id = mysqli_real_escape_string($conn, $new_clo_ids[$question_index]);
-        $difficulty = mysqli_real_escape_string($conn, $new_difficulties[$question_index]);
-        $points = intval($new_question_points[$question_index]);
-
-        // Get the highest answer_id from the question_choices table
-        $sql = "SELECT MAX(answer_id) AS max_answer_id FROM question_choices";
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $answer_id = $row['max_answer_id'] + 1;
-        } else {
-            $answer_id = 1;
-        }
-
-        // Check if question image is uploaded
-        $question_image = null;
-        if (isset($_FILES['new_question_image']['tmp_name'][$question_index]) && !empty($_FILES['new_question_image']['tmp_name'][$question_index])) {
-            if ($_FILES['new_question_image']['error'][$question_index] === UPLOAD_ERR_OK) {
-                $question_image = file_get_contents($_FILES['new_question_image']['tmp_name'][$question_index]);
-            } else {
-                echo "Error uploading file: " . $_FILES['new_question_image']['error'][$question_index];
-                continue; // Skip to the next iteration if there's an error uploading the image
-            }
-        }
-
-        // Prepare SQL statement based on the presence of question image
-        if ($question_image !== null) {
-            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, answer_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                die("Error preparing statement: " . $conn->error);
-            }
-            $stmt->bind_param("issssis", $exam_id, $question_text, $question_image, $clo_id, $difficulty, $points, $answer_id);
-        } else {
-            $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, answer_id)
-        VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                die("Error preparing statement: " . $conn->error);
-            }
-            $stmt->bind_param("isssss", $exam_id, $question_text, $clo_id, $difficulty, $points, $answer_id);
-        }
-
-        // Execute SQL statement
-        if (!$stmt->execute()) {
-            die("Error executing statement: " . $stmt->error);
-        }
-
-        // Parse the new_is_correct_unparsed string into an array
-        $new_is_correct_parsed = json_decode($_POST['new_is_correct_string']);
-
-        // Loop through the choices and insert them into the question_choices table based on the new_is_correct_parsed array
-        $new_answer_texts = isset($_POST['new_answer_text']) ? $_POST['new_answer_text'] : array();
-
-        foreach ($new_is_correct_parsed[$question_index] as $choice_index => $is_correct) {
-            // Extract each choice data
-            $new_answer_text = isset($new_answer_texts[$choice_index]) ? $new_answer_texts[$choice_index] : '';
-
-            $new_image_content = null;
-            if (
-                !empty($_FILES['new_answer_image']['tmp_name'][$choice_index])
-                && file_exists($_FILES['new_answer_image']['tmp_name'][$choice_index])
-            ) {
-                $new_image_content = file_get_contents($_FILES['new_answer_image']['tmp_name'][$choice_index]);
-            }
-
-            $new_letter = chr(65 + $choice_index);
-
-            // Print $question_index and $choice_index in the server
-            echo 'question_index: ' . $question_index . '<br>';
-            echo 'choice_index: ' . $choice_index . '<br></br>';
-
-            // Prepare SQL statement based on the presence of answer image
-            if ($new_image_content !== null) {
-                // Prepare SQL statement
-                $sql = "INSERT INTO question_choices (answer_text, answer_image, is_correct, letter, answer_id) VALUES (?, ?, ?, ?, ?)";
-                $stmt = $conn->prepare($sql);
-
-                // Check if the SQL statement is valid
-                if (!$stmt) {
-                    die("Error preparing statement: " . $conn->error);
-                }
-
-                // Bind parameters
-                $stmt->bind_param("ssssi", $new_answer_text, $new_image_content, $is_correct, $new_letter, $answer_id);
-            } else {
-                // Prepare SQL statement
-                $sql = "INSERT INTO question_choices (answer_text, is_correct, letter, answer_id) VALUES (?, ?, ?, ?)";
-                $stmt = $conn->prepare($sql);
-                if (!$stmt) {
-                    die("Error preparing statement: " . $conn->error);
-                }
-
-                // Bind parameters
-                $stmt->bind_param("sssi", $new_answer_text, $is_correct, $new_letter, $answer_id);
-            }
-
-            // Execute SQL statement
-            if (!$stmt->execute()) {
-                die("Error executing statement: " . $stmt->error);
-            }
-
-            // Close the prepared statement
-            $stmt->close();
-        }
-
-        // die();
-    }
-
 
     // Redirect back to the exam creator page
     header("Location: examcreator.php?course_topic_id=$course_topic_id");
@@ -449,7 +332,7 @@ if (isset($_POST['save_exam'])) {
 
     <!-- Main Exam Creator -->
     <main class="ml-[400px] mt-[70px] px-20 py-10">
-        <form class="w-full" method="POST" enctype="multipart/form-data">
+        <form id="examForm" class="w-full" method="POST" enctype="multipart/form-data">
             <h2 class="font-semibold mb-2">Exam Details</h2>
 
             <input class="mb-4 outline w-full outline-zinc-300 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
@@ -692,14 +575,13 @@ if (isset($_POST['save_exam'])) {
 
         // ----------------------------- Main Script -----------------------------
 
-        // Set empty array for new_is_correct
+        // Set empty arrays for new_is_correct, new_answer_text, and new_answer_image
         var new_is_correct = [];
+        var new_answer_text = [];
+        var new_answer_image = [];
 
-        // Read event if checkbox is checked, then loop through it, if last is checked, and length of checkboxes is 3 then it will be [0, 0, 1] as an example, the name of the checkbox is new_is_correct[]
-        $(document).on("change", "input[name='new_is_correct[]']", function() {
+        function updateIsCorrectArray() {
             new_is_correct = [];
-
-            // Loop through new-question id, then find new_is_correct[] in it, then push an array inside new_is_correct, so it will array of an array
             $(".new-question").each(function() {
                 var is_correct = [];
                 $(this).find("input[name='new_is_correct[]']").each(function() {
@@ -707,16 +589,65 @@ if (isset($_POST['save_exam'])) {
                 });
                 new_is_correct.push(is_correct);
             });
+            console.log("New Is Correct:", new_is_correct);
+        }
 
-            console.log(new_is_correct);
-            console.log('length of new-question', $(".new-question").length);
-        });
+        function updateAnswerTextArray() {
+            new_answer_text = [];
+            $(".new-question").each(function() {
+                var answer_text = [];
+                $(this).find("input[name='new_answer_text[]']").each(function() {
+                    answer_text.push($(this).val());
+                });
+                new_answer_text.push(answer_text);
+            });
+            console.log("New Answer Text:", new_answer_text);
+        }
 
-        // Create a hidden input named new_is_correct_string to store the new_is_correct array as a string
-        $(document).on("change", "input[name='new_is_correct[]']", function() {
+        function updateAnswerImageArray() {
+            new_answer_image = [];
+            $(".new-question").each(function() {
+                var answer_image = [];
+                $(this).find("input[name='new_answer_image[]']").each(function() {
+                    var file = $(this)[0].files[0];
+                    answer_image.push(file ? file : null);
+                });
+                new_answer_image.push(answer_image);
+            });
+            console.log("New Answer Image:", new_answer_image);
+        }
+
+        function updateHiddenInputs() {
             var new_is_correct_string = JSON.stringify(new_is_correct);
-            $(this).append(`<input type="hidden" name="new_is_correct_string" value='${new_is_correct_string}'>`);
+            var new_answer_text_string = JSON.stringify(new_answer_text);
+            $("input[name='new_is_correct_string']").remove();
+            $("input[name='new_answer_text_string']").remove();
+            $("<input>").attr({
+                type: "hidden",
+                name: "new_is_correct_string",
+                value: new_is_correct_string
+            }).appendTo("form");
+            $("<input>").attr({
+                type: "hidden",
+                name: "new_answer_text_string",
+                value: new_answer_text_string
+            }).appendTo("form");
+        }
+
+        $(document).on("change", "input[name='new_is_correct[]']", function() {
+            updateIsCorrectArray();
+            updateHiddenInputs();
         });
+
+        $(document).on("input", "input[name='new_answer_text[]']", function() {
+            updateAnswerTextArray();
+            updateHiddenInputs();
+        });
+
+        $(document).on("change", "input[name='new_answer_image[]']", function() {
+            updateAnswerImageArray();
+        });
+        // Read even
 
         // ----------------------------- Event Listeners -----------------------------
 
@@ -782,6 +713,55 @@ if (isset($_POST['save_exam'])) {
 
         $(document).ready(function() {
             fetchTotalPoints();
+
+            // Form submission validation
+            $("#examForm").on("submit", async function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Create a new FormData object
+                var formData = new FormData(this);
+
+                // Append the exam ID to the form data
+                formData.append("exam_id", <?php echo $exam_id; ?>);
+
+                // Append the new_is_correct and new_answer_text arrays to the FormData object
+                formData.append("new_is_correct", JSON.stringify(new_is_correct));
+                formData.append("new_answer_text", JSON.stringify(new_answer_text));
+
+                // Append the new_answer_image files to the FormData object
+                for (var i = 0; i < new_answer_image.length; i++) {
+                    for (var j = 0; j < new_answer_image[i].length; j++) {
+                        if (new_answer_image[i][j]) {
+                            formData.append(`new_answer_image[${i}][${j}]`, new_answer_image[i][j]);
+                        }
+                    }
+                }
+
+                try {
+                    // Print formData plain
+                    console.log("FormData:", formData);
+
+                    // Send the form data using the Fetch API
+                    const response = await fetch("http://localhost/ramex/api/question-choices/post-question-choices.php", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Error saving exam");
+                    }
+
+                    const data = await response.json();
+                    console.log(data.message);
+
+                    // Reload the page
+                    location.reload();
+
+                } catch (error) {
+                    console.error("Error:", error.message);
+                    // Handle the error
+                }
+            });
 
             $("#add_question").click(function() {
                 // Increment the new order
