@@ -65,8 +65,9 @@ $result = $stmt->get_result();
 $exam = $result->fetch_assoc();
 $exam_id = $exam['exam_id'];
 
-// Fetch the questions linked to the exam_id
-$sql = "SELECT * FROM question WHERE exam_id = ? ORDER BY `order`";
+
+// Fetch the instructions based on the exam_id
+$sql = "SELECT * FROM question WHERE exam_id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Error preparing statement: " . $conn->error);
@@ -113,49 +114,45 @@ if (isset($_POST['save_exam'])) {
     $clo_ids = isset($_POST['clo_id']) ? $_POST['clo_id'] : array();
     $difficulties = isset($_POST['difficulty']) ? $_POST['difficulty'] : array();
     $question_points = isset($_POST['question_points']) ? $_POST['question_points'] : array();
-    $orders = isset($_POST['order']) ? $_POST['order'] : array();
+    $answer_texts = isset($_POST['answer_text']) ? $_POST['answer_text'] : array();
 
     foreach ($question_ids as $index => $question_id) {
         $question_text = mysqli_real_escape_string($conn, $question_texts[$index]);
         $clo_id = mysqli_real_escape_string($conn, $clo_ids[$index]);
         $difficulty = mysqli_real_escape_string($conn, $difficulties[$index]);
         $points = intval($question_points[$index]);
-        $order = intval($orders[$index]);
 
         // Handle question image upload
         if (isset($_FILES['question_image']['tmp_name'][$index]) && !empty($_FILES['question_image']['tmp_name'][$index])) {
             if ($_FILES['question_image']['error'][$index] === UPLOAD_ERR_OK) {
                 $question_image = file_get_contents($_FILES['question_image']['tmp_name'][$index]);
-                $sql = "UPDATE question SET question_text = ?, question_image = ?, clo_id = ?, difficulty = ?, question_points = ?, `order` = ? WHERE question_id = ?";
+                $sql = "UPDATE question SET question_text = ?, question_image = ?, clo_id = ?, difficulty = ?, question_points = ? WHERE question_id = ?";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     die("Error preparing statement: " . $conn->error);
                 }
-                $stmt->bind_param("ssssiii", $question_text, $question_image, $clo_id, $difficulty, $points, $order, $question_id);
+                $stmt->bind_param("ssssii", $question_text, $question_image, $clo_id, $difficulty, $points, $question_id);
             } else {
                 echo "Error uploading file: " . $_FILES['question_image']['error'][$index];
             }
         } else {
-            $sql = "UPDATE question SET question_text = ?, clo_id = ?, difficulty = ?, question_points = ?, `order` = ? WHERE question_id = ?";
+            $sql = "UPDATE question SET question_text = ?, clo_id = ?, difficulty = ?, question_points = ? WHERE question_id = ?";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 die("Error preparing statement: " . $conn->error);
             }
-            $stmt->bind_param("sssiii", $question_text, $clo_id, $difficulty, $points, $order, $question_id);
+            $stmt->bind_param("sssii", $question_text, $clo_id, $difficulty, $points, $question_id);
         }
         if (!$stmt->execute()) {
             die("Error executing statement: " . $stmt->error);
         }
     }
 
-
-
     // Insert new questions
     $new_question_texts = $_POST['new_question_text'];
     $new_clo_ids = $_POST['new_clo_id'];
     $new_difficulties = $_POST['new_difficulty'];
     $new_question_points = $_POST['new_question_points'];
-    $new_orders = $_POST['new_order'];
 
     foreach ($new_question_texts as $index => $new_question_text) {
         // Prepare question data
@@ -163,7 +160,6 @@ if (isset($_POST['save_exam'])) {
         $clo_id = mysqli_real_escape_string($conn, $new_clo_ids[$index]);
         $difficulty = mysqli_real_escape_string($conn, $new_difficulties[$index]);
         $points = intval($new_question_points[$index]);
-        $order = intval($new_orders[$index]);
 
         // Get the highest answer_id from the question_choices table
         $sql = "SELECT MAX(answer_id) AS max_answer_id FROM question_choices";
@@ -189,21 +185,21 @@ if (isset($_POST['save_exam'])) {
 
         // Prepare SQL statement based on the presence of question image
         if ($question_image !== null) {
-            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, `order`, answer_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                die("Error preparing statement: " . $conn->error);
-            }
-            $stmt->bind_param("issssiis", $exam_id, $question_text, $question_image, $clo_id, $difficulty, $points, $order, $answer_id);
-        } else {
-            $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, `order`, answer_id) 
+            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, answer_id)
             VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 die("Error preparing statement: " . $conn->error);
             }
-            $stmt->bind_param("isssiis", $exam_id, $question_text, $clo_id, $difficulty, $points, $order, $answer_id);
+            $stmt->bind_param("issssis", $exam_id, $question_text, $question_image, $clo_id, $difficulty, $points, $answer_id);
+        } else {
+            $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, answer_id)
+            VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                die("Error preparing statement: " . $conn->error);
+            }
+            $stmt->bind_param("isssss", $exam_id, $question_text, $clo_id, $difficulty, $points, $answer_id);
         }
 
         // Execute SQL statement
@@ -213,7 +209,6 @@ if (isset($_POST['save_exam'])) {
 
         // Loop through the choices and insert them into the question_choices table one by one based on the answer_id
         $new_answer_texts = isset($_POST['new_answer_text']) ? $_POST['new_answer_text'] : array();
-        $new_is_correct = isset($_POST['new_is_correct']) ? $_POST['new_is_correct'] : array();
 
         for ($i = 0; $i < count($new_answer_texts); $i++) {
             // Extract each choice data
@@ -228,24 +223,28 @@ if (isset($_POST['save_exam'])) {
                 $new_image_content = file_get_contents($_FILES['new_answer_image']['tmp_name'][$i]);
             }
 
-            $new_is_correct_value = in_array(chr(65 + $i), $new_is_correct) ? 1 : 0;
-            $new_letter = chr(65 + $i); // Get the letter from the form data
+            $new_letter = chr(65 + $i);
 
             // Prepare SQL statement based on the presence of answer image
             if ($new_image_content !== null) {
-                $sql = "INSERT INTO question_choices (answer_text, answer_image, is_correct, answer_id, letter) VALUES (?, ?, ?, ?, ?)";
+                // Prepare SQL statement
+                $sql = "INSERT INTO question_choices (answer_text, answer_image, answer_id, letter) VALUES (?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
+
+                // Check if the SQL statement is valid
                 if (!$stmt) {
                     die("Error preparing statement: " . $conn->error);
                 }
-                $stmt->bind_param("ssiss", $new_answer_text, $new_image_content, $new_is_correct_value, $answer_id, $new_letter);
+
+                // Bind the parameters to the prepared statement
+                $stmt->bind_param("ssis", $new_answer_text, $new_image_content, $answer_id, $new_letter);
             } else {
-                $sql = "INSERT INTO question_choices (answer_text, is_correct, answer_id, letter) VALUES (?, ?, ?, ?)";
+                $sql = "INSERT INTO question_choices (answer_text, answer_id, letter) VALUES (?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     die("Error preparing statement: " . $conn->error);
                 }
-                $stmt->bind_param("siss", $new_answer_text, $new_is_correct_value, $answer_id, $new_letter);
+                $stmt->bind_param("sis", $new_answer_text, $answer_id, $new_letter);
             }
 
             // Execute SQL statement
@@ -461,7 +460,6 @@ if (isset($_POST['save_exam'])) {
                 });
 
                 $questionOrder = 1;
-                $instructionOrder = 1;
 
                 foreach ($combined_result as $item) {
                     if ($item['type'] === 'question') {
@@ -494,11 +492,7 @@ if (isset($_POST['save_exam'])) {
                             </div>
 
                             <div class="flex flex-col">
-                                <label class="mb-2" for="question_image">Question Image
-                                    <?php if (empty($question['question_image'])) : ?>
-                                        <span class="text-red-400">No Question Image*</span>
-                                    <?php endif; ?>
-                                </label>
+                                <label class="mb-2" for="question_image">Question Image</label>
                                 <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="question_image[]">
 
                                 <?php if (!empty($question['question_image'])) : ?>
@@ -562,67 +556,65 @@ if (isset($_POST['save_exam'])) {
                             }
 
                             $choices_result = $stmt->get_result();
+                            $choiceIndex = 0;
 
                             while ($choice = $choices_result->fetch_assoc()) {
+                                $choiceLetter = chr(65 + $choiceIndex);
+                                $imageId = "answer_image_{$question['question_id']}_{$choiceIndex}";
                             ?>
                                 <div class="choice flex gap-4 items-center">
-                                    <div class="flex items-center w-[140px]">
-                                        <input class="mr-2" type="checkbox" name="new_is_correct[]" value="A">
-                                        <label for="is_correct">Correct Answer</label>
-                                    </div>
-                                    <p class="font-semibold">A</p>
+                                    <!-- Letter -->
+                                    <p class="font-semibold"><?php echo $choiceLetter; ?></p>
+
+                                    <!-- Answer Text -->
                                     <div class="flex flex-col w-full">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="answer_text[<?php echo $question['question_id']; ?>][]" value="<?php echo htmlspecialchars($choice['answer_text']); ?>">
                                     </div>
+
+                                    <!-- Image -->
                                     <div class="flex flex-col">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="answer_image[<?php echo $question['question_id']; ?>][]">
                                     </div>
+
+                                    <!-- Create a toggle to open and close image -->
+                                    <?php if (!empty($choice['answer_image'])) : ?>
+                                        <script>
+                                            function toggleImage_<?php echo $imageId; ?>() {
+                                                var x = document.getElementById("<?php echo $imageId; ?>");
+                                                if (x.style.display === "none") {
+                                                    x.style.display = "block";
+                                                } else {
+                                                    x.style.display = "none";
+                                                }
+                                            }
+                                        </script>
+
+                                        <button type="button" onclick="toggleImage_<?php echo $imageId; ?>()">Toggle Image</button>
+
+                                        <div id="<?php echo $imageId; ?>" style="display: none;">
+                                            <?php
+                                            $imgData = base64_encode($choice['answer_image']);
+                                            $src = 'data:image/jpeg;base64,' . $imgData;
+                                            ?>
+                                            <img src="<?php echo $src; ?>" alt="Answer Image" style="max-width: 200px; max-height: 200px;">
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
 
-                                <div class="choice flex gap-4 items-center">
-                                    <div class="flex items-center w-[140px]">
-                                        <input class="mr-2" type="checkbox" name="new_is_correct[]" value="B">
-                                        <label for="is_correct">Correct Answer</label>
-                                    </div>
-                                    <p class="font-semibold">B</p>
-                                    <div class="flex flex-col w-full">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                                    </div>
-                                </div>
                             <?php
+                                $choiceIndex++;
                             }
                             ?>
-
-                            <input type="hidden" name="order[]" value="<?php echo htmlspecialchars($question['order']); ?>">
                             <p class="absolute right-[100%] py-2 px-4 rounded-l-lg -z-10 outline outline-1 outline-zinc-200 bg-yellow-400 text-white"><?php echo $questionOrder; ?></p>
                         </div>
 
-
-
-
-                    <?php
-                        $questionOrder++;
-                    } elseif ($item['type'] === 'instruction') {
-                        $instruction = $item['data'];
-                    ?>
-                        <div class="bg-yellow-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="instruction_text">Instruction Text</label>
-                                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="instruction_text[]"><?php echo htmlspecialchars($instruction['instruction_text']); ?></textarea>
-                            </div>
-                            <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
-                            <input type="hidden" name="instruction_order[]" value="<?php echo htmlspecialchars($instruction['order']); ?>">
-                            <p class="absolute right-[100%] py-2 px-4 rounded-l-lg -z-10 outline outline-1 outline-zinc-200 bg-yellow-400 text-white"><?php echo $instructionOrder; ?></p>
-                        </div>
                 <?php
-                        $instructionOrder++;
+                        $questionOrder++;
                     }
                 }
                 ?>
             </div>
+
 
             <div id="new_questions"></div>
 
@@ -715,15 +707,12 @@ if (isset($_POST['save_exam'])) {
         $(document).on("click", ".add-choice-btn", function() {
             var choicesContainer = $(this).siblings(".choices-container");
             var choiceCount = choicesContainer.children(".choice").length;
+            var questionIndex = $(this).closest(".question").index();
 
             if (choiceCount < 5) {
                 var choiceLetter = String.fromCharCode(65 + choiceCount);
                 var choiceHTML = `
             <div class="choice flex gap-4 items-center">
-                <div class="flex items-center w-[140px]">
-                    <input class="mr-2" type="checkbox" name="new_is_correct[]" value="${choiceCount}">
-                    <label for="is_correct">Correct Answer</label>
-                </div>
                 <p class="font-semibold">${choiceLetter}</p>
                 <div class="flex flex-col w-full">
                     <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
@@ -798,42 +787,30 @@ if (isset($_POST['save_exam'])) {
 
 
                         <div class="question-choices">
-            <h4 class="font-semibold mb-2">Question Choices</h4>
+        <h4 class="font-semibold mb-2">Question Choices</h4>
 
-            <div class="choices-container flex flex-col gap-4">
-
-                <div class="choice flex gap-4 items-center">
-                    <div class="flex items-center w-[140px]">
-                        <input class="mr-2" type="checkbox" name="new_is_correct[]" value="1">
-                        <label for="is_correct">Correct Answer</label>
-                    </div>
-                    <p class="font-semibold">A</p>
-                    <div class="flex flex-col w-full">
-                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                    </div>
-                    <div class="flex flex-col">
-                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                    </div>
+        <div class="choices-container flex flex-col gap-4">
+            <div class="choice flex gap-4 items-center">
+                <p class="font-semibold">A</p>
+                <div class="flex flex-col w-full">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
                 </div>
-
-                <div class="choice flex gap-4 items-center">
-                    <div class="flex items-center w-[140px]">
-                        <input class="mr-2" type="checkbox" name="new_is_correct[]" value="1">
-                        <label for="is_correct">Correct Answer</label>
-                    </div>
-                    <p class="font-semibold">B</p>
-                    <div class="flex flex-col w-full">
-                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                    </div>
-                    <div class="flex flex-col">
-                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                    </div>
+                <div class="flex flex-col">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
                 </div>
             </div>
 
+            <div class="choice flex gap-4 items-center">
+                <p class="font-semibold">B</p>
+                <div class="flex flex-col w-full">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                </div>
+                <div class="flex flex-col">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                </div>
+            </div>
 
-
-            <button type="button" class="add-choice-btn px-4 py-2 bg-green-500 text-white rounded-md mt-2">+ Add Choice</button>
+        </div> <button type="button" class="add-choice-btn px-4 py-2 bg-green-500 text-white rounded-md mt-2">+ Add Choice</button>
 
         </div>
 
