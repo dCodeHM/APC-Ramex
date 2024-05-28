@@ -334,3 +334,10 @@ THIS IS FOR THE COLORIZATION OF THE POPUP BACKGROUND
     z-index: 99999;
     overflow: hidden;
 }
+
+.labelName {
+    color: #343A40;
+    font-size: 20px;
+    width: 50%;
+    font-weight: bold; /* This makes the text bold */
+  }

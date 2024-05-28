@@ -67,16 +67,13 @@ $courseFolderName = $courseCode;
     <meta name="viewport" content="width=device-width">
     <meta name="author" content="APC AcademX">
     <title>APC AcademX | Exam Maker</title>
-    <link rel="stylesheet" href="./css/topicstyle.css">
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/adminstyle.css">
-    <link rel="stylesheet" href="./css/emstyle.css">
-    <link rel="stylesheet" href="./css/myexamstyle.css">
-    <link rel="stylesheet" href="./css/topicrectangledesign.css">
     <link rel="stylesheet" href="./css/sidebar.css">
     <link rel="stylesheet" href="./css/header.css">
     <link rel="stylesheet" href="./css/homepage.css">
     <link rel="stylesheet" href="./css/helpbutton.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/adminstyle.css">
+    <link rel="stylesheet" href="./css/topicstyle.css">
     <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./myexams.js"></script>
@@ -229,35 +226,53 @@ $courseFolderName = $courseCode;
                 </button>
             </section>
 
-            <div class="popup-hidden">
-    <div class="popup_bg"></div>
+<div class="popup-hidden">
+    <div class="popup_bg">
     <div class="Add_popup">
         <!-- Inside the form -->
-        <form action="topicfolder.php" method="post" id="createExamForm">
-            <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
-            <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
+    <form action="topicfolder.php" method="post" id="createExamForm">
+        <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly>
+        <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly>
 
-            <div class="inputcolumn">
-                <label class="label" for="course_topics">Course Topic</label>
-                <input class="input" type="text" name="course_topics" placeholder="Your Course Topics" required><br />
+
+        <div style = "display: flex; align-items: center">
+        <img src = "img/folder.png">
+        <p class = "heading"> Create an Exam</p>
+        </div>
+        
+        <div class="inputcolumn">
+            <div>
+            <label class="label" for="course_topics">Course Topic</label>
+            <input class="input" type="text" name="course_topics" placeholder="Topic Name..." required><br />
             </div>
-            <div class="inputcolumn">
+        </div>
+        <div class="inputcolumn">
+            <div style="display: flex; align-items: center; justify-items:center">
+            <div>
                 <label class="label" for="easy_questions">Easy</label>
-                <input class="input" type="number" name="easy_questions" placeholder="How many Easy question/s?" required><br />
-            </div>
-            <div class="inputcolumn">
+                <input class="difficultyinput" type="number" name="easy_questions" placeholder="0" required min="0">
+                </div>
+                <div>
                 <label class="label" for="normal_questions">Normal</label>
-                <input class="input" type="number" name="normal_questions" placeholder="How many Normal question/s?" required><br />
+                <input class="difficultyinput" type="number" name="normal_questions" placeholder="0" required min="0">
+                </div>
+                <div>
+                    <label class="label" for="hard_questions">Hard</label>
+                    <input class="difficultyinput" type="number" name="hard_questions" placeholder="0" required min="0">
+                </div>  
             </div>
-            <div class="inputcolumn">
-                <label class="label" for="hard_questions">Hard</label>
-                <input class="input" type="number" name="hard_questions" placeholder="How many Hard question/s?" required><br />
-            </div>
+        </div>
 
-            <button type="submit" name="create_exam">Create Exam</button>
-            <!-- Cancel button -->
-            <button type="button" onclick="goBack()">Cancel</button>
-        </form>
+        <div>
+        <div class="actionbuttons">
+            <button class="cancel" type="button" onclick="goBack()" style="margin-right: 10px;">Cancel</button>
+            <button class="create" type="submit" name="create_exam">Create</button>
+        </div>
+
+        </div>
+
+    </form>
+    </div>
     </div>
 </div>
 
@@ -269,7 +284,7 @@ $courseFolderName = $courseCode;
         var courseCode = urlParams.get('course_code');
 
         // Construct the new URL
-        var url = 'http://localhost/topic.php';
+        var url = 'http://localhost/old/APC-RAMeX-Examination-Project--honniel-s-branch/topic.php';
         url += '?course_subject_id=' + courseSubjectId;
         url += '&course_code=' + courseCode;
 
@@ -377,6 +392,8 @@ document.getElementById('topicSearch').addEventListener('input', function() {
         }
     });
 });
+
+
 </script>
 <?php
 ?>
