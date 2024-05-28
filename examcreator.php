@@ -154,12 +154,12 @@ if (isset($_POST['save_exam'])) {
     $new_difficulties = $_POST['new_difficulty'];
     $new_question_points = $_POST['new_question_points'];
 
-    foreach ($new_question_texts as $index => $new_question_text) {
+    foreach ($new_question_texts as $question_index => $new_question_text) {
         // Prepare question data
         $question_text = mysqli_real_escape_string($conn, $new_question_text);
-        $clo_id = mysqli_real_escape_string($conn, $new_clo_ids[$index]);
-        $difficulty = mysqli_real_escape_string($conn, $new_difficulties[$index]);
-        $points = intval($new_question_points[$index]);
+        $clo_id = mysqli_real_escape_string($conn, $new_clo_ids[$question_index]);
+        $difficulty = mysqli_real_escape_string($conn, $new_difficulties[$question_index]);
+        $points = intval($new_question_points[$question_index]);
 
         // Get the highest answer_id from the question_choices table
         $sql = "SELECT MAX(answer_id) AS max_answer_id FROM question_choices";
@@ -174,11 +174,11 @@ if (isset($_POST['save_exam'])) {
 
         // Check if question image is uploaded
         $question_image = null;
-        if (isset($_FILES['new_question_image']['tmp_name'][$index]) && !empty($_FILES['new_question_image']['tmp_name'][$index])) {
-            if ($_FILES['new_question_image']['error'][$index] === UPLOAD_ERR_OK) {
-                $question_image = file_get_contents($_FILES['new_question_image']['tmp_name'][$index]);
+        if (isset($_FILES['new_question_image']['tmp_name'][$question_index]) && !empty($_FILES['new_question_image']['tmp_name'][$question_index])) {
+            if ($_FILES['new_question_image']['error'][$question_index] === UPLOAD_ERR_OK) {
+                $question_image = file_get_contents($_FILES['new_question_image']['tmp_name'][$question_index]);
             } else {
-                echo "Error uploading file: " . $_FILES['new_question_image']['error'][$index];
+                echo "Error uploading file: " . $_FILES['new_question_image']['error'][$question_index];
                 continue; // Skip to the next iteration if there's an error uploading the image
             }
         }
@@ -186,7 +186,7 @@ if (isset($_POST['save_exam'])) {
         // Prepare SQL statement based on the presence of question image
         if ($question_image !== null) {
             $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, answer_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?)";
+        VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 die("Error preparing statement: " . $conn->error);
@@ -194,7 +194,7 @@ if (isset($_POST['save_exam'])) {
             $stmt->bind_param("issssis", $exam_id, $question_text, $question_image, $clo_id, $difficulty, $points, $answer_id);
         } else {
             $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, answer_id)
-            VALUES (?, ?, ?, ?, ?, ?)";
+        VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 die("Error preparing statement: " . $conn->error);
@@ -207,28 +207,34 @@ if (isset($_POST['save_exam'])) {
             die("Error executing statement: " . $stmt->error);
         }
 
-        // Loop through the choices and insert them into the question_choices table one by one based on the answer_id
+        // Parse the new_is_correct_unparsed string into an array
+        $new_is_correct_parsed = json_decode($_POST['new_is_correct_string']);
+
+        // Loop through the choices and insert them into the question_choices table based on the new_is_correct_parsed array
         $new_answer_texts = isset($_POST['new_answer_text']) ? $_POST['new_answer_text'] : array();
 
-        for ($i = 0; $i < count($new_answer_texts); $i++) {
+        foreach ($new_is_correct_parsed[$question_index] as $choice_index => $is_correct) {
             // Extract each choice data
-            $new_answer_text = $new_answer_texts[$i];
+            $new_answer_text = isset($new_answer_texts[$choice_index]) ? $new_answer_texts[$choice_index] : '';
 
             $new_image_content = null;
-
             if (
-                !empty($_FILES['new_answer_image']['tmp_name'][$i])
-                && file_exists($_FILES['new_answer_image']['tmp_name'][$i])
+                !empty($_FILES['new_answer_image']['tmp_name'][$choice_index])
+                && file_exists($_FILES['new_answer_image']['tmp_name'][$choice_index])
             ) {
-                $new_image_content = file_get_contents($_FILES['new_answer_image']['tmp_name'][$i]);
+                $new_image_content = file_get_contents($_FILES['new_answer_image']['tmp_name'][$choice_index]);
             }
 
-            $new_letter = chr(65 + $i);
+            $new_letter = chr(65 + $choice_index);
+
+            // Print $question_index and $choice_index in the server
+            echo 'question_index: ' . $question_index . '<br>';
+            echo 'choice_index: ' . $choice_index . '<br></br>';
 
             // Prepare SQL statement based on the presence of answer image
             if ($new_image_content !== null) {
                 // Prepare SQL statement
-                $sql = "INSERT INTO question_choices (answer_text, answer_image, answer_id, letter) VALUES (?, ?, ?, ?)";
+                $sql = "INSERT INTO question_choices (answer_text, answer_image, is_correct, letter, answer_id) VALUES (?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
 
                 // Check if the SQL statement is valid
@@ -236,15 +242,18 @@ if (isset($_POST['save_exam'])) {
                     die("Error preparing statement: " . $conn->error);
                 }
 
-                // Bind the parameters to the prepared statement
-                $stmt->bind_param("ssis", $new_answer_text, $new_image_content, $answer_id, $new_letter);
+                // Bind parameters
+                $stmt->bind_param("ssssi", $new_answer_text, $new_image_content, $is_correct, $new_letter, $answer_id);
             } else {
-                $sql = "INSERT INTO question_choices (answer_text, answer_id, letter) VALUES (?, ?, ?)";
+                // Prepare SQL statement
+                $sql = "INSERT INTO question_choices (answer_text, is_correct, letter, answer_id) VALUES (?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     die("Error preparing statement: " . $conn->error);
                 }
-                $stmt->bind_param("sis", $new_answer_text, $answer_id, $new_letter);
+
+                // Bind parameters
+                $stmt->bind_param("sssi", $new_answer_text, $is_correct, $new_letter, $answer_id);
             }
 
             // Execute SQL statement
@@ -255,6 +264,8 @@ if (isset($_POST['save_exam'])) {
             // Close the prepared statement
             $stmt->close();
         }
+
+        // die();
     }
 
 
@@ -284,7 +295,9 @@ if (isset($_POST['save_exam'])) {
 
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 
     <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
@@ -434,7 +447,8 @@ if (isset($_POST['save_exam'])) {
         </div>
     </div>
 
-    <section class="ml-[400px] mt-[70px] px-20 py-10">
+    <!-- Main Exam Creator -->
+    <main class="ml-[400px] mt-[70px] px-20 py-10">
         <form class="w-full" method="POST" enctype="multipart/form-data">
             <h2 class="font-semibold mb-2">Exam Details</h2>
 
@@ -562,7 +576,11 @@ if (isset($_POST['save_exam'])) {
                                 $choiceLetter = chr(65 + $choiceIndex);
                                 $imageId = "answer_image_{$question['question_id']}_{$choiceIndex}";
                             ?>
+                                <!-- Main Question Choices -->
                                 <div class="choice flex gap-4 items-center">
+                                    <!-- Is Correct -->
+                                    <input type="checkbox" name="is_correct[<?php echo $question['question_id']; ?>][]" value="<?php echo $choice['is_correct']; ?>" <?php if ($choice['is_correct']) echo 'checked'; ?>>
+
                                     <!-- Letter -->
                                     <p class="font-semibold"><?php echo $choiceLetter; ?></p>
 
@@ -623,7 +641,7 @@ if (isset($_POST['save_exam'])) {
                 <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="submit" name="save_exam">Save Exam</button>
             </div>
         </form>
-    </section>
+    </main>
 
     <script>
         totalQuestions = 0;
@@ -674,6 +692,34 @@ if (isset($_POST['save_exam'])) {
 
         // ----------------------------- Main Script -----------------------------
 
+        // Set empty array for new_is_correct
+        var new_is_correct = [];
+
+        // Read event if checkbox is checked, then loop through it, if last is checked, and length of checkboxes is 3 then it will be [0, 0, 1] as an example, the name of the checkbox is new_is_correct[]
+        $(document).on("change", "input[name='new_is_correct[]']", function() {
+            new_is_correct = [];
+
+            // Loop through new-question id, then find new_is_correct[] in it, then push an array inside new_is_correct, so it will array of an array
+            $(".new-question").each(function() {
+                var is_correct = [];
+                $(this).find("input[name='new_is_correct[]']").each(function() {
+                    is_correct.push($(this).is(":checked") ? 1 : 0);
+                });
+                new_is_correct.push(is_correct);
+            });
+
+            console.log(new_is_correct);
+            console.log('length of new-question', $(".new-question").length);
+        });
+
+        // Create a hidden input named new_is_correct_string to store the new_is_correct array as a string
+        $(document).on("change", "input[name='new_is_correct[]']", function() {
+            var new_is_correct_string = JSON.stringify(new_is_correct);
+            $(this).append(`<input type="hidden" name="new_is_correct_string" value='${new_is_correct_string}'>`);
+        });
+
+        // ----------------------------- Event Listeners -----------------------------
+
         // Read event for click in svg delete-question
         $(document).on("click", ".trash-icon", async function() {
             const questionId = $(this).data("question-id");
@@ -713,6 +759,7 @@ if (isset($_POST['save_exam'])) {
                 var choiceLetter = String.fromCharCode(65 + choiceCount);
                 var choiceHTML = `
             <div class="choice flex gap-4 items-center">
+                <input type="checkbox" name="new_is_correct[]" value="1">
                 <p class="font-semibold">${choiceLetter}</p>
                 <div class="flex flex-col w-full">
                     <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
@@ -747,7 +794,7 @@ if (isset($_POST['save_exam'])) {
                 const html = String.raw;
 
                 var questionHTML = `
-                    <div class="bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
+                    <div class="new-question bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
                         <div class="flex flex-col">
                             <label class="mb-2" for="question_text">Question Text</label>
                             <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
@@ -791,16 +838,20 @@ if (isset($_POST['save_exam'])) {
 
         <div class="choices-container flex flex-col gap-4">
             <div class="choice flex gap-4 items-center">
+                <input type="checkbox" name="new_is_correct[]" value="1">
+
                 <p class="font-semibold">A</p>
                 <div class="flex flex-col w-full">
                     <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
                 </div>
                 <div class="flex flex-col">
-                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]" >
                 </div>
             </div>
 
             <div class="choice flex gap-4 items-center">
+                 <input type="checkbox" name="new_is_correct[]" value="1">
+
                 <p class="font-semibold">B</p>
                 <div class="flex flex-col w-full">
                     <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
