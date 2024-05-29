@@ -91,7 +91,6 @@ header #branding #emactive{
   
 }
 
-
 .heading {
   font-weight: bold;
   font-size: 20px;
@@ -243,4 +242,3 @@ header #branding #emactive{
   image-rendering: -webkit-optimize-contrast; /* WebKit (Safari, Chrome) */
   image-rendering: optimize-contrast; /* CSS4 and Firefox */
 }
-

@@ -37,6 +37,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         <link rel="stylesheet" href="css/searchdesign.css">
         <!-- for admin Information -->
         <link rel="stylesheet" href="css/adminstyle.css">
+        <link rel="shortcut icon" type="x-icon" href="./img/icon.png">
 
 
 

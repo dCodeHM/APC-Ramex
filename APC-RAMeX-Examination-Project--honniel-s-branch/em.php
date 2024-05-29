@@ -54,7 +54,6 @@ if ($user_role == 'Executive Director') {
         <link rel="stylesheet" href="./css/userset.css">
         <link rel="stylesheet" href="./css/homepage.css">
         <link rel="stylesheet" href="./css/helpbutton.css">
-        
         <link rel="shortcut icon" type="x-icon" href="./img/icon.png">
     </head>
 

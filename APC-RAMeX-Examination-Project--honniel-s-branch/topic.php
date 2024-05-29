@@ -74,6 +74,7 @@ $courseFolderName = $courseCode;
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/adminstyle.css">
     <link rel="stylesheet" href="./css/topicstyle.css">
+    <link rel="shortcut icon" type="x-icon" href="./img/icon.png">
     <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./myexams.js"></script>
@@ -268,9 +269,7 @@ $courseFolderName = $courseCode;
             <button class="cancel" type="button" onclick="goBack()" style="margin-right: 10px;">Cancel</button>
             <button class="create" type="submit" name="create_exam">Create</button>
         </div>
-
         </div>
-
     </form>
     </div>
     </div>
