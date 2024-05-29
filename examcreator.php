@@ -79,84 +79,6 @@ if (!$stmt->execute()) {
 }
 
 $questions_result = $stmt->get_result();
-
-// Handle form submission
-if (isset($_POST['save_exam'])) {
-    // Log the received form data
-    error_log("Received form data: " . print_r($_POST, true));
-    error_log("Received files: " . print_r($_FILES, true));
-
-    // ----------------------------- Exam Details -----------------------------
-
-    // Update exam details
-    $exam_name = $_POST['exam_name'];
-
-    // Prepare SQL statement
-    $sql = "UPDATE exam SET exam_name = ? WHERE exam_id = ?";
-
-    // Execute SQL statement
-    $stmt = $conn->prepare($sql);
-
-    // Check if the SQL statement is valid
-    if (!$stmt) {
-        die("Error preparing statement: " . $conn->error);
-    }
-
-    // Bind the parameters to the prepared statement
-    $stmt->bind_param("si", $exam_name, $exam_id);
-
-    // Execute the prepared statement
-    if (!$stmt->execute()) {
-        die("Error executing statement: " . $stmt->error);
-    }
-
-    // ----------------------------- Question Handling -----------------------------
-
-    // Update existing questions
-    $question_ids = isset($_POST['question_id']) ? $_POST['question_id'] : array();
-    $question_texts = isset($_POST['question_text']) ? $_POST['question_text'] : array();
-    $clo_ids = isset($_POST['clo_id']) ? $_POST['clo_id'] : array();
-    $difficulties = isset($_POST['difficulty']) ? $_POST['difficulty'] : array();
-    $question_points = isset($_POST['question_points']) ? $_POST['question_points'] : array();
-    $answer_texts = isset($_POST['answer_text']) ? $_POST['answer_text'] : array();
-
-    foreach ($question_ids as $index => $question_id) {
-        $question_text = mysqli_real_escape_string($conn, $question_texts[$index]);
-        $clo_id = mysqli_real_escape_string($conn, $clo_ids[$index]);
-        $difficulty = mysqli_real_escape_string($conn, $difficulties[$index]);
-        $points = intval($question_points[$index]);
-
-        // Handle question image upload
-        if (isset($_FILES['question_image']['tmp_name'][$index]) && !empty($_FILES['question_image']['tmp_name'][$index])) {
-            if ($_FILES['question_image']['error'][$index] === UPLOAD_ERR_OK) {
-                $question_image = file_get_contents($_FILES['question_image']['tmp_name'][$index]);
-                $sql = "UPDATE question SET question_text = ?, question_image = ?, clo_id = ?, difficulty = ?, question_points = ? WHERE question_id = ?";
-                $stmt = $conn->prepare($sql);
-                if (!$stmt) {
-                    die("Error preparing statement: " . $conn->error);
-                }
-                $stmt->bind_param("ssssii", $question_text, $question_image, $clo_id, $difficulty, $points, $question_id);
-            } else {
-                echo "Error uploading file: " . $_FILES['question_image']['error'][$index];
-            }
-        } else {
-            $sql = "UPDATE question SET question_text = ?, clo_id = ?, difficulty = ?, question_points = ? WHERE question_id = ?";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                die("Error preparing statement: " . $conn->error);
-            }
-            $stmt->bind_param("sssii", $question_text, $clo_id, $difficulty, $points, $question_id);
-        }
-        if (!$stmt->execute()) {
-            die("Error executing statement: " . $stmt->error);
-        }
-    }
-
-    // Redirect back to the exam creator page
-    header("Location: examcreator.php?course_topic_id=$course_topic_id");
-    exit();
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -332,7 +254,7 @@ if (isset($_POST['save_exam'])) {
 
     <!-- Main Exam Creator -->
     <main class="ml-[400px] mt-[70px] px-20 py-10">
-        <form id="examForm" class="w-full" method="POST" enctype="multipart/form-data">
+        <form id="exam-form" class="w-full" method="POST" enctype="multipart/form-data">
             <h2 class="font-semibold mb-2">Exam Details</h2>
 
             <input class="mb-4 outline w-full outline-zinc-300 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
@@ -362,7 +284,7 @@ if (isset($_POST['save_exam'])) {
                     if ($item['type'] === 'question') {
                         $question = $item['data'];
                 ?>
-                        <div class="bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
+                        <div class="existing-question bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
                             <div class="flex w-full justify-between">
                                 <div class="flex flex-col">
                                     <label class="mb-2" for="question_id">Question ID</label>
@@ -476,6 +398,9 @@ if (isset($_POST['save_exam'])) {
                                     <div class="flex flex-col">
                                         <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="answer_image[<?php echo $question['question_id']; ?>][]">
                                     </div>
+
+                                    <!-- Hidden input field for question_choices_id -->
+                                    <input type="hidden" name="question_choices_id[<?php echo $question['question_id']; ?>][]" value="<?php echo $choice['question_choices_id']; ?>">
 
                                     <!-- Create a toggle to open and close image -->
                                     <?php if (!empty($choice['answer_image'])) : ?>
@@ -715,52 +640,241 @@ if (isset($_POST['save_exam'])) {
             fetchTotalPoints();
 
             // Form submission validation
-            $("#examForm").on("submit", async function(event) {
+            $("#exam-form").on("submit", async function(event) {
                 event.preventDefault(); // Prevent the default form submission
 
-                // Create a new FormData object
-                var formData = new FormData(this);
+                // -- Validation
 
-                // Append the exam ID to the form data
-                formData.append("exam_id", <?php echo $exam_id; ?>);
+                // Get all the new-question elements
+                var newQuestions = $(".new-question");
+                var newQuestionsLength = newQuestions.length;
 
-                // Append the new_is_correct and new_answer_text arrays to the FormData object
-                formData.append("new_is_correct", JSON.stringify(new_is_correct));
-                formData.append("new_answer_text", JSON.stringify(new_answer_text));
+                var existingQuestionsLength = $(".existing-question").length;
 
-                // Append the new_answer_image files to the FormData object
-                for (var i = 0; i < new_answer_image.length; i++) {
-                    for (var j = 0; j < new_answer_image[i].length; j++) {
-                        if (new_answer_image[i][j]) {
-                            formData.append(`new_answer_image[${i}][${j}]`, new_answer_image[i][j]);
-                        }
-                    }
+                // Alert
+                if (newQuestionsLength === 0 && existingQuestionsLength === 0) {
+                    alert(`Please add at least one question. New Questions: ${newQuestionsLength} | Existing Questions: ${existingQuestionsLength}`);
+                    return;
                 }
 
-                try {
-                    // Print formData plain
-                    console.log("FormData:", formData);
-
-                    // Send the form data using the Fetch API
-                    const response = await fetch("http://localhost/ramex/api/question-choices/post-question-choices.php", {
-                        method: "POST",
-                        body: formData
+                // If there is new question, then there are no checked checkboxes for correct answers then alert
+                if (newQuestionsLength > 0) {
+                    var newIsCorrect = [];
+                    newQuestions.each(function() {
+                        var isCorrect = $(this).find("input[name='new_is_correct[]']:checked").length;
+                        newIsCorrect.push(isCorrect);
                     });
 
-                    if (!response.ok) {
-                        throw new Error("Error saving exam");
+                    if (newIsCorrect.includes(0)) {
+                        alert("Please select at least one correct answer for each new question.");
+                        return;
                     }
 
-                    const data = await response.json();
-                    console.log(data.message);
+                    // If there are unfilled answer texts then alert
+                    var newAnswerText = [];
+
+                    newQuestions.each(function() {
+                        var answerText = $(this).find("input[name='new_answer_text[]']").val();
+                        newAnswerText.push(answerText);
+                    });
+
+                    if (newAnswerText.includes("")) {
+                        alert("Please fill in all answer texts for each new question.");
+                        return;
+                    }
+
+                    // --
+
+                    try {
+                        // -- Post Question Choices --
+
+                        // Create a new FormData object
+                        var formData = new FormData(this);
+
+                        // Append the exam ID to the form data
+                        formData.append("exam_id", <?php echo $exam_id; ?>);
+
+                        // Append the new_is_correct and new_answer_text arrays to the FormData object
+                        formData.append("new_is_correct", JSON.stringify(new_is_correct));
+                        formData.append("new_answer_text", JSON.stringify(new_answer_text));
+
+                        // Append the new_answer_image files to the FormData object
+                        for (var i = 0; i < new_answer_image.length; i++) {
+                            for (var j = 0; j < new_answer_image[i].length; j++) {
+                                if (new_answer_image[i][j]) {
+                                    formData.append(`new_answer_image[${i}][${j}]`, new_answer_image[i][j]);
+                                }
+                            }
+                        }
+
+                        // Send the form data using the Fetch API
+                        const response = await fetch("http://localhost/ramex/api/question-choices/post-question-choices.php", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        if (!response.ok) {
+                            console.error("Error posting question choices");
+                        }
+
+                        const data = await response.json();
+                        console.log(data.message);
+
+
+
+                    } catch (error) {
+                        console.error("Error:", error.message);
+                        // Handle the error
+                    }
+                }
+
+
+                // TODO: Fix updating of existing questions
+                if (existingQuestionsLength > 0) {
+                    console.log('Existing Questions Length:', existingQuestionsLength);
+
+                    // -- Update Existing Questions --
+                    async function updateExistingQuestions() {
+                        // Create a new FormData object
+                        var formData = new FormData();
+
+                        // Append the exam ID to the form data
+                        formData.append("exam_id", <?php echo $exam_id; ?>);
+
+                        // Loop through each existing question
+                        $(".existing-question").each(function() {
+                            var questionElement = $(this);
+
+                            // Get the question ID
+                            var questionId = questionElement.find("input[name='question_id[]']").val();
+                            formData.append("question_id[]", questionId);
+
+                            // Get the question text
+                            var questionText = questionElement.find("textarea[name='question_text[]']").val();
+                            formData.append("question_text[]", questionText);
+
+                            // Get the question image
+                            var questionImage = questionElement.find("input[name='question_image[]']")[0].files[0];
+                            if (questionImage) {
+                                formData.append("question_image[]", questionImage);
+                            }
+
+                            // Get the CLO ID
+                            var cloId = questionElement.find("select[name='clo_id[]']").val();
+                            formData.append("clo_id[]", cloId);
+
+                            // Get the difficulty
+                            var difficulty = questionElement.find("select[name='difficulty[]']").val();
+                            formData.append("difficulty[]", difficulty);
+
+                            // Get the question points
+                            var questionPoints = questionElement.find("input[name='question_points[]']").val();
+                            formData.append("question_points[]", questionPoints);
+                        });
+
+                        console.log("Form Data:", formData);
+
+                        try {
+                            // Send the form data to the PHP script using fetch
+                            const response = await fetch('http://localhost/ramex/api/question/update-existing-questions.php', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                console.log("Server response:", data);
+                                // Handle the success response here
+                            } else {
+                                console.error("Error updating existing questions");
+                                // Handle the error response here
+                            }
+                        } catch (error) {
+                            console.error("Error:", error);
+                            // Handle any network or other errors here
+                        }
+
+
+                    }
+
+                    async function updateExistingQuestionChoices() {
+                        var questionData = [];
+
+                        $(".existing-question").each(function() {
+                            var questionElement = $(this);
+
+                            var questionId = questionElement.find("input[name='question_id[]']").val();
+                            console.log("Processing question ID:", questionId);
+
+                            var questionChoices = [];
+
+                            questionElement.find(".choice").each(function() {
+                                var choiceElement = $(this);
+                                var isCorrectValue = choiceElement.find("input[name='is_correct[" + questionId + "][]']").is(":checked") ? 1 : 0;
+                                var answerTextValue = choiceElement.find("input[name='answer_text[" + questionId + "][]']").val();
+                                var answerImageValue = choiceElement.find("input[name='answer_image[" + questionId + "][]']")[0].files[0];
+                                var questionChoicesId = choiceElement.find("input[name='question_choices_id[" + questionId + "][]']").val();
+
+                                console.log('Answer Image Value:', answerImageValue);
+
+                                questionChoices.push({
+                                    is_correct: isCorrectValue,
+                                    answer_text: answerTextValue,
+                                    question_choices_id: questionChoicesId
+                                });
+
+                                if (answerImageValue) {
+                                    questionChoices[questionChoices.length - 1].answer_image = answerImageValue;
+                                }
+                            });
+
+                            questionData.push({
+                                question_id: questionId,
+                                choices: questionChoices
+                            });
+                        });
+
+                        console.log("Question Data:", questionData);
+
+                        var formData = new FormData();
+
+                        questionData.forEach((question, questionIndex) => {
+                            formData.append(`question_data[${questionIndex}][question_id]`, question.question_id);
+
+                            question.choices.forEach((choice, choiceIndex) => {
+                                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][is_correct]`, choice.is_correct);
+                                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][answer_text]`, choice.answer_text);
+                                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][question_choices_id]`, choice.question_choices_id);
+
+                                if (choice.answer_image) {
+                                    formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][answer_image]`, choice.answer_image);
+                                }
+                            });
+                        });
+
+                        console.log('Form Data for Question Choices:', formData);
+
+                        const response = await fetch("http://localhost/ramex/api/question-choices/update-existing-question-choices.php", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log(data.message);
+                        } else {
+                            console.error("Error updating question choices");
+                        }
+                    }
+
+                    updateExistingQuestions();
+                    updateExistingQuestionChoices();
 
                     // Reload the page
-                    location.reload();
-
-                } catch (error) {
-                    console.error("Error:", error.message);
-                    // Handle the error
+                    // location.reload();
                 }
+
+
             });
 
             $("#add_question").click(function() {
