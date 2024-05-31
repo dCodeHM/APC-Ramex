@@ -8,7 +8,7 @@
   position: fixed;
   top: 7rem;
   left: 50px;
-  background: #343A40;
+  background: #343a40;
   width: 360px; /* Use fixed width in pixels */
   height: 100%;
   min-height: 50rem;
@@ -17,23 +17,24 @@
   justify-content: center;
 }
 
-.diva, .divb {
+.diva,
+.divb {
   width: 360px; /* Use fixed width in pixels */
   height: calc(100% - 80px); /* Adjust height to account for padding */
   display: none;
-  justify-content: center;
   color: white;
   font-size: 24px;
   padding: 40px;
 }
 
 .diva {
-  background: #454C52;
+  background: #454c52;
 }
 
 .divb {
-  background: #454C52;
-  overflow-y: auto;
+  background: #454c52;
+  display: flex;
+  flex-direction: column;
 }
 
 .buttons {
@@ -46,7 +47,7 @@
   align-items: center;
   justify-content: center;
   border: none;
-  background: #343A40;
+  background: #343a40;
   width: 200px;
   height: 36px;
   cursor: pointer;
@@ -60,15 +61,15 @@
 .button img {
   margin-right: 5px;
   width: 20px;
-} 
+}
 
 .button:hover {
-  background: #454C52;
-  color: #E7AF42;
+  background: #454c52;
+  color: #e7af42;
 }
 
 .button.active {
-  background: #454C52;
+  background: #454c52;
   color: white;
 }
 
@@ -81,5 +82,21 @@
 }
 
 .trash-icon:hover {
-  background-color: rgba(248, 113, 113, 0.1) !important; /* hover:bg-red-100/50 */
+  background-color: rgba(
+    248,
+    113,
+    113,
+    0.1
+  ) !important; /* hover:bg-red-100/50 */
+}
+
+.exam_instruction {
+  font-size: 1rem;
+  width: 100%;
+}
+
+.exam_instruction textarea {
+  width: 100%;
+  color: black;
+  border-radius: 0.4rem;
 }

@@ -260,9 +260,8 @@ $courseFolderName = $courseCode;
                     <?php while ($row = $result->fetch_assoc()) : ?>
                         <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6">
                             <!-- Topics -->
-                            <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>&exam_id=
-                            ">
-                                <h2 class="font-semibold text-4xl text-zinc-700">
+                            <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>&course_subject_id=<?php echo $course_subject_id; ?>">
+                                <h2 class=" font-semibold text-4xl text-zinc-700">
                                     <?php echo $row['course_topics']; ?></h2>
                                 <!-- Date Created -->
                                 <p class="text-md text-gray-500">Date Created: <?php echo $row['date_created']; ?></p>

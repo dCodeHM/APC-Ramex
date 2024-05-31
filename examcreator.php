@@ -7,6 +7,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// No cache header
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+
 $user_data = check_login($conn);
 
 if (!isset($_SESSION['account_id'])) {
@@ -94,29 +97,25 @@ $questions_result = $stmt->get_result();
     <title>APC AcademX | Welcome</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="./css/sidebar.css">
-    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/sidebar.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./css/examsettings.css?v=<?php echo time(); ?>">
 
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
 
-
-
-    <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
 </head>
 
 <body>
-    <!-- Navbar -->
-    <navigation class="navbar">
-        <ul class="right-header">
-            <li class="logo">
-                <a href="myexams.php"><img id="logo" src="img/logo.png"></a>
-            </li>
-        </ul>
 
+
+    <!-- Navbar -->
+    <nav class="navbar">
+
+        <a class="navbar-logo-wrapper" class="h-full" href="myexams.php"><img class="navbar-logo" src="img/apc-academx-logo.png" alt="APC AcademX Logo"></a>
         <ul class="left-header">
             <?php
             // Check if the session variable exists
@@ -222,16 +221,15 @@ $questions_result = $stmt->get_result();
                 <img src="img/help.png">
             </div>
         </div>
-    </navigation>
-
+    </nav>
 
     <!-- Question Library -->
     <div class="main_container">
         <div class="buttons">
-            <button id="btn_diva" class="button">
+            <button id="btn_diva" class="button" type="button">
                 <img src="./img/book.png" alt="Icon"> Question Library
             </button>
-            <button id="btn_divb" class="button">
+            <button id="btn_divb" class="button" type="button">
                 <img src="./img/examsettings.png" alt="Icon"> Exam Settings
             </button>
         </div>
@@ -242,13 +240,19 @@ $questions_result = $stmt->get_result();
         </div>
 
         <!-- DIV 2 -->
-        <div class="divb" id="divb">
-            <div class="settingsbuttonONE">
-                <button id="previewBTN" class="prevBTN">1</button>
-                <button id="downloadBTN" class="downBTN">2</button>
-                <button id="savedButton" class="savedBTN">3</button>
-                <button id="uploadBTN" class="uploadBTN">4</button>
+        <div class="divb text-2xl flex flex-col gap-2" id="divb">
+            <!-- Text area for Exam Instruction -->
+            <div class="w-full flex flex-col gap-2">
+                <label class="w-full " for="exam_instruction">Exam Rules</label>
+                <textarea class="p-4 w-full text-zinc-800 rounded-xl" id="exam_instruction" cols="30" rows="10"></textarea>
             </div>
+
+            <div class="flex w-full items-center gap-2">
+                <button class="w-full bg-white text-zinc-800 font-medium py-4 rounded-xl flex items-center justify-center" type="button">Preview</button>
+                <button id="download-exam-btn" class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Download</button>
+            </div>
+            <button class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Save Progress</button>
+            <button class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Upload to Exam Library</button>
         </div>
     </div>
 
@@ -451,6 +455,289 @@ $questions_result = $stmt->get_result();
         </form>
     </main>
 
+    <!-- Exam Preview -->
+    <div id="exam-preview" class="hidden fixed justify-center items-center z-[100000] left-[50%] top-[50%] transform-gpu -translate-x-1/2 -translate-y-1/2 w-screen h-screen bg-black/40 backdrop-blur-xl">
+        <div class="flex text-white bg-[#343A40] w-[80%] h-[80%] rounded-xl shadow-xl">
+            <div class="w-[70%] overflow-y-scroll flex flex-col gap-8">
+                <?php
+                $totalQuestions = count($combined_result);
+                $questionsPerPage = 30;
+                $totalPages = ceil($totalQuestions / $questionsPerPage);
+
+                for ($page = 1; $page <= $totalPages; $page++) {
+                    $startIndex = ($page - 1) * $questionsPerPage;
+                    $endIndex = min($startIndex + $questionsPerPage, $totalQuestions);
+                ?>
+                    <div class="page py-8 px-20 bg-white rounded-xl text-2xl text-zinc-800">
+                        <div class="w-full flex items-center justify-between gap-4 text-xl font-normal text-zinc-800">
+                            <!-- Get the params course_code in the URL -->
+                            <p>
+                                <?php
+                                $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
+                                echo $course_code;
+                                ?>
+                            </p>
+
+                            <img src="img/apc-academx-logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+
+                            <h4 class="text-zinc-800">
+                                <?php echo htmlspecialchars($exam['exam_name']); ?>
+                            </h4>
+                        </div>
+                        <div class="w-full h-0.5 my-8 bg-black"></div>
+
+                        <?php if ($page === 1) { ?>
+                            <div class="w-full flex items-center h-[100px] border-black border-1 mb-6">
+                                <div class="w-[80%] flex flex-col h-full">
+                                    <div class="h-full p-4 border-[1px] border-black">Name:</div>
+                                    <div class="flex h-full">
+                                        <div class="w-full h-full p-4 border-[1px] border-black">Section:</div>
+                                        <div class="w-full h-full p-4 border-[1px] border-black">Date:</div>
+                                    </div>
+                                </div>
+                                <div class="w-[20%] h-full p-4 border-[1px] border-black">
+                                    Score:
+                                </div>
+                            </div>
+
+                            <h1 class="font-medium">General Instructions</h1>
+                            <p class="mb-6">
+                                1. Read, understand and follow every specified direction carefully.<br />
+                                2. Avoid using your cellular phone during exam proper.<br />
+                                3. This is exam CLOSED NOTES<br />
+                                4. Shade your answer on the answer sheet.<br />
+                                5. NO ERASURES. Erasure means WRONG.<br />
+                                6. Strictly NO CHEATING of any form. Anybody caught cheating will receive a FAILING MARK.
+                            </p>
+                        <?php } ?>
+
+                        <!-- Answer Sheet -->
+                        <div id="answer-sheet">
+                            <div class="flex justify-between">
+                                <?php
+                                $questionsPerColumn = 15;
+                                $columnsPerPage = 2;
+
+                                for ($column = 1; $column <= $columnsPerPage; $column++) {
+                                    $columnStartIndex = $startIndex + ($column - 1) * $questionsPerColumn;
+                                    $columnEndIndex = min($columnStartIndex + $questionsPerColumn, $endIndex);
+                                ?>
+                                    <div class="column w-1/2">
+                                        <?php for ($i = $columnStartIndex; $i < $columnEndIndex; $i++) {
+                                            $item = $combined_result[$i];
+                                            if ($item['type'] === 'question') {
+                                                $question = $item['data'];
+                                        ?>
+                                                <div class="question flex gap-4 items-center">
+                                                    <p class="font-semibold"><?php echo $i + 1; ?>.</p>
+                                                    <div class="choices-container flex gap-4">
+                                                        <?php
+                                                        $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+                                                        $stmt = $conn->prepare($sql);
+                                                        if (!$stmt) {
+                                                            die("Error preparing statement: " . $conn->error);
+                                                        }
+
+                                                        $stmt->bind_param("i", $question['answer_id']);
+                                                        if (!$stmt->execute()) {
+                                                            die("Error executing statement: " . $stmt->error);
+                                                        }
+
+                                                        $choices_result = $stmt->get_result();
+                                                        $choiceIndex = 0;
+
+                                                        while ($choice = $choices_result->fetch_assoc()) {
+                                                            $choiceLetter = chr(65 + $choiceIndex);
+                                                        ?>
+                                                            <div class="choice flex items-center">
+                                                                <div class="w-6 h-6 rounded-full border-[1px] border-black flex items-center justify-center">
+                                                                    <span class="text-base font-semibold"><?php echo $choiceLetter; ?></span>
+                                                                </div>
+                                                            </div>
+                                                        <?php
+                                                            $choiceIndex++;
+                                                        }
+                                                        ?>
+                                                    </div>
+                                                </div>
+                                        <?php
+                                            }
+                                        }
+                                        ?>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="w-full h-0.5 mt-8 bg-black"></div>
+                        <div class="w-full flex justify-center mt-4 text-lg">
+                            <p>Page <?php echo $page; ?> of <?php echo $totalPages; ?></p>
+                        </div>
+
+
+                    </div>
+                <?php } ?>
+
+                <!-- Questions and Choices -->
+                <?php
+                $totalQuestionsWithChoices = count($combined_result);
+                $questionsPerPageWithChoices = 30;
+                $totalPagesWithChoices = ceil($totalQuestionsWithChoices / $questionsPerPageWithChoices);
+
+                for ($page = 1; $page <= $totalPagesWithChoices; $page++) {
+                    $startIndex = ($page - 1) * $questionsPerPageWithChoices;
+                    $endIndex = min($startIndex + $questionsPerPageWithChoices, $totalQuestionsWithChoices);
+                ?>
+                    <div class="page py-8 px-20 bg-white rounded-xl text-2xl text-zinc-800">
+                        <div class="w-full flex items-center justify-between gap-4 text-xl font-normal text-zinc-800">
+                            <!-- Get the params course_code in the URL -->
+                            <p>
+                                <?php
+                                $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
+                                echo $course_code;
+                                ?>
+                            </p>
+
+                            <img src="img/apc-academx-logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+
+                            <h4 class="text-zinc-800">
+                                <?php echo htmlspecialchars($exam['exam_name']); ?>
+                            </h4>
+                        </div>
+                        <div class="w-full h-0.5 my-8 bg-black"></div>
+
+                        <div class="flex justify-between">
+                            <?php
+                            $questionsPerColumnWithChoices = 15;
+                            $columnsPerPageWithChoices = 2;
+
+                            for ($column = 1; $column <= $columnsPerPageWithChoices; $column++) {
+                                $columnStartIndex = $startIndex + ($column - 1) * $questionsPerColumnWithChoices;
+                                $columnEndIndex = min($columnStartIndex + $questionsPerColumnWithChoices, $endIndex);
+                            ?>
+                                <div class="column w-1/2">
+                                    <?php for ($i = $columnStartIndex; $i < $columnEndIndex; $i++) {
+                                        $item = $combined_result[$i];
+                                        if ($item['type'] === 'question') {
+                                            $question = $item['data'];
+                                    ?>
+                                            <div class="question mb-4">
+                                                <p class="font-semibold mb-2"><?php echo $i + 1; ?>. <?php echo $question['question_text']; ?></p>
+                                                <div class="choices-container">
+                                                    <?php
+                                                    $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+                                                    $stmt = $conn->prepare($sql);
+                                                    if (!$stmt) {
+                                                        die("Error preparing statement: " . $conn->error);
+                                                    }
+
+                                                    $stmt->bind_param("i", $question['answer_id']);
+                                                    if (!$stmt->execute()) {
+                                                        die("Error executing statement: " . $stmt->error);
+                                                    }
+
+                                                    $choices_result = $stmt->get_result();
+                                                    $choiceIndex = 0;
+
+                                                    while ($choice = $choices_result->fetch_assoc()) {
+                                                        $choiceLetter = chr(65 + $choiceIndex);
+                                                    ?>
+                                                        <p class="mb-1"><?php echo $choiceLetter; ?>. <?php echo $choice['answer_text']; ?></p>
+                                                    <?php
+                                                        $choiceIndex++;
+                                                    }
+                                                    ?>
+                                                </div>
+                                            </div>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+                                </div>
+                            <?php } ?>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="w-full h-0.5 mt-8 bg-black"></div>
+                        <div class="w-full flex justify-center mt-4 text-lg">
+                            <p>Page <?php echo $page; ?> of <?php echo $totalPagesWithChoices; ?></p>
+                        </div>
+                    </div>
+                <?php } ?>
+            </div>
+            <div class="w-[30%] h-full flex flex-col p-8 items-center">
+                <h2 class="text-2xl font-medium mb-6">Exam Preview</h2>
+                <button id="print-exam-btn" class="w-full mt-4 bg-yellow-400 mb-4 text-2xl py-6 rounded-xl flex font-medium items-center justify-center text-zinc-800" type="button">Save as PDF</button>
+                <button id="close-exam-download-btn" class="w-full bg-[#EDEDED] text-2xl text-zinc-800 py-6 rounded-xl flex font-medium items-center justify-center" type="button">Back</button>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Console log something when the download button is clicked
+        document.getElementById('download-exam-btn').addEventListener('click', function() {
+            // Show the modal
+            document.getElementById('exam-preview').style.position = 'fixed';
+            document.getElementById('exam-preview').style.display = 'flex';
+        });
+
+        document.getElementById('print-exam-btn').addEventListener('click', function() {
+            var examPages = document.querySelectorAll('.page');
+            var pdf = new jsPDF();
+            var margin = 10; // Define your margin size in mm
+
+            function generatePDF(index) {
+                if (index >= examPages.length) {
+                    pdf.save('exam.pdf');
+                    return;
+                }
+
+                html2canvas(examPages[index], {
+                    scale: 2, // Increase the scale for better quality
+                    useCORS: true, // Enable cross-origin resource sharing
+                    allowTaint: true // Allow cross-origin images
+                }).then(function(canvas) {
+                    var imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+                    var imgWidth = canvas.width;
+                    var imgHeight = canvas.height;
+                    var pageWidth = 210; // A4 size in mm
+                    var pageHeight = 297; // A4 size in mm
+
+                    // Calculate the width and height while maintaining the aspect ratio
+                    var ratio = Math.min((pageWidth - 2 * margin) / imgWidth, (pageHeight - 2 * margin) / imgHeight);
+                    var width = imgWidth * ratio;
+                    var height = imgHeight * ratio;
+
+                    // Set the x and y positions for the image to include the margin and start from the top
+                    var x = margin;
+                    var y = margin;
+
+                    pdf.addImage(imgData, 'JPEG', x, y, width, height);
+
+                    if (index < examPages.length - 1) {
+                        pdf.addPage();
+                    }
+
+                    generatePDF(index + 1);
+                });
+            }
+
+            generatePDF(0);
+        });
+
+
+
+        // Close the modal when the close button is clicked
+        document.getElementById('close-exam-download-btn').addEventListener('click', function() {
+            // Hide the modal
+            document.getElementById('exam-preview').style.display = 'none';
+        });
+    </script>
+
     <script>
         totalQuestions = 0;
         totalPoints = 0;
@@ -559,22 +846,24 @@ $questions_result = $stmt->get_result();
             }).appendTo("form");
         }
 
+        // ----------------------------- Event Listeners -----------------------------
+
+        // Read event for click in add_question button
         $(document).on("change", "input[name='new_is_correct[]']", function() {
             updateIsCorrectArray();
             updateHiddenInputs();
         });
 
+        // Read event for input in new_answer_text
         $(document).on("input", "input[name='new_answer_text[]']", function() {
             updateAnswerTextArray();
             updateHiddenInputs();
         });
 
+        // Read event for change in new_answer_image
         $(document).on("change", "input[name='new_answer_image[]']", function() {
             updateAnswerImageArray();
         });
-        // Read even
-
-        // ----------------------------- Event Listeners -----------------------------
 
         // Read event for click in svg delete-question
         $(document).on("click", ".trash-icon", async function() {
@@ -606,6 +895,7 @@ $questions_result = $stmt->get_result();
             $("#total-points").text(`(${newQuestionPoints} Points)`);
         });
 
+        // Add question button
         $(document).on("click", ".add-choice-btn", function() {
             var choicesContainer = $(this).siblings(".choices-container");
             var choiceCount = choicesContainer.children(".choice").length;
@@ -632,10 +922,12 @@ $questions_result = $stmt->get_result();
             }
         });
 
+        // Remove choice button
         $(document).on("click", ".remove-choice-btn", function() {
             $(this).closest(".choice").remove();
         });
 
+        // Add question button
         $(document).ready(function() {
             fetchTotalPoints();
 
@@ -871,7 +1163,7 @@ $questions_result = $stmt->get_result();
                     updateExistingQuestionChoices();
 
                     // Reload the page
-                    // location.reload();
+                    location.reload();
                 }
 
 
@@ -1008,13 +1300,16 @@ $questions_result = $stmt->get_result();
             activeButton.classList.add('active');
         }
 
-        btn_diva.addEventListener("click", () => {
+        // Event listeners for the buttons
+        btn_diva.addEventListener("click", (event) => {
+            event.preventDefault(); // Prevent the default behavior of the button
             diva.style.display = "flex";
             divb.style.display = "none";
             activateButton(btn_diva);
         });
 
-        btn_divb.addEventListener("click", () => {
+        btn_divb.addEventListener("click", (event) => {
+            event.preventDefault(); // Prevent the default behavior of the button
             diva.style.display = "none";
             divb.style.display = "flex";
             activateButton(btn_divb);

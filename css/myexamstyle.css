@@ -1,339 +1,334 @@
 header #branding #emactive {
-    margin-top: 10px;
-    width: 65px;
-    min-height: 10%;
-    margin-bottom: 0;
+  margin-top: 10px;
+  width: 65px;
+  min-height: 10%;
+  margin-bottom: 0;
 }
 
 .containerem {
-    width: 95%;
+  width: 95%;
 }
 
 /* label */
 .rightemhead {
-    display: flex;
-    height: 120px;
-    align-items: center;
-    text-align: left;
-    width: 95%;
-    margin: auto;
-}   
+  display: flex;
+  height: 120px;
+  align-items: center;
+  text-align: left;
+  width: 95%;
+  margin: auto;
+}
 
 .adminemline {
-    border-top: 5px solid black;
-    border-radius: 5px;
-    width: 95%;
-    margin: auto;
+  border-top: 5px solid black;
+  border-radius: 5px;
+  width: 95%;
+  margin: auto;
 }
 
 .adminmehead {
-    width: 20%;
-    text-align: right;
-    margin-left: 0;
+  width: 20%;
+  text-align: right;
+  margin-left: 0;
 
-    p {
-        margin: auto;
-    }
+  p {
+    margin: auto;
+  }
 }
 
 .adminemicon {
-    width: 7%;
-    padding: 5px;
-    margin: auto;
+  width: 7%;
+  padding: 5px;
+  margin: auto;
 
-    img {
-        width: 70px;
-    }
+  img {
+    width: 70px;
+  }
 }
 
 .adminmehead p {
-    font-size: 46px;
-    font-weight: 700;
-    text-align: left;
-    color: #343A40;
+  font-size: 46px;
+  font-weight: 700;
+  text-align: left;
+  color: #343a40;
 }
 
 /*2 boxes below line*/
 .mebox {
-    justify-content: space-around;
+  justify-content: space-around;
 }
 
 #emservices {
-    width: 95%;
-    margin: auto;
-    overflow: hidden;
+  width: 95%;
+  margin: auto;
+  overflow: hidden;
 }
 
 .boxme {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid #343a40;
-    width: 200px;
-    float: left;
-    padding: 15px;
-    position: relative;
-    margin: 2vh;
-    background-color: white;
-    border-radius: 5px;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    align-content: space-around;
-    flex-direction: column;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #343a40;
+  width: 200px;
+  float: left;
+  padding: 15px;
+  position: relative;
+  margin: 2vh;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  align-content: space-around;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 .boxme a {
-    display: block;
-    /* Make the anchor fill the entire box */
-    width: 100%;
-    /* Ensure full width for clickable area */
-    height: 100%;
-    /* Ensure full height for clickable area */
-    text-decoration: none;
-    /* Remove underline from anchor */
+  display: block;
+  /* Make the anchor fill the entire box */
+  width: 100%;
+  /* Ensure full width for clickable area */
+  height: 100%;
+  /* Ensure full height for clickable area */
+  text-decoration: none;
+  /* Remove underline from anchor */
 }
-
 
 /* add button */
 .addbutt i {
-    font-size: 30px;
+  font-size: 30px;
 }
 
 .addbutt {
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
 }
 
 .addbutt.hover {
-    color: #343A40;
+  color: #343a40;
 }
 
 /* for the pop up */
 .popup-hidden {
-    display: none;
-
+  display: none;
 }
 
 .popup_bg {
-    display: block;
-    position: relative;
-    background-color: #343A40;
-    opacity: 85%;
-    height: 100%;
-    width: 100%;
-    z-index: 10;
-    overflow-x: hidden;
+  display: block;
+  position: relative;
+  background-color: #343a40;
+  opacity: 85%;
+  height: 100%;
+  width: 100%;
+  z-index: 10;
+  overflow-x: hidden;
 }
 
 /*Add Course popup*/
 
 .popup_tc {
-    display: flex;
-    position: relative;
-    height: 4rem;
-    width: 40rem;
-    margin-top: 4%;
-    margin-left: 5%;
+  display: flex;
+  position: relative;
+  height: 4rem;
+  width: 40rem;
+  margin-top: 4%;
+  margin-left: 5%;
 }
 
 .popup_tc li {
-    display: list-item;
-    list-style: none;
-    text-decoration: none;
+  display: list-item;
+  list-style: none;
+  text-decoration: none;
 }
 
 .popup_tc h1 {
-    display: list-item;
-    list-style: none;
-    text-decoration: none;
-    font: Noto Sans;
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #343A43;
-    position: relative;
-    display: flex;
-
+  display: list-item;
+  list-style: none;
+  text-decoration: none;
+  font: Noto Sans;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #343a43;
+  position: relative;
+  display: flex;
 }
 
 .popup_tc img {
-    position: relative;
-    margin-top: -5%;
-    margin-left: 1%;
-    height: 3.5rem;
-    width: 3.5rem;
+  position: relative;
+  margin-top: -5%;
+  margin-left: 1%;
+  height: 3.5rem;
+  width: 3.5rem;
 }
 
 .popup_ic {
-    position: relative;
-    display: flex;
-    margin-top: 12%;
-    margin-left: -90%;
-    width: 80%;
-    height: 35%;
+  position: relative;
+  display: flex;
+  margin-top: 12%;
+  margin-left: -90%;
+  width: 80%;
+  height: 35%;
 }
 
 .prog {
-    font: Noto Sans;
-    font-size: 0.85rem;
-    width: 10rem;
-    height: 1rem;
+  font: Noto Sans;
+  font-size: 0.85rem;
+  width: 10rem;
+  height: 1rem;
 }
 
 .course {
-    font: Noto Sans;
-    font-size: 0.85rem;
-    margin-top: 15.55%;
-    width: 10rem;
-    height: 1rem;
-    position: absolute;
+  font: Noto Sans;
+  font-size: 0.85rem;
+  margin-top: 15.55%;
+  width: 10rem;
+  height: 1rem;
+  position: absolute;
 }
 
 .popup_ic li {
-    display: list-item;
-    list-style: none;
-    text-decoration: none;
-
+  display: list-item;
+  list-style: none;
+  text-decoration: none;
 }
 
 .program {
-    font: Noto Sans;
-    font-size: 23px;
-    border-radius: 0.5rem;
-    width: 13.7rem;
-    height: 2.2rem;
-    position: relative;
-    display: flex;
-    margin-top: 7%;
-    margin-left: -20.8%;
-    border-color: #343A40;
-    border: 0.13rem solid;
+  font: Noto Sans;
+  font-size: 23px;
+  border-radius: 0.5rem;
+  width: 13.7rem;
+  height: 2.2rem;
+  position: relative;
+  display: flex;
+  margin-top: 7%;
+  margin-left: -20.8%;
+  border-color: #343a40;
+  border: 0.13rem solid;
 }
 
 .program[type="text"]::-webkit-inner-spin-button,
 .program[type="text"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .program[type="text"] {
-    appearance: textfield;
-    /* Add vendor prefixes for broader compatibility */
-    -webkit-appearance: textfield;
-    -moz-appearance: textfield;
+  appearance: textfield;
+  /* Add vendor prefixes for broader compatibility */
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
 }
 
 .course_code {
-    font: Noto Sans;
-    font-size: 23px;
-    background-color: #EDEDED;
-    border-radius: 0.5rem;
-    width: 13.7rem;
-    height: 2.2rem;
-    position: relative;
-    display: flex;
-    margin-top: 19.9%;
-    margin-left: 0%;
-    border-color: #343A40;
-    border: 0.13rem solid;
+  font: Noto Sans;
+  font-size: 23px;
+  background-color: #ededed;
+  border-radius: 0.5rem;
+  width: 13.7rem;
+  height: 2.2rem;
+  position: relative;
+  display: flex;
+  margin-top: 19.9%;
+  margin-left: 0%;
+  border-color: #343a40;
+  border: 0.13rem solid;
 }
 
 /* 2 buttons below */
 #create {
-    width: 200px;
-    height: 55px;
-    right: 1rem;
-    bottom: 1rem;
-    position: absolute;
-    background: #343A40;
-    color: #FFFFFF;
-    text-decoration: bold;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    cursor: pointer;
+  width: 200px;
+  height: 55px;
+  right: 1rem;
+  bottom: 1rem;
+  position: absolute;
+  background: #343a40;
+  color: #ffffff;
+  text-decoration: bold;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 #cancel {
-    width: 200px;
-    height: 55px;
-    right: 14rem;
-    bottom: 1rem;
-    position: absolute;
-    background: #EDEDED;
-    color: #343A40;
-    text-decoration: bold;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    cursor: pointer;
+  width: 200px;
+  height: 55px;
+  right: 14rem;
+  bottom: 1rem;
+  position: absolute;
+  background: #ededed;
+  color: #343a40;
+  text-decoration: bold;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 #cancel a {
-    text-decoration: none;
-    background: #EDEDED;
-    color: #343A40;
-    width: 100%;
+  text-decoration: none;
+  background: #ededed;
+  color: #343a40;
+  width: 100%;
 }
 
 /* searchbar */
 .searchbar {
-    width: 400px;
-    min-width: 100%;
-    min-height: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    left: 100px;
-    box-sizing: border-box;
-    border: 3px solid #000000;
-    -webkit-transition: 0.5s;
-    transition: 0.5s;
-    outline: none;
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 5px;
+  width: 400px;
+  min-width: 100%;
+  min-height: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  left: 100px;
+  box-sizing: border-box;
+  border: 3px solid #000000;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  outline: none;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 5px;
 }
 
 /* for the dots */
 .dots {
-    border: none;
-    width: auto;
-    color: #848484;
-    background: none;
-    z-index: 10;
-    font-weight: bolder;
-    margin-left: 85%;
-    z-index: 10;
-    cursor: pointer;
+  border: none;
+  width: auto;
+  color: #848484;
+  background: none;
+  z-index: 10;
+  font-weight: bolder;
+  margin-left: 85%;
+  z-index: 10;
+  cursor: pointer;
 }
 
 .Add_smallpopup {
-    display: flex;
-    position: absolute;
-    width: 10rem;
-    height: 5rem;
-    margin-left: 27%;
-    margin-top: 15%;
-    transform: translate(-55%, -15%);
-    background-color: #FFFFFF;
-    border: 3.5px solid #343A40;
-    border-radius: 0.3rem;
-    z-index: 99999;
+  display: flex;
+  position: absolute;
+  width: 10rem;
+  height: 5rem;
+  margin-left: 27%;
+  margin-top: 15%;
+  transform: translate(-55%, -15%);
+  background-color: #ffffff;
+  border: 3.5px solid #343a40;
+  border-radius: 0.3rem;
+  z-index: 99999;
 }
 
 .smallpop_up {
-    width: 40px;
-    height: 50px;
-    border: #343A40;
-    background: none;
+  width: 40px;
+  height: 50px;
+  border: #343a40;
+  background: none;
 }
 
 .smallpopup-hidden {
-    display: none;
-    position: relative;
-    margin-top: -790px;
-    min-width: 100.05rem;
-    height: 50rem;
-    min-height: 100%;
-    z-index: 99999;
-    overflow: hidden;
+  display: none;
+  position: relative;
+  margin-top: -790px;
+  min-width: 100.05rem;
+  height: 50rem;
+  min-height: 100%;
+  z-index: 99999;
+  overflow: hidden;
 }
