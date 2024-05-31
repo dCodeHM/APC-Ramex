@@ -63,16 +63,16 @@ if ($user_role == 'Executive Director') {
                 <meta name="viewport" content="width=device-width">
                 <meta name="author" content="APC AcademX">
                 <title>APC AcademX | Exam Maker</title>
+                <link rel="system icon" type="x-icon" href="./img/icon.png">
                 <link rel="stylesheet" href="./css/style.css">
                 <link rel="stylesheet" href="./css/adminstyle.css">
                 <link rel="stylesheet" href="./css/emstyle.css">
                 <link rel="stylesheet" href="./css/myexamstyle.css">
-                <!-- <link rel="stylesheet" href="./css/myexamsfolder.css"> -->
                 <link rel="stylesheet" href="./css/sidebar.css">
                 <link rel="stylesheet" href="./css/header.css">
                 <link rel="stylesheet" href="./css/homepage.css">
                 <link rel="stylesheet" href="./css/helpbutton.css">
-                <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
+                <script src="https://kit.fontawesome.com/e85940e9f2.js" crsossorigin="anonymous"></script>
             </head>
 
             <body>
@@ -224,95 +224,95 @@ if ($user_role == 'Executive Director') {
 
                             </div>
                             <!-- HIDDEN IS TO NOT DISPLAY IMMEDIATELY THE PLUS SIGN -->
-    <div class="popup-hidden">
-        <!-- POPUP-BG - this is for the black background behind the pop-up-hidden -->
-        <div class="popup_bg">
-            <div class="Add_popup" >
-            <form action="coursefolder.php" method="post">
-                <!-- Add a hidden input field to indicate action -->
-                <input type="hidden" name="action" id="action" value="add">
+                            <div class="popup-hidden">
+                                <!-- POPUP-BG - this is for the black background behind the pop-up-hidden -->
+                                <div class="popup_bg">
+                                    <div class="Add_popup" >
+                                    <form action="coursefolder.php" method="post">
+                                        <!-- Add a hidden input field to indicate action -->
+                                        <input type="hidden" name="action" id="action" value="add">
 
-                <input type="hidden" name="update" value="<?php echo isset($_GET['update']) ? $_GET['update'] : 'false'; ?>">
+                                        <input type="hidden" name="update" value="<?php echo isset($_GET['update']) ? $_GET['update'] : 'false'; ?>">
 
-                <?php if ($update == true) : ?>
-                    <p class="heading">Update Course Folder Information<img src="img/folder.png"></p>
-                <?php else : ?>
-                    <div style="display: flex; align-items: center">
-                    <img src="img/folder.png">
-                    <p class="heading">Create a Course Folder</p>
-                    </div>
-                <?php endif; ?>
+                                        <?php if ($update == true) : ?>
+                                            <p class="heading">Update Course Folder Information<img src="img/folder.png"></p>
+                                        <?php else : ?>
+                                            <div style="display: flex; align-items: center">
+                                            <img src="img/folder.png">
+                                            <p class="heading">Create a Course Folder</p>
+                                            </div>
+                                        <?php endif; ?>
 
-                <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
+                                        <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
 
-                <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
+                                        <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
 
-                <div class="inputcolumn">
-                    <div>
-                    <label class="labelName" style="color: #343A40;font-size: 14px;width: 50%;font-weight: bold;" for="program_name">Program Name</label><br />
-                    <select class="input" name="program_name" required>
-                        <option value="" disabled selected>None Selected</option>
-                        <?php
-                        $sql = "SELECT program_name FROM program_name";
-                        $result = $mysqli->query($sql);
+                                        <div class="inputcolumn">
+                                            <div>
+                                            <label class="labelName" for="program_name">Program Name</label><br />
+                                            <select class="input" name="program_name" required>
+                                                <option value="" disabled selected>None Selected</option>
+                                                <?php
+                                                $sql = "SELECT program_name FROM program_name";
+                                                $result = $mysqli->query($sql);
 
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-                                $program = $row['program_name'];
-                                $selected = ($program === $program_name) ? 'selected' : '';
-                                echo "<option value=\"$program\" $selected>$program</option>";
-                            }
-                        } else {
-                            echo "<option value=\"\">No programs found</option>";
-                        }
-                        ?>
-                    </select>
-                    </div>
-                    <br/>
-                </div>
+                                                if ($result->num_rows > 0) {
+                                                    while ($row = $result->fetch_assoc()) {
+                                                        $program = $row['program_name'];
+                                                        $selected = ($program === $program_name) ? 'selected' : '';
+                                                        echo "<option value=\"$program\" $selected>$program</option>";
+                                                    }
+                                                } else {
+                                                    echo "<option value=\"\">No programs found</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                            </div>
+                                            <br/>
+                                        </div>
 
-                <div class="inputcolumn">
+                                        <div class="inputcolumn">
 
-                    <label class="labelName" style="color: #343A40;font-size: 14px;width: 50%;font-weight: bold;" for="course_code">Course Code</label>
-                    <select class="input" name="course_code" required>
-                        <option value="" disabled selected>None Selected</option>
-                        <?php
-                        $sql = "SELECT course_syllabus_id, course_code FROM course_syllabus";
-                        $result = $mysqli->query($sql);
+                                            <label class="labelName" for="course_code">Course Code</label>
+                                            <select class="input" name="course_code" required>
+                                                <option value="" disabled selected>None Selected</option>
+                                                <?php
+                                                $sql = "SELECT course_syllabus_id, course_code FROM course_syllabus";
+                                                $result = $mysqli->query($sql);
 
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-                                $course = $row['course_code'];
-                                $selected = ($course === $course_code) ? 'selected' : '';
-                                echo "<option value=\"$course\" $selected>$course</option>";
-                            }
-                        } else {
-                            echo "<option value=\"\">No courses found</option>";
-                        }
-                        ?>
-                    </select>
-                
-                </div>
+                                                if ($result->num_rows > 0) {
+                                                    while ($row = $result->fetch_assoc()) {
+                                                        $course = $row['course_code'];
+                                                        $selected = ($course === $course_code) ? 'selected' : '';
+                                                        echo "<option value=\"$course\" $selected>$course</option>";
+                                                    }
+                                                } else {
+                                                    echo "<option value=\"\">No courses found</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        
+                                        </div>
 
-                <input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
-                <input type="hidden" name="course_topic_id" value="<?php echo $course_subject_id ?>" readonly><br />
+                                        <input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
+                                        <input type="hidden" name="course_topic_id" value="<?php echo $course_subject_id ?>" readonly><br />
 
-                <?php if ($update == true) : ?>
-                    <button class="update" type="submit" name="update">Update</button>
-                <?php else : ?>
-                    <div class="actionbuttons">
-                        <button class="cancel" onclick="window.location.href='myexams.php'" name = "cancel">Cancel</button>
-                        <span class="button-gap"></span> <!-- Add a span for the gap -->
-                        <button class="save" type="submit" name="save">Create</button>
-                        <?php endif; ?>      
-                    </div>
-                <!-- <div class="cancelbutton">
-                    <a class="cancel" href="myexams.php">Cancel</a>
-                </div> -->
-            </form>
-        </div>
-        </div>
-    </div>
+                                        <?php if ($update == true) : ?>
+                                            <button class="update" type="submit" name="update">Update</button>
+                                        <?php else : ?>
+                                            <div class="actionbuttons">
+                                                <button class="cancel" onclick="window.location.href='myexams.php'" name = "cancel">Cancel</button>
+                                                <span class="button-gap"></span> <!-- Add a span for the gap -->
+                                                <button class="save" type="submit" name="save">Create</button>
+                                                <?php endif; ?>      
+                                            </div>
+                                        <!-- <div class="cancelbutton">
+                                            <a class="cancel" href="myexams.php">Cancel</a>
+                                        </div> -->
+                                    </form>
+                                </div>
+                                </div>
+                            </div>
                             <!--line-->
                             <div class="adminemline">
                             </div>
@@ -335,18 +335,68 @@ if ($user_role == 'Executive Director') {
                                         <section id="container2">
                                             <div class="emservices">
                                                 <div class="mebox">
-                                                    <div class="boxme">
-                                                        <select onchange="handleAction(this)">
-                                                            <option value="">Select Action</option>
-                                                            <option value="myexams.php?edit=<?php echo $row['course_subject_id']; ?>&update=true">Edit</option>
-                                                            <option value="coursefolder.php?delete=<?php echo $row['course_subject_id']; ?>">Delete</option>
-                                                        </select>
-                                                        <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
-                                                            <p class="malakingbox">
-                                                                <?php echo $courseCode; ?>
-                                                            </p>
-                                                        </a>
-                                                    </div>
+                                                <style>
+
+    .options-icon {
+        cursor: pointer;
+    }
+
+    .options {
+        position: absolute;
+        top: 30px;
+        right: 10px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        display: none;
+        z-index: 1;
+    }
+
+    .options select {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="boxme">
+    <img src="./img/dots.png" alt="Options" class="options-icon" onclick="showOptions(this)" class="selectOPTION" style="width: 15px;margin-left: auto;">
+    <div class="options">
+        <select onchange="handleAction(this)">
+            <option value="myexams.php?edit=<?php echo $row['course_subject_id']; ?>&update=true">Edit</option>
+            <option value="coursefolder.php?delete=<?php echo $row['course_subject_id']; ?>">Delete</option>
+        </select>
+    </div>
+    <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
+        <p class="malakingbox">
+            <?php echo $courseCode; ?>
+        </p>
+    </a>
+</div>
+
+<script> function showOptions(img) {
+    var options = img.nextElementSibling;
+    options.style.display = (options.style.display === "block") ? "none" : "block";
+}
+
+function handleAction(select) {
+    var selectedValue = select.value;
+    if (selectedValue !== "") {
+        window.location.href = selectedValue;
+    }
+    select.value = "";
+}
+
+
+function handleAction(select) {
+    var selectedValue = select.value;
+    if (selectedValue !== "") {
+        select.parentNode.style.display = "none";
+        window.location.href = selectedValue;
+    }
+    select.value = "";
+}</script>
                                                 </div>
                                             </div>
                                         </section>
