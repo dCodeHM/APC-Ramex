@@ -665,6 +665,93 @@ $questions_result = $stmt->get_result();
                         </div>
                     </div>
                 <?php } ?>
+
+                <!-- Answer Keys -->
+                <?php
+                $totalAnswerKeys = count($combined_result);
+                $answerKeysPerPage = 30;
+                $totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
+
+                for ($page = 1; $page <= $totalAnswerKeyPages; $page++) {
+                    $startIndex = ($page - 1) * $answerKeysPerPage;
+                    $endIndex = min($startIndex + $answerKeysPerPage, $totalAnswerKeys);
+                ?>
+                    <div class="page py-8 px-20 bg-white rounded-xl text-2xl text-zinc-800">
+                        <div class="w-full flex items-center justify-between gap-4 text-xl font-normal text-zinc-800">
+                            <!-- Get the params course_code in the URL -->
+                            <p>
+                                <?php
+                                $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
+                                echo $course_code;
+                                ?>
+                            </p>
+
+                            <img src="img/apc-academx-logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+
+                            <h4 class="text-zinc-800">
+                                <?php echo htmlspecialchars($exam['exam_name']); ?>
+                            </h4>
+                        </div>
+                        <div class="w-full h-0.5 my-8 bg-black"></div>
+
+                        <div class="flex justify-between">
+                            <?php
+                            $answerKeysPerColumn = 15;
+                            $columnsPerAnswerKeyPage = 2;
+
+                            for ($column = 1; $column <= $columnsPerAnswerKeyPage; $column++) {
+                                $columnStartIndex = $startIndex + ($column - 1) * $answerKeysPerColumn;
+                                $columnEndIndex = min($columnStartIndex + $answerKeysPerColumn, $endIndex);
+                            ?>
+                                <div class="column w-1/2">
+                                    <?php for ($i = $columnStartIndex; $i < $columnEndIndex; $i++) {
+                                        $item = $combined_result[$i];
+                                        if ($item['type'] === 'question') {
+                                            $question = $item['data'];
+                                    ?>
+                                            <div class="question mb-4">
+                                                <p class="font-semibold mb-2"><?php echo $i + 1; ?>. <?php echo $question['question_text']; ?></p>
+                                                <div class="choices-container">
+                                                    <?php
+                                                    $sql = "SELECT * FROM question_choices WHERE answer_id = ? AND is_correct = 1";
+                                                    $stmt = $conn->prepare($sql);
+                                                    if (!$stmt) {
+                                                        die("Error preparing statement: " . $conn->error);
+                                                    }
+
+                                                    $stmt->bind_param("i", $question['answer_id']);
+                                                    if (!$stmt->execute()) {
+                                                        die("Error executing statement: " . $stmt->error);
+                                                    }
+
+                                                    $choices_result = $stmt->get_result();
+                                                    $choiceIndex = 0;
+
+                                                    while ($choice = $choices_result->fetch_assoc()) {
+                                                        $choiceLetter = chr(65 + $choiceIndex);
+                                                    ?>
+                                                        <p class="mb-1"><?php echo $choiceLetter; ?>. <?php echo $choice['answer_text']; ?></p>
+                                                    <?php
+                                                        $choiceIndex++;
+                                                    }
+                                                    ?>
+                                                </div>
+                                            </div>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+                                </div>
+                            <?php } ?>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="w-full h-0.5 mt-8 bg-black"></div>
+                        <div class="w-full flex justify-center mt-4 text-lg">
+                            <p>Answer Keys - Page <?php echo $page; ?> of <?php echo $totalAnswerKeyPages; ?></p>
+                        </div>
+                    </div>
+                <?php } ?>
             </div>
             <div class="w-[30%] h-full flex flex-col p-8 items-center">
                 <h2 class="text-2xl font-medium mb-6">Exam Preview</h2>
@@ -684,6 +771,7 @@ $questions_result = $stmt->get_result();
             document.getElementById('exam-preview').style.display = 'flex';
         });
 
+        // Download exam pages as PDF
         document.getElementById('print-exam-btn').addEventListener('click', function() {
             var examPages = document.querySelectorAll('.page');
             var pdf = new jsPDF();
@@ -712,8 +800,9 @@ $questions_result = $stmt->get_result();
                     var width = imgWidth * ratio;
                     var height = imgHeight * ratio;
 
-                    // Set the x and y positions for the image to include the margin and start from the top
-                    var x = margin;
+                    // Set the x position for the image to be centered horizontally
+                    var x = (pageWidth - width) / 2;
+                    // Set the y position to include the top margin
                     var y = margin;
 
                     pdf.addImage(imgData, 'JPEG', x, y, width, height);
@@ -728,6 +817,7 @@ $questions_result = $stmt->get_result();
 
             generatePDF(0);
         });
+
 
 
 
