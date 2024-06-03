@@ -129,7 +129,7 @@ $questions_result = $stmt->get_result();
     <!-- Navbar -->
     <nav class="navbar">
 
-    <ul class="right-header">
+        <ul class="right-header">
             <li class="logo">
                 <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/APC AcademX Logo.png"></a>
             </li>
@@ -496,7 +496,7 @@ $questions_result = $stmt->get_result();
                                 ?>
                             </p>
 
-                            <img src="img/apc-academx-logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+                            <img src="img/APC AcademX Logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
 
                             <h4 class="text-zinc-800">
                                 <?php echo htmlspecialchars($exam['exam_name']); ?>
@@ -792,7 +792,7 @@ $questions_result = $stmt->get_result();
         // Download exam pages as PDF
         document.getElementById('print-exam-btn').addEventListener('click', function() {
             var examPages = document.querySelectorAll('.page');
-            var pdf = new jsPDF();
+            var pdf = new jsPDF('p', 'mm', 'a4');
             var margin = 10; // Define your margin size in mm
 
             function generatePDF(index) {
@@ -807,23 +807,12 @@ $questions_result = $stmt->get_result();
                     allowTaint: true // Allow cross-origin images
                 }).then(function(canvas) {
                     var imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    var imgWidth = 210 - margin * 2; // A4 page width - margins
+                    var pageHeight = 297; // A4 page height
+                    var imgHeight = canvas.height * imgWidth / canvas.width;
+                    var position = 0;
 
-                    var imgWidth = canvas.width;
-                    var imgHeight = canvas.height;
-                    var pageWidth = 210; // A4 size in mm
-                    var pageHeight = 297; // A4 size in mm
-
-                    // Calculate the width and height while maintaining the aspect ratio
-                    var ratio = Math.min((pageWidth - 2 * margin) / imgWidth, (pageHeight - 2 * margin) / imgHeight);
-                    var width = imgWidth * ratio;
-                    var height = imgHeight * ratio;
-
-                    // Set the x position for the image to be centered horizontally
-                    var x = (pageWidth - width) / 2;
-                    // Set the y position to include the top margin
-                    var y = margin;
-
-                    pdf.addImage(imgData, 'JPEG', x, y, width, height);
+                    pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
 
                     if (index < examPages.length - 1) {
                         pdf.addPage();
@@ -835,6 +824,7 @@ $questions_result = $stmt->get_result();
 
             generatePDF(0);
         });
+
 
 
 
