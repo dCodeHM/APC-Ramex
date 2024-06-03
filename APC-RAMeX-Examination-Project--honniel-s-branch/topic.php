@@ -56,7 +56,6 @@ $course_subject_id = isset($_GET['course_subject_id']) ? $_GET['course_subject_i
 // Set the course code as the header text
 $courseFolderName = $courseCode;
 
-
 ?>
 
 <!DOCTYPE html>
