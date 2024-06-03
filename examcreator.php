@@ -617,7 +617,7 @@ $questions_result = $stmt->get_result();
                                 ?>
                             </p>
 
-                            <img src="img/apc-academx-logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+                            <img src="img/APC AcademX Logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
 
                             <h4 class="text-zinc-800">
                                 <?php echo htmlspecialchars($exam['exam_name']); ?>
@@ -704,7 +704,7 @@ $questions_result = $stmt->get_result();
                                 ?>
                             </p>
 
-                            <img src="img/apc-academx-logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+                            <img src="img/APC AcademX Logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
 
                             <h4 class="text-zinc-800">
                                 <?php echo htmlspecialchars($exam['exam_name']); ?>
