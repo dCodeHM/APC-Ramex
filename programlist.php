@@ -22,7 +22,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         <meta name="author" content="APC AcademX">
         <title>APC AcademX | Program List</title>
         <link rel="stylesheet" href="./css/adminstyle.css">
-
+        <link rel="shortcut icon" type="x-icon" href="./img/icon.png">
         <link rel="stylesheet" href="css/settings.css">
         <link rel="stylesheet" href="css/header.css">
         <link rel="stylesheet" href="css/sidebar.css">
@@ -34,7 +34,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
 
 <ul class="right-header">
     <li class="logo">
-        <a href="index.php"><img id="logo" src="img/logo.png"></a>
+        <a href="index.php"><img id="logo" src="img/APC AcademX Logo.png"></a>
     </li>
 </ul>
 

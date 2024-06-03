@@ -37,6 +37,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
         <link rel="stylesheet" href="css/searchdesign.css">
         <!-- for admin Information -->
         <link rel="stylesheet" href="css/adminstyle.css">
+        <link rel="shortcut icon" type="x-icon" href="./img/icon.png">
 
 
 
@@ -48,7 +49,7 @@ $result = mysqli_query($conn, "SELECT * FROM account"); //data get from database
 
     <ul class="right-header">
     <li class="logo">
-        <a href="index.php"><img id="logo" src="img/logo.png"></a>
+        <a href="index.php"><img id="logo" src="img/APC AcademX Logo.png"></a>
     </li>
     </ul>
 

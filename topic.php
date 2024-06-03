@@ -56,7 +56,6 @@ $course_subject_id = isset($_GET['course_subject_id']) ? $_GET['course_subject_i
 // Set the course code as the header text
 $courseFolderName = $courseCode;
 
-
 ?>
 
 <!DOCTYPE html>
@@ -67,16 +66,14 @@ $courseFolderName = $courseCode;
     <meta name="viewport" content="width=device-width">
     <meta name="author" content="APC AcademX">
     <title>APC AcademX | Exam Maker</title>
-    <link rel="stylesheet" href="./css/topicstyle.css">
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/adminstyle.css">
-    <link rel="stylesheet" href="./css/emstyle.css">
-    <link rel="stylesheet" href="./css/myexamstyle.css">
-    <link rel="stylesheet" href="./css/topicrectangledesign.css">
     <link rel="stylesheet" href="./css/sidebar.css">
     <link rel="stylesheet" href="./css/header.css">
     <link rel="stylesheet" href="./css/homepage.css">
     <link rel="stylesheet" href="./css/helpbutton.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/adminstyle.css">
+    <link rel="stylesheet" href="./css/topicstyle.css">
+    <link rel="shortcut icon" type="x-icon" href="./img/icon.png">
     <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./myexams.js"></script>
@@ -87,7 +84,7 @@ $courseFolderName = $courseCode;
     <navigation class="navbar">
         <ul class="right-header">
             <li class="logo">
-                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
+                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/APC AcademX Logo.png"></a>
             </li>
         </ul>
 
@@ -218,42 +215,62 @@ $courseFolderName = $courseCode;
             <!-- Search bar -->
             <section class="flex gap-4 items-center mb-6">
                 <div class="outline outline-1 outline-zinc-200 rounded-lg w-full">
-                    <input type="text" class="border-transparent p-4 w-full" placeholder="Search here...">
+                    <input type="text" class="border-transparent p-4 w-full"  id = "topicSearch" placeholder="Search here...">
                 </div>
+<!-- 
+                <div class="searchicon" style="position:relative; left: 45%">
+                        <input type="text" class="searchbar" id="topicSearch" placeholder="Search topics...">
+                    </div> -->
                 <button class="max-w-fit flex gap-4 items-center bg-[#293A82] py-4 px-6 rounded-xl text-white">
                     Search <i class="fa-solid fa-search"></i>
                 </button>
             </section>
 
-            <div class="popup-hidden">
-    <div class="popup_bg"></div>
+<div class="popup-hidden">
+    <div class="popup_bg">
     <div class="Add_popup">
         <!-- Inside the form -->
-        <form action="topicfolder.php" method="post" id="createExamForm">
-            <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
-            <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
+    <form action="topicfolder.php" method="post" id="createExamForm">
+        <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly>
+        <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly>
 
-            <div class="inputcolumn">
-                <label class="label" for="course_topics">Course Topic</label>
-                <input class="input" type="text" name="course_topics" placeholder="Your Course Topics" required><br />
+
+        <div style = "display: flex; align-items: center">
+        <img src = "img/folder.png">
+        <p class = "heading"> Create an Exam</p>
+        </div>
+        
+        <div class="inputcolumn">
+            <div>
+            <label class="label" for="course_topics">Course Topic</label>
+            <input class="input" type="text" name="course_topics" placeholder="Topic Name..." required><br />
             </div>
-            <div class="inputcolumn">
+        </div>
+        <div class="inputcolumn">
+            <div style="display: flex; align-items: center; justify-items:center">
+            <div>
                 <label class="label" for="easy_questions">Easy</label>
-                <input class="input" type="number" name="easy_questions" placeholder="How many Easy question/s?" required><br />
-            </div>
-            <div class="inputcolumn">
+                <input class="difficultyinput" type="number" name="easy_questions" placeholder="0" required min="0">
+                </div>
+                <div>
                 <label class="label" for="normal_questions">Normal</label>
-                <input class="input" type="number" name="normal_questions" placeholder="How many Normal question/s?" required><br />
+                <input class="difficultyinput" type="number" name="normal_questions" placeholder="0" required min="0">
+                </div>
+                <div>
+                    <label class="label" for="hard_questions">Hard</label>
+                    <input class="difficultyinput" type="number" name="hard_questions" placeholder="0" required min="0">
+                </div> 
             </div>
-            <div class="inputcolumn">
-                <label class="label" for="hard_questions">Hard</label>
-                <input class="input" type="number" name="hard_questions" placeholder="How many Hard question/s?" required><br />
-            </div>
+        </div>
 
-            <button type="submit" name="create_exam">Create Exam</button>
-            <!-- Cancel button -->
-            <button type="button" onclick="goBack()">Cancel</button>
-        </form>
+        <div>
+        <div class="actionbuttons">
+            <button class="cancel" type="button" onclick="goBack()" style="margin-right: 10px;">Cancel</button>
+            <button class="create" type="submit" name="create_exam">Create</button>
+        </div>
+        </div>
+    </form>
+    </div>
     </div>
 </div>
 
@@ -265,7 +282,7 @@ $courseFolderName = $courseCode;
         var courseCode = urlParams.get('course_code');
 
         // Construct the new URL
-        var url = 'http://localhost/topic.php';
+        var url = 'http://localhost/old/APC-RAMeX-Examination-Project--honniel-s-branch/topic.php';
         url += '?course_subject_id=' + courseSubjectId;
         url += '&course_code=' + courseCode;
 
@@ -287,12 +304,12 @@ $courseFolderName = $courseCode;
                 <p class="header">You have no topic folders.</p>
 
             <?php } else { ?>
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-4" >
                     <?php while ($row = $result->fetch_assoc()) : ?>
-                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6">
+                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6" id = "CourseNameBox">
                             <!-- Topics -->
                             <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>">
-                                <h2 class="font-semibold text-4xl text-zinc-700">
+                                <h2 class="font-semibold text-4xl text-zinc-700" id="topicBox">
                                     <?php echo $row['course_topics']; ?></h2>
                                 <!-- Date Created -->
                                 <p class="text-md text-gray-500">Date Created: <?php echo $row['date_created']; ?></p>
@@ -357,6 +374,24 @@ $courseFolderName = $courseCode;
         // After logging, you can submit the form if needed:
         // event.target.submit();
     }
+
+document.getElementById('topicSearch').addEventListener('input', function() {
+    const searchQuery = this.value.toLowerCase().trim();
+    const courseBoxes = document.querySelectorAll('topicBOX'); // Select all course boxes
+    // #topicBox > div
+    courseBoxes.forEach(courseBox => {
+        const courseName = courseBox.querySelector('CourseNameBox').textContent.toLowerCase();
+        // #CourseNameBox
+        // Check if the course name contains the search query
+        if (courseName.includes(searchQuery)) {
+            courseBox.style.display = 'flex'; // Show the course box
+        } else {
+            courseBox.style.display = 'none'; // Hide the course box
+        }
+    });
+});
+
+
 </script>
 <?php
 ?>

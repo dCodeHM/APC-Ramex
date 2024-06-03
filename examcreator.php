@@ -3,6 +3,13 @@ session_start();
 include("config/db.php");
 include("config/functions.php");
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// No cache header
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+
 $user_data = check_login($conn);
 
 if (!isset($_SESSION['account_id'])) {
@@ -10,20 +17,6 @@ if (!isset($_SESSION['account_id'])) {
     echo '<script>alert("User is not logged in, directing to login page.")</script>';
     echo "<script> window.location.assign('login.php'); </script>";
     exit();
-}
-
-$account_id = $_SESSION['account_id'];
-
-// Display the user-specific information
-$sql = "SELECT * FROM account WHERE account_id = $account_id";
-$result = mysqli_query($conn, $sql); // Replace with data from the database
-if ($result) {
-    $row = mysqli_fetch_array($result);
-    $user_email = $row['user_email'];
-    $pwd = $row['pwd'];
-    $first_name = $row['first_name'];
-    $last_name = $row['last_name'];
-    $role = $row['role'];
 }
 
 // Assuming $user_data contains information about the user's role
@@ -40,6 +33,20 @@ if ($user_role == 'Executive Director') {
     $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
 }
 
+$account_id = $_SESSION['account_id'];
+
+// Display the user-specific information
+$sql = "SELECT * FROM account WHERE account_id = $account_id";
+$result = mysqli_query($conn, $sql); // Replace with data from the database
+if ($result) {
+    $row = mysqli_fetch_array($result);
+    $user_email = $row['user_email'];
+    $pwd = $row['pwd'];
+    $first_name = $row['first_name'];
+    $last_name = $row['last_name'];
+    $role = $row['role'];
+}
+
 // Retrieve the course_topic_id from the URL
 $course_topic_id = isset($_GET['course_topic_id']) ? intval($_GET['course_topic_id']) : 0;
 
@@ -49,10 +56,12 @@ $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Error preparing statement: " . $conn->error);
 }
+
 $stmt->bind_param("i", $course_topic_id);
 if (!$stmt->execute()) {
     die("Error executing statement: " . $stmt->error);
 }
+
 $result = $stmt->get_result();
 $course_topic = $result->fetch_assoc();
 $course_subject_id = $course_topic['course_subject_id'];
@@ -63,316 +72,68 @@ $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Error preparing statement: " . $conn->error);
 }
+
 $stmt->bind_param("i", $course_topic_id);
 if (!$stmt->execute()) {
     die("Error executing statement: " . $stmt->error);
 }
+
 $result = $stmt->get_result();
 $exam = $result->fetch_assoc();
-
 $exam_id = $exam['exam_id'];
 
-// Fetch the questions linked to the exam_id
-$sql = "SELECT * FROM question WHERE exam_id = ? ORDER BY `order`";
+
+// Fetch the instructions based on the exam_id
+$sql = "SELECT * FROM question WHERE exam_id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Error preparing statement: " . $conn->error);
 }
+
 $stmt->bind_param("i", $exam_id);
 if (!$stmt->execute()) {
     die("Error executing statement: " . $stmt->error);
 }
+
 $questions_result = $stmt->get_result();
-
-// Fetch the instructions linked to the exam_id
-$sql = "SELECT * FROM instruction WHERE exam_id = ? ORDER BY `order`";
-$stmt = $conn->prepare($sql);
-if (!$stmt) {
-    die("Error preparing statement: " . $conn->error);
-}
-$stmt->bind_param("i", $exam_id);
-if (!$stmt->execute()) {
-    die("Error executing statement: " . $stmt->error);
-}
-$instructions_result = $stmt->get_result();
-
-// Handle form submission
-if (isset($_POST['save_exam'])) {
-    // Update exam details
-    $exam_name = $_POST['exam_name'];
-    $sql = "UPDATE exam SET exam_name = ? WHERE exam_id = ?";
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        die("Error preparing statement: " . $conn->error);
-    }
-    $stmt->bind_param("si", $exam_name, $exam_id);
-    if (!$stmt->execute()) {
-        die("Error executing statement: " . $stmt->error);
-    }
-
-    // Update existing questions
-    if (isset($_POST['question_id'])) {
-        $question_ids = $_POST['question_id'];
-        $question_texts = $_POST['question_text'];
-        $clo_ids = $_POST['clo_id'];
-        $difficulties = $_POST['difficulty'];
-        $question_points = $_POST['question_points'];
-        $orders = $_POST['order'];
-
-        foreach ($question_ids as $index => $question_id) {
-            $question_text = mysqli_real_escape_string($conn, $question_texts[$index]);
-            $clo_id = mysqli_real_escape_string($conn, $clo_ids[$index]);
-            $difficulty = mysqli_real_escape_string($conn, $difficulties[$index]);
-            $points = intval($question_points[$index]);
-            $order = intval($orders[$index]);
-
-            // Handle question image upload
-            if (isset($_FILES['question_image']['tmp_name'][$index]) && !empty($_FILES['question_image']['tmp_name'][$index])) {
-                if ($_FILES['question_image']['error'][$index] === UPLOAD_ERR_OK) {
-                    $question_image = file_get_contents($_FILES['question_image']['tmp_name'][$index]);
-                    $sql = "UPDATE question SET question_text = ?, question_image = ?, clo_id = ?, difficulty = ?, question_points = ?, `order` = ? WHERE question_id = ?";
-                    $stmt = $conn->prepare($sql);
-                    if (!$stmt) {
-                        die("Error preparing statement: " . $conn->error);
-                    }
-                    $stmt->bind_param("ssssiii", $question_text, $question_image, $clo_id, $difficulty, $points, $order, $question_id);
-                } else {
-                    echo "Error uploading file: " . $_FILES['question_image']['error'][$index];
-                }
-            } else {
-                $sql = "UPDATE question SET question_text = ?, clo_id = ?, difficulty = ?, question_points = ?, `order` = ? WHERE question_id = ?";
-                $stmt = $conn->prepare($sql);
-                if (!$stmt) {
-                    die("Error preparing statement: " . $conn->error);
-                }
-                $stmt->bind_param("sssiii", $question_text, $clo_id, $difficulty, $points, $order, $question_id);
-            }
-            if (!$stmt->execute()) {
-                die("Error executing statement: " . $stmt->error);
-            }
-
-            // Save to question library
-            $sql = "INSERT INTO question_library (question_text, question_image, clo_id, difficulty, question_points, course_subject_id) VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                die("Error preparing statement: " . $conn->error);
-            }
-            $stmt->bind_param("ssssii", $question_text, $question_image, $clo_id, $difficulty, $points, $course_subject_id);
-            if (!$stmt->execute()) {
-                die("Error executing statement: " . $stmt->error);
-            }
-        }
-    }
-
-    // Insert new questions
-    if (isset($_POST['new_question_text'])) {
-        $new_question_texts = $_POST['new_question_text'];
-        $new_clo_ids = $_POST['new_clo_id'];
-        $new_difficulties = $_POST['new_difficulty'];
-        $new_question_points = $_POST['new_question_points'];
-        $new_orders = $_POST['new_order'];
-
-        foreach ($new_question_texts as $index => $new_question_text) {
-            $new_question_text = mysqli_real_escape_string($conn, $new_question_text);
-            $new_clo_id = mysqli_real_escape_string($conn, $new_clo_ids[$index]);
-            $new_difficulty = mysqli_real_escape_string($conn, $new_difficulties[$index]);
-            $new_points = intval($new_question_points[$index]);
-            $new_order = intval($new_orders[$index]);
-
-            if (isset($_FILES['new_question_image']['tmp_name'][$index]) && !empty($_FILES['new_question_image']['tmp_name'][$index])) {
-                if ($_FILES['new_question_image']['error'][$index] === UPLOAD_ERR_OK) {
-                    $new_question_image = file_get_contents($_FILES['new_question_image']['tmp_name'][$index]);
-                    $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, `order`) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?)";
-                    $stmt = $conn->prepare($sql);
-                    if (!$stmt) {
-                        die("Error preparing statement: " . $conn->error);
-                    }
-                    $stmt->bind_param("issssii", $exam_id, $new_question_text, $new_question_image, $new_clo_id, $new_difficulty, $new_points, $new_order);
-                } else {
-                    echo "Error uploading file: " . $_FILES['new_question_image']['error'][$index];
-                }
-            } else {
-                $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, `order`) 
-                        VALUES (?, ?, ?, ?, ?, ?)";
-                $stmt = $conn->prepare($sql);
-                if (!$stmt) {
-                    die("Error preparing statement: " . $conn->error);
-                }
-                $stmt->bind_param("isssii", $exam_id, $new_question_text, $new_clo_id, $new_difficulty, $new_points, $new_order);
-            }
-            if (!$stmt->execute()) {
-                die("Error executing statement: " . $stmt->error);
-            }
-        }
-    }
-
-    if (isset($_POST['new_instruction_text'])) {
-        $new_instruction_texts = $_POST['new_instruction_text'];
-        $new_instruction_orders = $_POST['new_instruction_order'];
-
-        foreach ($new_instruction_texts as $index => $new_instruction_text) {
-            $new_instruction_text = mysqli_real_escape_string($conn, $new_instruction_text);
-            $new_instruction_order = intval($new_instruction_orders[$index]);
-
-            $sql = "INSERT INTO `instruction` (`exam_id`, `instruction_text`, `order`) VALUES (?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                die("Error preparing statement: " . $conn->error);
-            }
-            $stmt->bind_param("isi", $exam_id, $new_instruction_text, $new_instruction_order);
-            if (!$stmt->execute()) {
-                die("Error executing statement: " . $stmt->error);
-            }
-        }
-    }
-
-    // Redirect back to the exam creator page
-    header("Location: examcreator.php?course_topic_id=$course_topic_id");
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <!-- Meta -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <meta name="author" content="APC AcademX">
+
+    <!-- Title -->
     <title>APC AcademX | Welcome</title>
-    <link rel="stylesheet" href="./css/sidebar.css">
-    <link rel="stylesheet" href="./css/header.css">
-    <link rel="stylesheet" href="./css/examsettings.css">
+    <link rel="shortcut icon" type="x-icon" href="./img/icon.png">
+    <!-- Styles -->
+    <link rel="stylesheet" href="./css/sidebar.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/header.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="./css/examsettings.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="./css/helpbutton.css">
+
+    <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
+    <!-- Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            $("#add_question").click(function() {
-                var exam_id = <?php echo $exam_id; ?>;
-                $.ajax({
-                    url: 'get_highest_order.php',
-                    method: 'POST',
-                    data: {
-                        exam_id: exam_id,
-                        type: 'question'
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        var highestOrder = response.highestOrder;
-                        var latestType = response.latestType;
-                        var newOrder;
-
-                        if (latestType === 'instruction') {
-                            newOrder = 1;
-                        } else {
-                            newOrder = highestOrder + 1;
-                        }
-
-                        var questionHTML = `
-                        <div class="bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="question_text">Question Text</label>
-                                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
-                            </div>
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="question_image">Question Image</label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_question_image[]">
-                            </div>
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="clo_id">CLO ID</label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_clo_id[]">
-                            </div>
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="difficulty">Difficulty</label>
-                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_difficulty[]">
-                                    <option value="E">Easy</option>
-                                    <option value="N">Normal</option>
-                                    <option value="H">Hard</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="question_points">Question Points</label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_question_points[]">
-                            </div>
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="order">Order</label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_order[]" value="${newOrder}" readonly>
-                            </div>
-                            <button class="remove_question px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button">Remove Question</button>
-                        </div>
-                    `;
-                        $("#new_questions").append(questionHTML);
-                    }
-                });
-            });
-
-            // Add new instruction dynamically
-            $("#add_instruction").click(function() {
-                var exam_id = <?php echo $exam_id; ?>;
-                $.ajax({
-                    url: 'get_highest_order.php',
-                    method: 'POST',
-                    data: {
-                        exam_id: exam_id,
-                        type: 'instruction'
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        var highestOrder = response.highestOrder;
-                        var newOrder = highestOrder + 1;
-
-                        var instructionHTML = `
-                        <div class="bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col instruction">
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="instruction_text">Instruction Text</label>
-                                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_instruction_text[]"></textarea>
-                            </div>
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="order">Order</label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_instruction_order[]" value="${newOrder}" readonly>
-                            </div>
-                            <button class="remove_instruction px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button">Remove Instruction</button>
-                        </div>
-                    `;
-                        $("#new_instructions").append(instructionHTML);
-                    }
-                });
-            });
-
-            // Remove question dynamically
-            $(document).on("click", ".remove_question", function() {
-                $(this).closest(".question").remove();
-            });
-
-            // Remove instruction dynamically
-            $(document).on("click", ".remove_instruction", function() {
-                $(this).closest(".instruction").remove();
-            });
-        });
-    </script>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            padding: 0;
-            margin: 0;
-        }
-    </style>
 </head>
 
 <body>
-        <!--OTHER CODE -->
-    <navigation class="navbar">
-        <ul class="right-header">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+
+    <ul class="right-header">
             <li class="logo">
-                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
+                <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/APC AcademX Logo.png"></a>
             </li>
         </ul>
-
         <ul class="left-header">
             <?php
             // Check if the session variable exists
@@ -474,208 +235,54 @@ if (isset($_POST['save_exam'])) {
                     <img src="img/back.png">
                 </a>
             </div>
-            <div class="help_buttonec">
-                <img src="img/help.png" alt="Help Icon">
+            <div class="help_buttonexam">
+                <img src="img/help.png">
             </div>
         </div>
-    </navigation>
+    </nav>
 
-
-    <!-- QUESTION Library -->
-
+    <!-- Question Library -->
     <div class="main_container">
-    <div class="buttons">
-        <button id="btn_diva" class="button">
-            <img src="./img/book.png" alt="Icon"> Question Library
-        </button>
-        <button id="btn_divb" class="button">
-            <img src="./img/examsettings.png" alt="Icon"> Exam Settings
-        </button>
-    </div>
+        <div class="buttons">
+            <button id="btn_diva" class="button" type="button">
+                <img src="./img/book.png" alt="Icon"> Question Library
+            </button>
+            <button id="btn_divb" class="button" type="button">
+                <img src="./img/examsettings.png" alt="Icon"> Exam Settings
+            </button>
+        </div>
 
-    <!-- div 1 -->
-    <div class="diva" id="diva">
-      Content A
-    </div>
+        <!-- DIV 1 -->
+        <div class="diva" id="diva">
+            Content A
+        </div>
 
-    <!-- div 2 -->
-    <div class="divb" id="divb">
-        <div class = "settingsbuttonONE">
-            <style>
-            body{
-                font: 15px/1.5 Arial, Helvetica, sans-serif;
-            }
-            .examrule {
-                width: 100%;
-                color: black;
-                background-color: white;
-                height: 400px;
-                padding: 20px; /* Adjusted padding for better spacing */
-                margin: 0 auto; /* Center the div if necessary */
-                overflow: auto; /* Adds scrollbar if content exceeds the div */
-                box-sizing: border-box; /* Includes padding and border in the width and height */
-                font: 14.1px/1.5 Arial, Helvetica, sans-serif;
-                border-radius: 7px;
-                border-radius: 12px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
-
-            .examrule h1 {
-                text-align: center;
-                margin-top: 0; /* Removes default top margin */
-                padding-bottom: 10px; /* Adds space below the title */
-            }
-
-            .examrule p {
-                margin: 10px 0; /* Adds vertical spacing between paragraphs */
-            }
-
-            .button-container{
-                display: flex;
-                justify-content: center; /* Centers the buttons horizontally */
-                align-items: center; /* Centers the buttons vertically if needed */
-            }
-        
-                .prevBTN {
-                width: 100%;
-                background-color: #FFFFFF;
-                border: none;
-                color: black;
-                padding: 15px 32px;
-                text-align: center;
-                text-decoration: none;
-                font-size: 16px;
-                margin: 4px 2px;
-                transition-duration: 0.4s;
-                cursor: pointer;
-                border-radius: 12px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
-
-            .downBTN {
-                width: 100%;
-                background-color: #F3C44C; 
-                border: none;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                text-decoration: none;
-                font-size: 16px;
-                margin: 4px 2px;
-                transition-duration: 0.4s;
-                cursor: pointer;
-                border-radius: 12px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
-
-            .savedBTN {
-                background-color: #F3C44C; 
-                border: none;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                width: 100%;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
-                transition-duration: 0.4s;
-                cursor: pointer;
-                border-radius: 12px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
-
-            .uploadBTN {
-                background-color: #F3C44C; 
-                border: none;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                width: 100%;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
-                transition-duration: 0.4s;
-                cursor: pointer;
-                border-radius: 12px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
-
-            button:hover {
-                opacity: 0.8;
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            }
-            </style>
-
-            <div class="examrule">
-                <h1><b>Exam Rules</b></h1>
-                <p><b>1.</b> Read, understand, and follow every specified direction carefully.</p>
-                <p><b>2.</b> Avoid using your cellular phone during exam proper.</p>
-                <p><b>3.</b> This exam is CLOSED NOTES.</p>
-                <p><b>4.</b> Shade your answer on the answer sheet.</p>
-                <p><b>5.</b> NO ERASURE. Erasure means wrong.</p>
-                <p><b>6.</b> Strictly NO CHEATING. Anybody caught cheating will receive a FAILING MARK.</p>
+        <!-- DIV 2 -->
+        <div class="divb text-2xl flex flex-col gap-2" id="divb">
+            <!-- Text area for Exam Instruction -->
+            <div class="w-full flex flex-col gap-2">
+                <label class="w-full " for="exam_instruction">Exam Rules</label>
+                <textarea class="p-4 w-full text-zinc-800 rounded-xl" id="exam_instruction" cols="30" rows="10"></textarea>
             </div>
-            <div class="button-container">
-                <button id="previewBTN" class ="prevBTN">Preview</button>
-                <button id="downloadBTN" class ="downBTN">Download</button>
+
+            <div class="flex w-full items-center gap-2">
+                <button class="w-full bg-white text-zinc-800 font-medium py-4 rounded-xl flex items-center justify-center" type="button">Preview</button>
+                <button id="download-exam-btn" class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Download</button>
             </div>
-            
-            <div class = "button-container-lower">
-            <button id="savedBTN" class ="savedBTN">Save Progress</button>
-            </div>
-            <div class = "button-container-lower">
-            <button id="uploadBTN" class ="uploadBTN">Upload to Exam Library</button>
-            </div>
+            <button class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Save Progress</button>
+            <button class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Upload to Exam Library</button>
         </div>
     </div>
-  </div>
 
-  <script>
-    var btn_diva = document.getElementById("btn_diva");
-    var btn_divb = document.getElementById("btn_divb");
-    var diva = document.getElementById("diva");
-    var divb = document.getElementById("divb");
-
-    function activateButton(activeButton) {
-      // Remove the active class from all buttons
-      document.querySelectorAll('.button').forEach(button => {
-        button.classList.remove('active');
-      });
-      // Add the active class to the clicked button
-      activeButton.classList.add('active');
-    }
-
-    btn_diva.addEventListener("click", () => {
-      diva.style.display = "flex";
-      divb.style.display = "none";
-      activateButton(btn_diva);
-    });
-
-    btn_divb.addEventListener("click", () => {
-      diva.style.display = "none";
-      divb.style.display = "flex";
-      activateButton(btn_divb);
-    });
-
-    // Display DIV A and set button DIV A as active on initial load
-    window.addEventListener('load', () => {
-      diva.style.display = "flex";
-      divb.style.display = "none";
-      activateButton(btn_diva);
-    });
-  </script>
-
-    <section class="ml-[400px] mt-[70px] px-20 py-10">
-        <form class="w-full" method="POST" action="" enctype="multipart/form-data">
+    <!-- Main Exam Creator -->
+    <main class="ml-[400px] mt-[70px] px-20 py-10">
+        <form id="exam-form" class="w-full" method="POST" enctype="multipart/form-data">
             <h2 class="font-semibold mb-2">Exam Details</h2>
-            <!-- <input class="mb-4 outline outline-zinc-600 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>"> -->
-            <div class="mb-4 outline outline-zinc-600 outline-1 py-2 px-4 rounded-lg">
-                <?php echo htmlspecialchars($exam['exam_name']); ?>
-            </div>
+
+            <input class="mb-4 outline w-full outline-zinc-300 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
             <h3 class="w-full font-semibold mb-2">Questions
-                <span class="text-base font-normal text-gray-400 ml-1">Total Questions: <?php echo $questions_result->num_rows; ?></span>
+                <span class="text-base font-normal text-gray-400 ml-1" id="total-questions"></span>
+                <span class="text-base font-normal text-gray-400 ml-1" id="total-points"></span>
             </h3>
 
             <div class="flex flex-col gap-6">
@@ -689,28 +296,31 @@ if (isset($_POST['save_exam'])) {
                     );
                 }
 
-                while ($instruction = $instructions_result->fetch_assoc()) {
-                    $combined_result[] = array(
-                        'type' => 'instruction',
-                        'data' => $instruction
-                    );
-                }
-
                 usort($combined_result, function ($a, $b) {
                     return strtotime($a['data']['date_created']) - strtotime($b['data']['date_created']);
                 });
 
                 $questionOrder = 1;
-                $instructionOrder = 1;
 
                 foreach ($combined_result as $item) {
                     if ($item['type'] === 'question') {
                         $question = $item['data'];
                 ?>
-                        <div class="bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="question_id">Question ID</label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_id[]" value="<?php echo htmlspecialchars($question['question_id']); ?>" readonly>
+                        <div class="existing-question bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
+                            <div class="flex w-full justify-between">
+                                <div class="flex flex-col">
+                                    <label class="mb-2" for="question_id">Question ID</label>
+                                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_id[]" value="<?php echo htmlspecialchars($question['question_id']); ?>" readonly>
+
+
+                                </div>
+                                <svg class="trash-icon" data-question-id="<?php echo $question['question_id']; ?>" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2">
+                                    <path d="M3 6h18" />
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                    <line x1="10" x2="10" y1="11" y2="17" />
+                                    <line x1="14" x2="14" y1="11" y2="17" />
+                                </svg>
                             </div>
 
                             <div class="flex flex-col">
@@ -723,11 +333,7 @@ if (isset($_POST['save_exam'])) {
                             </div>
 
                             <div class="flex flex-col">
-                                <label class="mb-2" for="question_image">Question Image
-                                    <?php if (empty($question['question_image'])) : ?>
-                                        <span class="text-red-400">No Question Image*</span>
-                                    <?php endif; ?>
-                                </label>
+                                <label class="mb-2" for="question_image">Question Image</label>
                                 <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="question_image[]">
 
                                 <?php if (!empty($question['question_image'])) : ?>
@@ -773,52 +379,1057 @@ if (isset($_POST['save_exam'])) {
                                         <span class="text-red-400">No Question Points*</span>
                                     <?php endif; ?>
                                 </label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="question_points[]" value="<?php echo htmlspecialchars($question['question_points']); ?>">
+                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 existing-question-points" type="number" name="question_points[]" value="<?php echo htmlspecialchars($question['question_points']); ?>">
                             </div>
 
-                            <input type="hidden" name="order[]" value="<?php echo htmlspecialchars($question['order']); ?>">
+                            <!-- Display question choices -->
+                            <h3 class="font-semibold mt-4">Choices</h3>
+                            <?php
+                            $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+                            $stmt = $conn->prepare($sql);
+                            if (!$stmt) {
+                                die("Error preparing statement: " . $conn->error);
+                            }
+
+                            $stmt->bind_param("i", $question['answer_id']);
+                            if (!$stmt->execute()) {
+                                die("Error executing statement: " . $stmt->error);
+                            }
+
+                            $choices_result = $stmt->get_result();
+                            $choiceIndex = 0;
+
+                            while ($choice = $choices_result->fetch_assoc()) {
+                                $choiceLetter = chr(65 + $choiceIndex);
+                                $imageId = "answer_image_{$question['question_id']}_{$choiceIndex}";
+                            ?>
+                                <!-- Main Question Choices -->
+                                <div class="choice flex gap-4 items-center">
+                                    <!-- Is Correct -->
+                                    <input type="checkbox" name="is_correct[<?php echo $question['question_id']; ?>][]" value="<?php echo $choice['is_correct']; ?>" <?php if ($choice['is_correct']) echo 'checked'; ?>>
+
+                                    <!-- Letter -->
+                                    <p class="font-semibold"><?php echo $choiceLetter; ?></p>
+
+                                    <!-- Answer Text -->
+                                    <div class="flex flex-col w-full">
+                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="answer_text[<?php echo $question['question_id']; ?>][]" value="<?php echo htmlspecialchars($choice['answer_text']); ?>">
+                                    </div>
+
+                                    <!-- Image -->
+                                    <div class="flex flex-col">
+                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="answer_image[<?php echo $question['question_id']; ?>][]">
+                                    </div>
+
+                                    <!-- Hidden input field for question_choices_id -->
+                                    <input type="hidden" name="question_choices_id[<?php echo $question['question_id']; ?>][]" value="<?php echo $choice['question_choices_id']; ?>">
+
+                                    <!-- Create a toggle to open and close image -->
+                                    <?php if (!empty($choice['answer_image'])) : ?>
+                                        <script>
+                                            function toggleImage_<?php echo $imageId; ?>() {
+                                                var x = document.getElementById("<?php echo $imageId; ?>");
+                                                if (x.style.display === "none") {
+                                                    x.style.display = "block";
+                                                } else {
+                                                    x.style.display = "none";
+                                                }
+                                            }
+                                        </script>
+
+                                        <button type="button" onclick="toggleImage_<?php echo $imageId; ?>()">Toggle Image</button>
+
+                                        <div id="<?php echo $imageId; ?>" style="display: none;">
+                                            <?php
+                                            $imgData = base64_encode($choice['answer_image']);
+                                            $src = 'data:image/jpeg;base64,' . $imgData;
+                                            ?>
+                                            <img src="<?php echo $src; ?>" alt="Answer Image" style="max-width: 200px; max-height: 200px;">
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+
+                            <?php
+                                $choiceIndex++;
+                            }
+                            ?>
                             <p class="absolute right-[100%] py-2 px-4 rounded-l-lg -z-10 outline outline-1 outline-zinc-200 bg-yellow-400 text-white"><?php echo $questionOrder; ?></p>
                         </div>
-                    <?php
-                        $questionOrder++;
-                    } elseif ($item['type'] === 'instruction') {
-                        $instruction = $item['data'];
-                    ?>
-                        <div class="bg-yellow-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
-                            <div class="flex flex-col">
-                                <label class="mb-2" for="instruction_text">Instruction Text</label>
-                                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="instruction_text[]"><?php echo htmlspecialchars($instruction['instruction_text']); ?></textarea>
-                            </div>
-                            <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
-                            <input type="hidden" name="instruction_order[]" value="<?php echo htmlspecialchars($instruction['order']); ?>">
-                            <p class="absolute right-[100%] py-2 px-4 rounded-l-lg -z-10 outline outline-1 outline-zinc-200 bg-yellow-400 text-white"><?php echo $instructionOrder; ?></p>
-                        </div>
+
                 <?php
-                        $instructionOrder++;
+                        $questionOrder++;
                     }
                 }
                 ?>
             </div>
 
+
             <div id="new_questions"></div>
-            <div id="new_instructions"></div>
 
             <div class="mt-4">
                 <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button" id="add_question">Add Question</button>
-                <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button" id="add_instruction">Add Instruction</button>
                 <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="submit" name="save_exam">Save Exam</button>
             </div>
-
-            <?php while ($instruction = $instructions_result->fetch_assoc()) : ?>
-                <div>
-                    <label for="instruction_text">Instruction Text</label>
-                    <input type="hidden" name="instruction_id[]" value="<?php echo htmlspecialchars($instruction['instruction_id']); ?>">
-                    <textarea name="instruction_text[]"><?php echo htmlspecialchars($instruction['instruction_text']); ?></textarea>
-                </div>
-            <?php endwhile; ?>
-
         </form>
-    </section>
+    </main>
+
+    <!-- Exam Preview -->
+    <div id="exam-preview" class="hidden fixed justify-center items-center z-[100000] left-[50%] top-[50%] transform-gpu -translate-x-1/2 -translate-y-1/2 w-screen h-screen bg-black/40 backdrop-blur-xl">
+        <div class="flex text-white bg-[#343A40] w-[80%] h-[80%] rounded-xl shadow-xl">
+            <div class="w-[70%] overflow-y-scroll flex flex-col gap-8">
+                <?php
+                $totalQuestions = count($combined_result);
+                $questionsPerPage = 30;
+                $totalPages = ceil($totalQuestions / $questionsPerPage);
+
+                for ($page = 1; $page <= $totalPages; $page++) {
+                    $startIndex = ($page - 1) * $questionsPerPage;
+                    $endIndex = min($startIndex + $questionsPerPage, $totalQuestions);
+                ?>
+                    <div class="page py-8 px-20 bg-white rounded-xl text-2xl text-zinc-800">
+                        <div class="w-full flex items-center justify-between gap-4 text-xl font-normal text-zinc-800">
+                            <!-- Get the params course_code in the URL -->
+                            <p>
+                                <?php
+                                $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
+                                echo $course_code;
+                                ?>
+                            </p>
+
+                            <img src="img/apc-academx-logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+
+                            <h4 class="text-zinc-800">
+                                <?php echo htmlspecialchars($exam['exam_name']); ?>
+                            </h4>
+                        </div>
+                        <div class="w-full h-0.5 my-8 bg-black"></div>
+
+                        <?php if ($page === 1) { ?>
+                            <div class="w-full flex items-center h-[100px] border-black border-1 mb-6">
+                                <div class="w-[80%] flex flex-col h-full">
+                                    <div class="h-full p-4 border-[1px] border-black">Name:</div>
+                                    <div class="flex h-full">
+                                        <div class="w-full h-full p-4 border-[1px] border-black">Section:</div>
+                                        <div class="w-full h-full p-4 border-[1px] border-black">Date:</div>
+                                    </div>
+                                </div>
+                                <div class="w-[20%] h-full p-4 border-[1px] border-black">
+                                    Score:
+                                </div>
+                            </div>
+
+                            <h1 class="font-medium">General Instructions</h1>
+                            <p class="mb-6">
+                                1. Read, understand and follow every specified direction carefully.<br />
+                                2. Avoid using your cellular phone during exam proper.<br />
+                                3. This is exam CLOSED NOTES<br />
+                                4. Shade your answer on the answer sheet.<br />
+                                5. NO ERASURES. Erasure means WRONG.<br />
+                                6. Strictly NO CHEATING of any form. Anybody caught cheating will receive a FAILING MARK.
+                            </p>
+                        <?php } ?>
+
+                        <!-- Answer Sheet -->
+                        <div id="answer-sheet">
+                            <div class="flex justify-between">
+                                <?php
+                                $questionsPerColumn = 15;
+                                $columnsPerPage = 2;
+
+                                for ($column = 1; $column <= $columnsPerPage; $column++) {
+                                    $columnStartIndex = $startIndex + ($column - 1) * $questionsPerColumn;
+                                    $columnEndIndex = min($columnStartIndex + $questionsPerColumn, $endIndex);
+                                ?>
+                                    <div class="column w-1/2">
+                                        <?php for ($i = $columnStartIndex; $i < $columnEndIndex; $i++) {
+                                            $item = $combined_result[$i];
+                                            if ($item['type'] === 'question') {
+                                                $question = $item['data'];
+                                        ?>
+                                                <div class="question flex gap-4 items-center">
+                                                    <p class="font-semibold"><?php echo $i + 1; ?>.</p>
+                                                    <div class="choices-container flex gap-4">
+                                                        <?php
+                                                        $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+                                                        $stmt = $conn->prepare($sql);
+                                                        if (!$stmt) {
+                                                            die("Error preparing statement: " . $conn->error);
+                                                        }
+
+                                                        $stmt->bind_param("i", $question['answer_id']);
+                                                        if (!$stmt->execute()) {
+                                                            die("Error executing statement: " . $stmt->error);
+                                                        }
+
+                                                        $choices_result = $stmt->get_result();
+                                                        $choiceIndex = 0;
+
+                                                        while ($choice = $choices_result->fetch_assoc()) {
+                                                            $choiceLetter = chr(65 + $choiceIndex);
+                                                        ?>
+                                                            <div class="choice flex items-center">
+                                                                <div class="w-6 h-6 rounded-full border-[1px] border-black flex items-center justify-center">
+                                                                    <span class="text-base font-semibold"><?php echo $choiceLetter; ?></span>
+                                                                </div>
+                                                            </div>
+                                                        <?php
+                                                            $choiceIndex++;
+                                                        }
+                                                        ?>
+                                                    </div>
+                                                </div>
+                                        <?php
+                                            }
+                                        }
+                                        ?>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="w-full h-0.5 mt-8 bg-black"></div>
+                        <div class="w-full flex justify-center mt-4 text-lg">
+                            <p>Page <?php echo $page; ?> of <?php echo $totalPages; ?></p>
+                        </div>
+
+
+                    </div>
+                <?php } ?>
+
+                <!-- Questions and Choices -->
+                <?php
+                $totalQuestionsWithChoices = count($combined_result);
+                $questionsPerPageWithChoices = 30;
+                $totalPagesWithChoices = ceil($totalQuestionsWithChoices / $questionsPerPageWithChoices);
+
+                for ($page = 1; $page <= $totalPagesWithChoices; $page++) {
+                    $startIndex = ($page - 1) * $questionsPerPageWithChoices;
+                    $endIndex = min($startIndex + $questionsPerPageWithChoices, $totalQuestionsWithChoices);
+                ?>
+                    <div class="page py-8 px-20 bg-white rounded-xl text-2xl text-zinc-800">
+                        <div class="w-full flex items-center justify-between gap-4 text-xl font-normal text-zinc-800">
+                            <!-- Get the params course_code in the URL -->
+                            <p>
+                                <?php
+                                $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
+                                echo $course_code;
+                                ?>
+                            </p>
+
+                            <img src="img/apc-academx-logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+
+                            <h4 class="text-zinc-800">
+                                <?php echo htmlspecialchars($exam['exam_name']); ?>
+                            </h4>
+                        </div>
+                        <div class="w-full h-0.5 my-8 bg-black"></div>
+
+                        <div class="flex justify-between">
+                            <?php
+                            $questionsPerColumnWithChoices = 15;
+                            $columnsPerPageWithChoices = 2;
+
+                            for ($column = 1; $column <= $columnsPerPageWithChoices; $column++) {
+                                $columnStartIndex = $startIndex + ($column - 1) * $questionsPerColumnWithChoices;
+                                $columnEndIndex = min($columnStartIndex + $questionsPerColumnWithChoices, $endIndex);
+                            ?>
+                                <div class="column w-1/2">
+                                    <?php for ($i = $columnStartIndex; $i < $columnEndIndex; $i++) {
+                                        $item = $combined_result[$i];
+                                        if ($item['type'] === 'question') {
+                                            $question = $item['data'];
+                                    ?>
+                                            <div class="question mb-4">
+                                                <p class="font-semibold mb-2"><?php echo $i + 1; ?>. <?php echo $question['question_text']; ?></p>
+                                                <div class="choices-container">
+                                                    <?php
+                                                    $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+                                                    $stmt = $conn->prepare($sql);
+                                                    if (!$stmt) {
+                                                        die("Error preparing statement: " . $conn->error);
+                                                    }
+
+                                                    $stmt->bind_param("i", $question['answer_id']);
+                                                    if (!$stmt->execute()) {
+                                                        die("Error executing statement: " . $stmt->error);
+                                                    }
+
+                                                    $choices_result = $stmt->get_result();
+                                                    $choiceIndex = 0;
+
+                                                    while ($choice = $choices_result->fetch_assoc()) {
+                                                        $choiceLetter = chr(65 + $choiceIndex);
+                                                    ?>
+                                                        <p class="mb-1"><?php echo $choiceLetter; ?>. <?php echo $choice['answer_text']; ?></p>
+                                                    <?php
+                                                        $choiceIndex++;
+                                                    }
+                                                    ?>
+                                                </div>
+                                            </div>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+                                </div>
+                            <?php } ?>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="w-full h-0.5 mt-8 bg-black"></div>
+                        <div class="w-full flex justify-center mt-4 text-lg">
+                            <p>Page <?php echo $page; ?> of <?php echo $totalPagesWithChoices; ?></p>
+                        </div>
+                    </div>
+                <?php } ?>
+
+                <!-- Answer Keys -->
+                <?php
+                $totalAnswerKeys = count($combined_result);
+                $answerKeysPerPage = 30;
+                $totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
+
+                for ($page = 1; $page <= $totalAnswerKeyPages; $page++) {
+                    $startIndex = ($page - 1) * $answerKeysPerPage;
+                    $endIndex = min($startIndex + $answerKeysPerPage, $totalAnswerKeys);
+                ?>
+                    <div class="page py-8 px-20 bg-white rounded-xl text-2xl text-zinc-800">
+                        <div class="w-full flex items-center justify-between gap-4 text-xl font-normal text-zinc-800">
+                            <!-- Get the params course_code in the URL -->
+                            <p>
+                                <?php
+                                $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
+                                echo $course_code;
+                                ?>
+                            </p>
+
+                            <img src="img/apc-academx-logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+
+                            <h4 class="text-zinc-800">
+                                <?php echo htmlspecialchars($exam['exam_name']); ?>
+                            </h4>
+                        </div>
+                        <div class="w-full h-0.5 my-8 bg-black"></div>
+
+                        <div class="flex justify-between">
+                            <?php
+                            $answerKeysPerColumn = 15;
+                            $columnsPerAnswerKeyPage = 2;
+
+                            for ($column = 1; $column <= $columnsPerAnswerKeyPage; $column++) {
+                                $columnStartIndex = $startIndex + ($column - 1) * $answerKeysPerColumn;
+                                $columnEndIndex = min($columnStartIndex + $answerKeysPerColumn, $endIndex);
+                            ?>
+                                <div class="column w-1/2">
+                                    <?php for ($i = $columnStartIndex; $i < $columnEndIndex; $i++) {
+                                        $item = $combined_result[$i];
+                                        if ($item['type'] === 'question') {
+                                            $question = $item['data'];
+                                    ?>
+                                            <div class="question mb-4">
+                                                <p class="font-semibold mb-2"><?php echo $i + 1; ?>. <?php echo $question['question_text']; ?></p>
+                                                <div class="choices-container">
+                                                    <?php
+                                                    $sql = "SELECT * FROM question_choices WHERE answer_id = ? AND is_correct = 1";
+                                                    $stmt = $conn->prepare($sql);
+                                                    if (!$stmt) {
+                                                        die("Error preparing statement: " . $conn->error);
+                                                    }
+
+                                                    $stmt->bind_param("i", $question['answer_id']);
+                                                    if (!$stmt->execute()) {
+                                                        die("Error executing statement: " . $stmt->error);
+                                                    }
+
+                                                    $choices_result = $stmt->get_result();
+                                                    $choiceIndex = 0;
+
+                                                    while ($choice = $choices_result->fetch_assoc()) {
+                                                        $choiceLetter = chr(65 + $choiceIndex);
+                                                    ?>
+                                                        <p class="mb-1"><?php echo $choiceLetter; ?>. <?php echo $choice['answer_text']; ?></p>
+                                                    <?php
+                                                        $choiceIndex++;
+                                                    }
+                                                    ?>
+                                                </div>
+                                            </div>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+                                </div>
+                            <?php } ?>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="w-full h-0.5 mt-8 bg-black"></div>
+                        <div class="w-full flex justify-center mt-4 text-lg">
+                            <p>Answer Keys - Page <?php echo $page; ?> of <?php echo $totalAnswerKeyPages; ?></p>
+                        </div>
+                    </div>
+                <?php } ?>
+            </div>
+            <div class="w-[30%] h-full flex flex-col p-8 items-center">
+                <h2 class="text-2xl font-medium mb-6">Exam Preview</h2>
+                <button id="print-exam-btn" class="w-full mt-4 bg-yellow-400 mb-4 text-2xl py-6 rounded-xl flex font-medium items-center justify-center text-zinc-800" type="button">Save as PDF</button>
+                <button id="close-exam-download-btn" class="w-full bg-[#EDEDED] text-2xl text-zinc-800 py-6 rounded-xl flex font-medium items-center justify-center" type="button">Back</button>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Console log something when the download button is clicked
+        document.getElementById('download-exam-btn').addEventListener('click', function() {
+            // Show the modal
+            document.getElementById('exam-preview').style.position = 'fixed';
+            document.getElementById('exam-preview').style.display = 'flex';
+        });
+
+        // Download exam pages as PDF
+        document.getElementById('print-exam-btn').addEventListener('click', function() {
+            var examPages = document.querySelectorAll('.page');
+            var pdf = new jsPDF();
+            var margin = 10; // Define your margin size in mm
+
+            function generatePDF(index) {
+                if (index >= examPages.length) {
+                    pdf.save('exam.pdf');
+                    return;
+                }
+
+                html2canvas(examPages[index], {
+                    scale: 2, // Increase the scale for better quality
+                    useCORS: true, // Enable cross-origin resource sharing
+                    allowTaint: true // Allow cross-origin images
+                }).then(function(canvas) {
+                    var imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+                    var imgWidth = canvas.width;
+                    var imgHeight = canvas.height;
+                    var pageWidth = 210; // A4 size in mm
+                    var pageHeight = 297; // A4 size in mm
+
+                    // Calculate the width and height while maintaining the aspect ratio
+                    var ratio = Math.min((pageWidth - 2 * margin) / imgWidth, (pageHeight - 2 * margin) / imgHeight);
+                    var width = imgWidth * ratio;
+                    var height = imgHeight * ratio;
+
+                    // Set the x position for the image to be centered horizontally
+                    var x = (pageWidth - width) / 2;
+                    // Set the y position to include the top margin
+                    var y = margin;
+
+                    pdf.addImage(imgData, 'JPEG', x, y, width, height);
+
+                    if (index < examPages.length - 1) {
+                        pdf.addPage();
+                    }
+
+                    generatePDF(index + 1);
+                });
+            }
+
+            generatePDF(0);
+        });
+
+
+
+
+        // Close the modal when the close button is clicked
+        document.getElementById('close-exam-download-btn').addEventListener('click', function() {
+            // Hide the modal
+            document.getElementById('exam-preview').style.display = 'none';
+        });
+    </script>
+
+    <script>
+        totalQuestions = 0;
+        totalPoints = 0;
+
+        // ----------------------------- Helper Functions -----------------------------
+
+        // Function to fetch total points from the API
+        async function fetchTotalPoints() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseTopicId = urlParams.get('course_topic_id');
+
+            var res = await fetch(`http://localhost/ramex/api/exam/get-exam-id-by-course-topic-id.php?course_topic_id=${courseTopicId}`);
+            var data = await res.json();
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            var examId = data;
+            console.log("Exam ID:", examId);
+
+            res = await fetch(`http://localhost/ramex/api/question/get-total-points-by-exam-id.php?exam_id=${examId}`);
+            data = await res.json();
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            var totalPointsData = data;
+            console.log("Total Points:", totalPointsData);
+
+            res = await fetch(`http://localhost/ramex/api/question/get-total-questions-by-exam-id.php?exam_id=${examId}`)
+            data = await res.json();
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            var totalQuestionsData = data;
+            console.log("Total Questions:", totalQuestionsData);
+
+            // Add totalPointsData to the totalPoints variable
+            totalPoints = totalPointsData;
+            document.getElementById('total-points').innerText = `(${totalPoints} Points)`;
+
+            // Add totalQuestionsData to the totalQuestions variable
+            totalQuestions = totalQuestionsData;
+            document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
+        }
+
+        // ----------------------------- Main Script -----------------------------
+
+        // Set empty arrays for new_is_correct, new_answer_text, and new_answer_image
+        var new_is_correct = [];
+        var new_answer_text = [];
+        var new_answer_image = [];
+
+        function updateIsCorrectArray() {
+            new_is_correct = [];
+            $(".new-question").each(function() {
+                var is_correct = [];
+                $(this).find("input[name='new_is_correct[]']").each(function() {
+                    is_correct.push($(this).is(":checked") ? 1 : 0);
+                });
+                new_is_correct.push(is_correct);
+            });
+            console.log("New Is Correct:", new_is_correct);
+        }
+
+        function updateAnswerTextArray() {
+            new_answer_text = [];
+            $(".new-question").each(function() {
+                var answer_text = [];
+                $(this).find("input[name='new_answer_text[]']").each(function() {
+                    answer_text.push($(this).val());
+                });
+                new_answer_text.push(answer_text);
+            });
+            console.log("New Answer Text:", new_answer_text);
+        }
+
+        function updateAnswerImageArray() {
+            new_answer_image = [];
+            $(".new-question").each(function() {
+                var answer_image = [];
+                $(this).find("input[name='new_answer_image[]']").each(function() {
+                    var file = $(this)[0].files[0];
+                    answer_image.push(file ? file : null);
+                });
+                new_answer_image.push(answer_image);
+            });
+            console.log("New Answer Image:", new_answer_image);
+        }
+
+        function updateHiddenInputs() {
+            var new_is_correct_string = JSON.stringify(new_is_correct);
+            var new_answer_text_string = JSON.stringify(new_answer_text);
+            $("input[name='new_is_correct_string']").remove();
+            $("input[name='new_answer_text_string']").remove();
+            $("<input>").attr({
+                type: "hidden",
+                name: "new_is_correct_string",
+                value: new_is_correct_string
+            }).appendTo("form");
+            $("<input>").attr({
+                type: "hidden",
+                name: "new_answer_text_string",
+                value: new_answer_text_string
+            }).appendTo("form");
+        }
+
+        // ----------------------------- Event Listeners -----------------------------
+
+        // Read event for click in add_question button
+        $(document).on("change", "input[name='new_is_correct[]']", function() {
+            updateIsCorrectArray();
+            updateHiddenInputs();
+        });
+
+        // Read event for input in new_answer_text
+        $(document).on("input", "input[name='new_answer_text[]']", function() {
+            updateAnswerTextArray();
+            updateHiddenInputs();
+        });
+
+        // Read event for change in new_answer_image
+        $(document).on("change", "input[name='new_answer_image[]']", function() {
+            updateAnswerImageArray();
+        });
+
+        // Read event for click in svg delete-question
+        $(document).on("click", ".trash-icon", async function() {
+            const questionId = $(this).data("question-id");
+            const questionElement = $(this).closest(".question");
+
+            if (confirm("Are you sure you want to delete this question?")) {
+                try {
+                    const res = await fetch(`http://localhost/ramex/api/question/delete-question-by-question-id.php?question_id=${questionId}`);
+                    const data = await res.text();
+                    console.log(data);
+                    questionElement.remove();
+                    fetchTotalPoints();
+
+                    // Reload the page
+                    location.reload();
+                } catch (error) {
+                    console.error("Error deleting question:", error);
+                }
+            }
+        });
+
+        // Update total points dynamically for new and existing questions
+        $(document).on("input", ".new-question-points, .existing-question-points", function() {
+            var newQuestionPoints = 0;
+            $(".new-question-points, .existing-question-points").each(function() {
+                newQuestionPoints += parseInt($(this).val() || 0);
+            });
+            $("#total-points").text(`(${newQuestionPoints} Points)`);
+        });
+
+        // Add question button
+        $(document).on("click", ".add-choice-btn", function() {
+            var choicesContainer = $(this).siblings(".choices-container");
+            var choiceCount = choicesContainer.children(".choice").length;
+            var questionIndex = $(this).closest(".question").index();
+
+            if (choiceCount < 5) {
+                var choiceLetter = String.fromCharCode(65 + choiceCount);
+                var choiceHTML = `
+            <div class="choice flex gap-4 items-center">
+                <input type="checkbox" name="new_is_correct[]" value="1">
+                <p class="font-semibold">${choiceLetter}</p>
+                <div class="flex flex-col w-full">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                </div>
+                <div class="flex flex-col">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                </div>
+                <button type="button" class="remove-choice-btn px-2 py-1 bg-red-500 text-white rounded-md">X</button>
+            </div>
+        `;
+                choicesContainer.append(choiceHTML);
+            } else {
+                alert("Maximum of 5 choices allowed.");
+            }
+        });
+
+        // Remove choice button
+        $(document).on("click", ".remove-choice-btn", function() {
+            $(this).closest(".choice").remove();
+        });
+
+        // Add question button
+        $(document).ready(function() {
+            fetchTotalPoints();
+
+            // Form submission validation
+            $("#exam-form").on("submit", async function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // -- Validation
+
+                // Get all the new-question elements
+                var newQuestions = $(".new-question");
+                var newQuestionsLength = newQuestions.length;
+
+                var existingQuestionsLength = $(".existing-question").length;
+
+                // Alert
+                if (newQuestionsLength === 0 && existingQuestionsLength === 0) {
+                    alert(`Please add at least one question. New Questions: ${newQuestionsLength} | Existing Questions: ${existingQuestionsLength}`);
+                    return;
+                }
+
+                // If there is new question, then there are no checked checkboxes for correct answers then alert
+                if (newQuestionsLength > 0) {
+                    var newIsCorrect = [];
+                    newQuestions.each(function() {
+                        var isCorrect = $(this).find("input[name='new_is_correct[]']:checked").length;
+                        newIsCorrect.push(isCorrect);
+                    });
+
+                    if (newIsCorrect.includes(0)) {
+                        alert("Please select at least one correct answer for each new question.");
+                        return;
+                    }
+
+                    // If there are unfilled answer texts then alert
+                    var newAnswerText = [];
+
+                    newQuestions.each(function() {
+                        var answerText = $(this).find("input[name='new_answer_text[]']").val();
+                        newAnswerText.push(answerText);
+                    });
+
+                    if (newAnswerText.includes("")) {
+                        alert("Please fill in all answer texts for each new question.");
+                        return;
+                    }
+
+                    // --
+
+                    try {
+                        // -- Post Question Choices --
+
+                        // Create a new FormData object
+                        var formData = new FormData(this);
+
+                        // Append the exam ID to the form data
+                        formData.append("exam_id", <?php echo $exam_id; ?>);
+
+                        // Append the new_is_correct and new_answer_text arrays to the FormData object
+                        formData.append("new_is_correct", JSON.stringify(new_is_correct));
+                        formData.append("new_answer_text", JSON.stringify(new_answer_text));
+
+                        // Append the new_answer_image files to the FormData object
+                        for (var i = 0; i < new_answer_image.length; i++) {
+                            for (var j = 0; j < new_answer_image[i].length; j++) {
+                                if (new_answer_image[i][j]) {
+                                    formData.append(`new_answer_image[${i}][${j}]`, new_answer_image[i][j]);
+                                }
+                            }
+                        }
+
+                        // Send the form data using the Fetch API
+                        const response = await fetch("http://localhost/ramex/api/question-choices/post-question-choices.php", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        if (!response.ok) {
+                            console.error("Error posting question choices");
+                        }
+
+                        const data = await response.json();
+                        console.log(data.message);
+
+
+
+                    } catch (error) {
+                        console.error("Error:", error.message);
+                        // Handle the error
+                    }
+                }
+
+
+                // TODO: Fix updating of existing questions
+                if (existingQuestionsLength > 0) {
+                    console.log('Existing Questions Length:', existingQuestionsLength);
+
+                    // -- Update Existing Questions --
+                    async function updateExistingQuestions() {
+                        // Create a new FormData object
+                        var formData = new FormData();
+
+                        // Append the exam ID to the form data
+                        formData.append("exam_id", <?php echo $exam_id; ?>);
+
+                        // Loop through each existing question
+                        $(".existing-question").each(function() {
+                            var questionElement = $(this);
+
+                            // Get the question ID
+                            var questionId = questionElement.find("input[name='question_id[]']").val();
+                            formData.append("question_id[]", questionId);
+
+                            // Get the question text
+                            var questionText = questionElement.find("textarea[name='question_text[]']").val();
+                            formData.append("question_text[]", questionText);
+
+                            // Get the question image
+                            var questionImage = questionElement.find("input[name='question_image[]']")[0].files[0];
+                            if (questionImage) {
+                                formData.append("question_image[]", questionImage);
+                            }
+
+                            // Get the CLO ID
+                            var cloId = questionElement.find("select[name='clo_id[]']").val();
+                            formData.append("clo_id[]", cloId);
+
+                            // Get the difficulty
+                            var difficulty = questionElement.find("select[name='difficulty[]']").val();
+                            formData.append("difficulty[]", difficulty);
+
+                            // Get the question points
+                            var questionPoints = questionElement.find("input[name='question_points[]']").val();
+                            formData.append("question_points[]", questionPoints);
+                        });
+
+                        console.log("Form Data:", formData);
+
+                        try {
+                            // Send the form data to the PHP script using fetch
+                            const response = await fetch('http://localhost/ramex/api/question/update-existing-questions.php', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                console.log("Server response:", data);
+                                // Handle the success response here
+                            } else {
+                                console.error("Error updating existing questions");
+                                // Handle the error response here
+                            }
+                        } catch (error) {
+                            console.error("Error:", error);
+                            // Handle any network or other errors here
+                        }
+
+
+                    }
+
+                    async function updateExistingQuestionChoices() {
+                        var questionData = [];
+
+                        $(".existing-question").each(function() {
+                            var questionElement = $(this);
+
+                            var questionId = questionElement.find("input[name='question_id[]']").val();
+                            console.log("Processing question ID:", questionId);
+
+                            var questionChoices = [];
+
+                            questionElement.find(".choice").each(function() {
+                                var choiceElement = $(this);
+                                var isCorrectValue = choiceElement.find("input[name='is_correct[" + questionId + "][]']").is(":checked") ? 1 : 0;
+                                var answerTextValue = choiceElement.find("input[name='answer_text[" + questionId + "][]']").val();
+                                var answerImageValue = choiceElement.find("input[name='answer_image[" + questionId + "][]']")[0].files[0];
+                                var questionChoicesId = choiceElement.find("input[name='question_choices_id[" + questionId + "][]']").val();
+
+                                console.log('Answer Image Value:', answerImageValue);
+
+                                questionChoices.push({
+                                    is_correct: isCorrectValue,
+                                    answer_text: answerTextValue,
+                                    question_choices_id: questionChoicesId
+                                });
+
+                                if (answerImageValue) {
+                                    questionChoices[questionChoices.length - 1].answer_image = answerImageValue;
+                                }
+                            });
+
+                            questionData.push({
+                                question_id: questionId,
+                                choices: questionChoices
+                            });
+                        });
+
+                        console.log("Question Data:", questionData);
+
+                        var formData = new FormData();
+
+                        questionData.forEach((question, questionIndex) => {
+                            formData.append(`question_data[${questionIndex}][question_id]`, question.question_id);
+
+                            question.choices.forEach((choice, choiceIndex) => {
+                                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][is_correct]`, choice.is_correct);
+                                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][answer_text]`, choice.answer_text);
+                                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][question_choices_id]`, choice.question_choices_id);
+
+                                if (choice.answer_image) {
+                                    formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][answer_image]`, choice.answer_image);
+                                }
+                            });
+                        });
+
+                        console.log('Form Data for Question Choices:', formData);
+
+                        const response = await fetch("http://localhost/ramex/api/question-choices/update-existing-question-choices.php", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log(data.message);
+                        } else {
+                            console.error("Error updating question choices");
+                        }
+                    }
+
+                    updateExistingQuestions();
+                    updateExistingQuestionChoices();
+
+                    // Reload the page
+                    location.reload();
+                }
+
+
+            });
+
+            $("#add_question").click(function() {
+                // Increment the new order
+                totalQuestions++;
+                // Display the total questions
+                document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
+
+                var newOrder = $("#new_questions .question").length + 1;
+
+                const html = String.raw;
+
+                var questionHTML = `
+                    <div class="new-question bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
+                        <div class="flex flex-col">
+                            <label class="mb-2" for="question_text">Question Text</label>
+                            <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="mb-2" for="question_image">Question Image</label>
+                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_question_image[]">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="mb-2" for="clo_id">CLO ID</label>
+                            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[]">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="mb-2" for="difficulty">Difficulty</label>
+                            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_difficulty[]">
+                                <option value="E">Easy</option>
+                                <option value="N">Normal</option>
+                                <option value="H">Hard</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                        <label class="mb-2" for="question_points">Question Points</label>
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 new-question-points" type="number" name="new_question_points[]">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="mb-2" for="order">Order</label>
+                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_order[]" value="${newOrder}" readonly>
+                        </div>
+
+                        <hr class="my-6">
+
+
+                        <div class="question-choices">
+        <h4 class="font-semibold mb-2">Question Choices</h4>
+
+        <div class="choices-container flex flex-col gap-4">
+            <div class="choice flex gap-4 items-center">
+                <input type="checkbox" name="new_is_correct[]" value="1">
+
+                <p class="font-semibold">A</p>
+                <div class="flex flex-col w-full">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                </div>
+                <div class="flex flex-col">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]" >
+                </div>
+            </div>
+
+            <div class="choice flex gap-4 items-center">
+                 <input type="checkbox" name="new_is_correct[]" value="1">
+
+                <p class="font-semibold">B</p>
+                <div class="flex flex-col w-full">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                </div>
+                <div class="flex flex-col">
+                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                </div>
+            </div>
+
+        </div> <button type="button" class="add-choice-btn px-4 py-2 bg-green-500 text-white rounded-md mt-2">+ Add Choice</button>
+
+        </div>
+
+
+                        <button class="remove_question px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button">Remove Question</button>
+                    </div>
+                `;
+
+                // Append to the new_questions div
+                $("#new_questions").append(questionHTML);
+
+
+            });
+
+            // Update total points dynamically, incrementing by the new question points
+            $(document).on("input", ".new-question-points", function() {
+                var newQuestionPoints = totalPoints;
+                $(".new-question-points").each(function() {
+                    newQuestionPoints += parseInt($(this).val() || 0);
+                });
+                $("#total-points").text(`(${newQuestionPoints} Points)`);
+            });
+
+            // Remove question dynamically
+            $(document).on("click", ".remove_question", function() {
+                $(this).closest(".question").remove();
+                totalQuestions--;
+                document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
+
+                // Decrement the total points
+                var newQuestionPoints = totalPoints;
+                $(".new-question-points").each(function() {
+                    newQuestionPoints += parseInt($(this).val() || 0);
+                });
+                $("#total-points").text(`(${newQuestionPoints} Points)`);
+            });
+        });
+
+        var btn_diva = document.getElementById("btn_diva");
+        var btn_divb = document.getElementById("btn_divb");
+        var diva = document.getElementById("diva");
+        var divb = document.getElementById("divb");
+
+        function activateButton(activeButton) {
+            // Remove the active class from all buttons
+            document.querySelectorAll('.button').forEach(button => {
+                button.classList.remove('active');
+            });
+            // Add the active class to the clicked button
+            activeButton.classList.add('active');
+        }
+
+        // Event listeners for the buttons
+        btn_diva.addEventListener("click", (event) => {
+            event.preventDefault(); // Prevent the default behavior of the button
+            diva.style.display = "flex";
+            divb.style.display = "none";
+            activateButton(btn_diva);
+        });
+
+        btn_divb.addEventListener("click", (event) => {
+            event.preventDefault(); // Prevent the default behavior of the button
+            diva.style.display = "none";
+            divb.style.display = "flex";
+            activateButton(btn_divb);
+        });
+
+        // Display DIV A and set button DIV A as active on initial load
+        window.addEventListener('load', () => {
+            diva.style.display = "flex";
+            divb.style.display = "none";
+            activateButton(btn_diva);
+        });
+    </script>
 </body>
 
 </html>

@@ -63,6 +63,7 @@ if ($user_role == 'Executive Director') {
                 <meta name="viewport" content="width=device-width">
                 <meta name="author" content="APC AcademX">
                 <title>APC AcademX | Exam Maker</title>
+                <link rel="system icon" type="x-icon" href="./img/icon.png">
                 <link rel="stylesheet" href="./css/style.css">
                 <link rel="stylesheet" href="./css/adminstyle.css">
                 <link rel="stylesheet" href="./css/emstyle.css">
@@ -71,7 +72,7 @@ if ($user_role == 'Executive Director') {
                 <link rel="stylesheet" href="./css/header.css">
                 <link rel="stylesheet" href="./css/homepage.css">
                 <link rel="stylesheet" href="./css/helpbutton.css">
-                <script src="https://kit.fontawesome.com/e85940e9f2.js" crossorigin="anonymous"></script>
+                <script src="https://kit.fontawesome.com/e85940e9f2.js" crsossorigin="anonymous"></script>
             </head>
 
             <body>
@@ -80,9 +81,9 @@ if ($user_role == 'Executive Director') {
 
                     <ul class="right-header">
         <li class="logo">
-            <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/logo.png"></a>
+            <a href="<?php echo $redirect_url; ?>"><img id="logo" src="img/APC AcademX Logo.png"></a>
         </li>
-    </ul>
+    </ul>   
 
                     <ul class="left-header">
                         <?php
@@ -196,28 +197,37 @@ if ($user_role == 'Executive Director') {
 
                     <!--header-->
                     <div class="emright">
-                        <div class="content">
+                        <div class="contentem">
 
                             <div class="righthead">
 
-                                <div class="adminmehead">
-                                    <p style="padding-left: 50px"> My Exams </p>
-                                </div>
-
-                                <?php if (!$update) : ?>
-                                    <button class="addbutt" onclick="showPopup()" style="margin-left: 300px;">
+                                <div class="adminmehead" style="margin-left: 50px ;display: flex">
+                                    <p> My Exams </p>
+                                    <?php if (!$update) : ?>
+                                    <button class="addbutt" onclick="showPopup()" style="margin-left: 30px">
                                         <i class="fa-solid fa-circle-plus"></i>
                                     </button>
                                 <?php endif; ?>
                                 <script src="./myexams.js"></script>
+                                
+                                <div class="searchicon" style="display: flex; align-items: center; margin-left: auto" >
+                                    <input type="text" class="searchbar" id="live_search" placeholder="Search a Course Folder...">
+                                </div>
+                                </div>
+
+                                
+
+
                             </div>
 
                             <div class="system-list">
 
                             </div>
+                            <!-- HIDDEN IS TO NOT DISPLAY IMMEDIATELY THE PLUS SIGN -->
                             <div class="popup-hidden">
-                                <div class="popup_bg"></div>
-                                <div class="Add_popup">
+                                <!-- POPUP-BG - this is for the black background behind the pop-up-hidden -->
+                                <div class="popup_bg">
+                                    <div class="Add_popup" >
                                     <form action="coursefolder.php" method="post">
                                         <!-- Add a hidden input field to indicate action -->
                                         <input type="hidden" name="action" id="action" value="add">
@@ -225,9 +235,12 @@ if ($user_role == 'Executive Director') {
                                         <input type="hidden" name="update" value="<?php echo isset($_GET['update']) ? $_GET['update'] : 'false'; ?>">
 
                                         <?php if ($update == true) : ?>
-                                            <p class="heading">Update Course Folder Information<img src="img/Folder.png" style="margin: 5px; width: 4rem;"></p>
+                                            <p class="heading">Update Course Folder Information<img src="img/folder.png"></p>
                                         <?php else : ?>
-                                            <p class="heading">Create a Course Folder<img src="img/Folder.png" style="margin: 5px; width: 4rem;"></p>
+                                            <div style="display: flex; align-items: center">
+                                            <img src="img/folder.png">
+                                            <p class="heading">Create a Course Folder</p>
+                                            </div>
                                         <?php endif; ?>
 
                                         <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
@@ -235,7 +248,8 @@ if ($user_role == 'Executive Director') {
                                         <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
 
                                         <div class="inputcolumn">
-                                            <label class="label" for="program_name">Program Name</label><br />
+                                            <div>
+                                            <label class="labelName" for="program_name">Program Name</label><br />
                                             <select class="input" name="program_name" required>
                                                 <option value="" disabled selected>None Selected</option>
                                                 <?php
@@ -253,11 +267,13 @@ if ($user_role == 'Executive Director') {
                                                 }
                                                 ?>
                                             </select>
-                                            <br />
+                                            </div>
+                                            <br/>
                                         </div>
 
                                         <div class="inputcolumn">
-                                            <label class="label" for="course_code">Course Code</label>
+
+                                            <label class="labelName" for="course_code">Course Code</label>
                                             <select class="input" name="course_code" required>
                                                 <option value="" disabled selected>None Selected</option>
                                                 <?php
@@ -275,6 +291,7 @@ if ($user_role == 'Executive Director') {
                                                 }
                                                 ?>
                                             </select>
+                                        
                                         </div>
 
                                         <input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
@@ -283,12 +300,17 @@ if ($user_role == 'Executive Director') {
                                         <?php if ($update == true) : ?>
                                             <button class="update" type="submit" name="update">Update</button>
                                         <?php else : ?>
-                                            <button class="save" type="submit" name="save">Create</button>
-                                        <?php endif; ?>
-                                        <div class="cancelbutton">
+                                            <div class="actionbuttons">
+                                                <button class="cancel" onclick="window.location.href='myexams.php'" name = "cancel">Cancel</button>
+                                                <span class="button-gap"></span> <!-- Add a span for the gap -->
+                                                <button class="save" type="submit" name="save">Create</button>
+                                                <?php endif; ?>      
+                                            </div>
+                                        <!-- <div class="cancelbutton">
                                             <a class="cancel" href="myexams.php">Cancel</a>
-                                        </div>
+                                        </div> -->
                                     </form>
+                                </div>
                                 </div>
                             </div>
                             <!--line-->
@@ -313,18 +335,68 @@ if ($user_role == 'Executive Director') {
                                         <section id="container2">
                                             <div class="emservices">
                                                 <div class="mebox">
-                                                    <div class="boxme">
-                                                        <select onchange="handleAction(this)">
-                                                            <option value="">Select Action</option>
-                                                            <option value="myexams.php?edit=<?php echo $row['course_subject_id']; ?>&update=true">Edit</option>
-                                                            <option value="coursefolder.php?delete=<?php echo $row['course_subject_id']; ?>">Delete</option>
-                                                        </select>
-                                                        <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
-                                                            <p class="malakingbox">
-                                                                <?php echo $courseCode; ?>
-                                                            </p>
-                                                        </a>
-                                                    </div>
+                                                <style>
+
+    .options-icon {
+        cursor: pointer;
+    }
+
+    .options {
+        position: absolute;
+        top: 30px;
+        right: 10px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        display: none;
+        z-index: 1;
+    }
+
+    .options select {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="boxme">
+    <img src="./img/dots.png" alt="Options" class="options-icon" onclick="showOptions(this)" class="selectOPTION" style="width: 15px;margin-left: auto;">
+    <div class="options">
+        <select onchange="handleAction(this)">
+            <option value="myexams.php?edit=<?php echo $row['course_subject_id']; ?>&update=true">Edit</option>
+            <option value="coursefolder.php?delete=<?php echo $row['course_subject_id']; ?>">Delete</option>
+        </select>
+    </div>
+    <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
+        <p class="malakingbox">
+            <?php echo $courseCode; ?>
+        </p>
+    </a>
+</div>
+
+<script> function showOptions(img) {
+    var options = img.nextElementSibling;
+    options.style.display = (options.style.display === "block") ? "none" : "block";
+}
+
+function handleAction(select) {
+    var selectedValue = select.value;
+    if (selectedValue !== "") {
+        window.location.href = selectedValue;
+    }
+    select.value = "";
+}
+
+
+function handleAction(select) {
+    var selectedValue = select.value;
+    if (selectedValue !== "") {
+        select.parentNode.style.display = "none";
+        window.location.href = selectedValue;
+    }
+    select.value = "";
+}</script>
                                                 </div>
                                             </div>
                                         </section>
@@ -370,6 +442,30 @@ if ($user_role == 'Executive Director') {
                         showEditPopup(urlParams.get('edit'), updateStatus);
                     }
                 }
+
+                function handleSearchInput() {
+        // Get the value of the search input
+        const searchQuery = document.getElementById("live_search").value.trim().toLowerCase();
+        // Get all course folder elements
+        const courseFolders = document.querySelectorAll(".mebox");
+
+        // Loop through each course folder
+        courseFolders.forEach(folder => {
+            // Get the text content of the course folder
+            const folderText = folder.textContent.toLowerCase();
+            // Check if the folder text contains the search query
+            if (folderText.includes(searchQuery)) {
+                // Show the folder if it matches the search query
+                folder.style.display = "block";
+            } else {
+                // Hide the folder if it does not match the search query
+                folder.style.display = "none";
+            }
+        });
+    }
+
+    // Attach an event listener to the search input
+    document.getElementById("live_search").addEventListener("input", handleSearchInput);
             </script>
 <?php
         }

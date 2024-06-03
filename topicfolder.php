@@ -16,8 +16,9 @@ if (isset($_POST['create_exam'])) {
     $easy_questions = $_POST['easy_questions'];
     $normal_questions = $_POST['normal_questions'];
     $hard_questions = $_POST['hard_questions'];
-    $total_questions = $_POST['total_questions'];
-    $difficulty = $_POST['difficulty'];
+    
+    // Check if the 'difficulty' key exists in the $_POST array
+    $difficulty = isset($_POST['difficulty']) ? $_POST['difficulty'] : '';
 
     // Insert the course topic into the prof_course_topic table
     $sql = "INSERT INTO prof_course_topic (course_subject_id, account_id, course_topics, difficulty, date_created) 
@@ -31,6 +32,8 @@ if (isset($_POST['create_exam'])) {
         die("Error inserting course topic: " . $stmt->error);
     }
     $course_topic_id = $stmt->insert_id;
+
+    // 
 
     // Create the exam
     $exam_name = "Exam for " . $course_topics;
