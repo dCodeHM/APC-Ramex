@@ -96,6 +96,55 @@ if (!$stmt->execute()) {
 }
 
 $questions_result = $stmt->get_result();
+
+
+// ------------------- Fetch CLOs -------------------
+
+// Fetch the course_subject_id using the course_code from the URL
+$course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
+
+$sql = "SELECT course_subject_id FROM prof_course_subject WHERE course_code = ?";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Error preparing statement: " . $conn->error);
+}
+$stmt->bind_param("s", $course_code);
+if (!$stmt->execute()) {
+    die("Error executing statement: " . $stmt->error);
+}
+$result = $stmt->get_result();
+$course_subject = $result->fetch_assoc();
+$course_subject_id = $course_subject['course_subject_id'];
+
+// Fetch the course_syllabus_id using the course_subject_id
+$sql = "SELECT course_syllabus_id FROM course_syllabus WHERE course_code = ?";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Error preparing statement: " . $conn->error);
+}
+$stmt->bind_param("s", $course_code);
+if (!$stmt->execute()) {
+    die("Error executing statement: " . $stmt->error);
+}
+$result = $stmt->get_result();
+$course_syllabus = $result->fetch_assoc();
+$course_syllabus_id = $course_syllabus['course_syllabus_id'];
+
+// Fetch the CLOs using the course_syllabus_id
+$sql = "SELECT clo_id, clo_number, clo_details FROM course_outcomes WHERE course_syllabus_id = ?";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Error preparing statement: " . $conn->error);
+}
+$stmt->bind_param("i", $course_syllabus_id);
+if (!$stmt->execute()) {
+    die("Error executing statement: " . $stmt->error);
+}
+$result = $stmt->get_result();
+$clos = $result->fetch_all(MYSQLI_ASSOC);
+
+$clos_json = json_encode($clos);
+
 ?>
 
 <!DOCTYPE html>
@@ -352,11 +401,11 @@ $questions_result = $stmt->get_result();
                                     <?php endif; ?>
                                 </label>
                                 <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="clo_id[]">
-                                    <option value="1" <?php if ($question['clo_id'] == 1) echo 'selected'; ?>>1</option>
-                                    <option value="2" <?php if ($question['clo_id'] == 2) echo 'selected'; ?>>2</option>
-                                    <option value="3" <?php if ($question['clo_id'] == 3) echo 'selected'; ?>>3</option>
-                                    <option value="4" <?php if ($question['clo_id'] == 4) echo 'selected'; ?>>4</option>
-                                    <option value="5" <?php if ($question['clo_id'] == 5) echo 'selected'; ?>>5</option>
+                                    <?php foreach ($clos as $clo) : ?>
+                                        <option value="<?php echo $clo['clo_id']; ?>" <?php if ($question['clo_id'] == $clo['clo_id']) echo 'selected'; ?>>
+                                            <?php echo $clo['clo_number'] . ' - ' . $clo['clo_details']; ?>
+                                        </option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
 
@@ -1267,6 +1316,9 @@ $questions_result = $stmt->get_result();
 
             });
 
+            // Add this script to pass CLO data to JavaScript
+            const clos = <?php echo $clos_json; ?>;
+
             $("#add_question").click(function() {
                 // Increment the new order
                 totalQuestions++;
@@ -1277,88 +1329,75 @@ $questions_result = $stmt->get_result();
 
                 const html = String.raw;
 
+                var cloOptions = clos.map(clo => `<option value="${clo.clo_id}">${clo.clo_number} - ${clo.clo_details}</option>`).join('');
+
                 var questionHTML = `
-                    <div class="new-question bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
-                        <div class="flex flex-col">
-                            <label class="mb-2" for="question_text">Question Text</label>
-                            <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
-                        </div>
-                        <div class="flex flex-col">
-                            <label class="mb-2" for="question_image">Question Image</label>
-                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_question_image[]">
-                        </div>
-                        <div class="flex flex-col">
-                            <label class="mb-2" for="clo_id">CLO ID</label>
-                            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[]">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </div>
-                        <div class="flex flex-col">
-                            <label class="mb-2" for="difficulty">Difficulty</label>
-                            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_difficulty[]">
-                                <option value="E">Easy</option>
-                                <option value="N">Normal</option>
-                                <option value="H">Hard</option>
-                            </select>
-                        </div>
-                        <div class="flex flex-col">
-                        <label class="mb-2" for="question_points">Question Points</label>
-                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 new-question-points" type="number" name="new_question_points[]">
-                        </div>
-                        <div class="flex flex-col">
-                            <label class="mb-2" for="order">Order</label>
-                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_order[]" value="${newOrder}" readonly>
-                        </div>
-
-                        <hr class="my-6">
-
-
-                        <div class="question-choices">
-        <h4 class="font-semibold mb-2">Question Choices</h4>
-
-        <div class="choices-container flex flex-col gap-4">
-            <div class="choice flex gap-4 items-center">
-                <input type="checkbox" name="new_is_correct[]" value="1">
-
-                <p class="font-semibold">A</p>
-                <div class="flex flex-col w-full">
-                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                </div>
-                <div class="flex flex-col">
-                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]" >
-                </div>
+        <div class="new-question bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
+            <div class="flex flex-col">
+                <label class="mb-2" for="question_text">Question Text</label>
+                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
             </div>
-
-            <div class="choice flex gap-4 items-center">
-                 <input type="checkbox" name="new_is_correct[]" value="1">
-
-                <p class="font-semibold">B</p>
-                <div class="flex flex-col w-full">
-                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                </div>
-                <div class="flex flex-col">
-                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                </div>
+            <div class="flex flex-col">
+                <label class="mb-2" for="question_image">Question Image</label>
+                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_question_image[]">
             </div>
-
-        </div> <button type="button" class="add-choice-btn px-4 py-2 bg-green-500 text-white rounded-md mt-2">+ Add Choice</button>
-
-        </div>
-
-
-                        <button class="remove_question px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button">Remove Question</button>
+            <div class="flex flex-col">
+                <label class="mb-2" for="clo_id">CLO ID</label>
+                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[]">
+                    ${cloOptions}
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label class="mb-2" for="difficulty">Difficulty</label>
+                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_difficulty[]">
+                    <option value="E">Easy</option>
+                    <option value="N">Normal</option>
+                    <option value="H">Hard</option>
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label class="mb-2" for="question_points">Question Points</label>
+                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 new-question-points" type="number" name="new_question_points[]">
+            </div>
+            <div class="flex flex-col">
+                <label class="mb-2" for="order">Order</label>
+                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_order[]" value="${newOrder}" readonly>
+            </div>
+            <hr class="my-6">
+            <div class="question-choices">
+                <h4 class="font-semibold mb-2">Question Choices</h4>
+                <div class="choices-container flex flex-col gap-4">
+                    <div class="choice flex gap-4 items-center">
+                        <input type="checkbox" name="new_is_correct[]" value="1">
+                        <p class="font-semibold">A</p>
+                        <div class="flex flex-col w-full">
+                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                        </div>
+                        <div class="flex flex-col">
+                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                        </div>
                     </div>
-                `;
+                    <div class="choice flex gap-4 items-center">
+                        <input type="checkbox" name="new_is_correct[]" value="1">
+                        <p class="font-semibold">B</p>
+                        <div class="flex flex-col w-full">
+                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                        </div>
+                        <div class="flex flex-col">
+                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="add-choice-btn px-4 py-2 bg-green-500 text-white rounded-md mt-2">+ Add Choice</button>
+            </div>
+            <button class="remove_question px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button">Remove Question</button>
+        </div>
+    `;
 
                 // Append to the new_questions div
                 $("#new_questions").append(questionHTML);
-
-
             });
+
 
             // Update total points dynamically, incrementing by the new question points
             $(document).on("input", ".new-question-points", function() {
