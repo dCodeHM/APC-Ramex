@@ -33,6 +33,7 @@ if (isset($_POST['create_exam'])) {
     }
     $course_topic_id = $stmt->insert_id;
 
+    // 
 
     // Create the exam
     $exam_name = "Exam for " . $course_topics;

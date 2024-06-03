@@ -259,7 +259,7 @@ $courseFolderName = $courseCode;
                 <div>
                     <label class="label" for="hard_questions">Hard</label>
                     <input class="difficultyinput" type="number" name="hard_questions" placeholder="0" required min="0">
-                </div>  
+                </div> 
             </div>
         </div>
 
