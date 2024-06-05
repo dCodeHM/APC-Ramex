@@ -424,7 +424,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
     </nav>
 
     <!-- Question Library -->
-    <div class="main_container">
+    <div class="main_container overflow-y-scroll pb-36">
         <div class="buttons">
             <button id="btn_diva" class="button active" type="button">
                 <img src="./img/book.png" alt="Icon"> Question Library
@@ -435,7 +435,12 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
         </div>
 
         <!-- Question Library Section -->
-        <div id="question-library" class="p-6 overflow-y-scroll">
+        <div id="question-library" class="p-6 !overflow-y-scroll">
+            <!-- Don't display add 5 questions if there are less than 5 questions -->
+            <?php if (count($related_questions) >= 5) : ?>
+                <button id="add_5_questions" class="px-4 py-2 bg-white text-xl font-medium rounded-md text-black mb-4" type="button">Add 5 Questions</button>
+            <?php endif; ?>
+
             <?php if (empty($related_questions)) : ?>
                 <p class="text-white text-2xl">No related questions found.</p>
             <?php else : ?>
@@ -502,6 +507,32 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
+
+        <script>
+            document.getElementById("add_5_questions").addEventListener("click", function() {
+                const questionItems = document.querySelectorAll(".question-item");
+
+                // If less than 5 questions, then alert
+                if (questionItems.length < 5) {
+                    alert("Not enough questions to add.");
+                    return;
+                }
+
+                // Click 5 .question-item elements
+                for (let i = 0; i < 5; i++) {
+                    const questionItem = questionItems[i];
+                    if (questionItem) {
+                        questionItem.click();
+                    }
+                }
+
+
+
+
+
+
+            });
+        </script>
 
 
 
