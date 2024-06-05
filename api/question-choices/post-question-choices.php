@@ -55,16 +55,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             // Prepare SQL statement based on the presence of question image
             if ($question_image !== null) {
-                $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, answer_id)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, answer_id, in_question_library)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     throw new Exception("Error preparing statement: " . $conn->error);
                 }
                 $stmt->bind_param("issssis", $exam_id, $question_text, $question_image, $clo_id, $difficulty, $points, $answer_id);
             } else {
-                $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, answer_id)
-                        VALUES (?, ?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, answer_id, in_question_library)
+            VALUES (?, ?, ?, ?, ?, ?, 1)";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     throw new Exception("Error preparing statement: " . $conn->error);

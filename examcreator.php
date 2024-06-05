@@ -145,6 +145,139 @@ $clos = $result->fetch_all(MYSQLI_ASSOC);
 
 $clos_json = json_encode($clos);
 
+
+// ------------------- Question Library (Fetch Related Questions) -------------------
+
+// Function to fetch related questions based on course_topic_id
+function fetchRelatedQuestions($conn, $course_topic_id, $easy_limit, $normal_limit, $hard_limit)
+{
+    // Get the course_subject_id based on the course_topic_id
+    $sql = "SELECT course_subject_id FROM prof_course_topic WHERE course_topic_id = ?";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Error preparing statement: " . $conn->error);
+    }
+    $stmt->bind_param("i", $course_topic_id);
+    if (!$stmt->execute()) {
+        die("Error executing statement: " . $stmt->error);
+    }
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $course_subject_id = $row['course_subject_id'];
+
+    // Get all the course_topic_ids with the same course_subject_id
+    $sql = "SELECT course_topic_id FROM prof_course_topic WHERE course_subject_id = ?";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Error preparing statement: " . $conn->error);
+    }
+    $stmt->bind_param("i", $course_subject_id);
+    if (!$stmt->execute()) {
+        die("Error executing statement: " . $stmt->error);
+    }
+    $result = $stmt->get_result();
+    $course_topic_ids = [];
+    while ($row = $result->fetch_assoc()) {
+        $course_topic_ids[] = $row['course_topic_id'];
+    }
+
+    // Get all the exam_ids based on the course_topic_ids
+    $placeholders = implode(',', array_fill(0, count($course_topic_ids), '?'));
+    $sql = "SELECT exam_id FROM exam WHERE course_topic_id IN ($placeholders)";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Error preparing statement: " . $conn->error);
+    }
+    $stmt->bind_param(str_repeat('i', count($course_topic_ids)), ...$course_topic_ids);
+    if (!$stmt->execute()) {
+        die("Error executing statement: " . $stmt->error);
+    }
+    $result = $stmt->get_result();
+    $exam_ids = [];
+    while ($row = $result->fetch_assoc()) {
+        $exam_ids[] = $row['exam_id'];
+    }
+
+    // Fetch questions based on the exam_ids
+    $placeholders = implode(',', array_fill(0, count($exam_ids), '?'));
+    $sql = "
+        SELECT q.*, qc.question_choices_id, qc.answer_text, qc.answer_image, qc.is_correct, qc.letter, co.clo_number
+        FROM question q
+        LEFT JOIN question_choices qc ON q.answer_id = qc.answer_id
+        LEFT JOIN course_outcomes co ON q.clo_id = co.clo_id
+        WHERE q.exam_id IN ($placeholders) AND q.in_question_library = 1
+        ORDER BY q.question_id
+    ";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Error preparing statement: " . $conn->error);
+    }
+    $stmt->bind_param(str_repeat('i', count($exam_ids)), ...$exam_ids);
+    if (!$stmt->execute()) {
+        die("Error executing statement: " . $stmt->error);
+    }
+    $result = $stmt->get_result();
+
+    $questions = [];
+    while ($row = $result->fetch_assoc()) {
+        $questions[$row['question_id']]['details'] = $row;
+        $questions[$row['question_id']]['choices'][] = $row;
+    }
+
+    // $easy_limit = 3;
+    // $normal_limit = 1;
+    // $hard_limit = 1;
+
+    // Easy - 'E', Normal - 'N', Hard - 'H'
+
+    $easy_questions = [];
+    $normal_questions = [];
+    $hard_questions = [];
+
+    foreach ($questions as $question) {
+        if ($question['details']['difficulty'] === 'E' && $easy_limit > 0) {
+            $easy_questions[] = $question;
+            $easy_limit--;
+        } elseif ($question['details']['difficulty'] === 'N' && $normal_limit > 0) {
+            $normal_questions[] = $question;
+            $normal_limit--;
+        } elseif ($question['details']['difficulty'] === 'H' && $hard_limit > 0) {
+            $hard_questions[] = $question;
+            $hard_limit--;
+        }
+    }
+
+    $questions = array_merge($easy_questions, $normal_questions, $hard_questions);
+
+    return $questions;
+}
+
+// Get the course_topic_id and exam_id from the URL
+$course_topic_id = isset($_GET['course_topic_id']) ? intval($_GET['course_topic_id']) : 0;
+$exam_id = isset($_GET['exam_id']) ? intval($_GET['exam_id']) : 0;
+
+// Use exam_id to get the easy, normal, and hard int columns in the exam table
+$sql = "SELECT * FROM exam WHERE exam_id = ?";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Error preparing statement: " . $conn->error);
+}
+
+$stmt->bind_param("i", $exam_id);
+if (!$stmt->execute()) {
+    die("Error executing statement: " . $stmt->error);
+}
+
+$result = $stmt->get_result();
+$exam = $result->fetch_assoc();
+
+$easy = $exam['easy'];
+$normal = $exam['normal'];
+$hard = $exam['hard'];
+
+// Fetch the related questions
+$related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $normal, $hard);
 ?>
 
 <!DOCTYPE html>
@@ -293,7 +426,7 @@ $clos_json = json_encode($clos);
     <!-- Question Library -->
     <div class="main_container">
         <div class="buttons">
-            <button id="btn_diva" class="button" type="button">
+            <button id="btn_diva" class="button active" type="button">
                 <img src="./img/book.png" alt="Icon"> Question Library
             </button>
             <button id="btn_divb" class="button" type="button">
@@ -301,27 +434,95 @@ $clos_json = json_encode($clos);
             </button>
         </div>
 
-        <!-- DIV 1 -->
-        <div class="diva" id="diva">
-            Content A
+        <!-- Question Library Section -->
+        <div id="question-library" class="p-6 overflow-y-scroll">
+            <?php if (empty($related_questions)) : ?>
+                <p class="text-white text-2xl">No related questions found.</p>
+            <?php else : ?>
+                <?php foreach ($related_questions as $question) : ?>
+                    <div class="question-item bg-zinc-100 p-6 gap-4 mb-2 outline-zinc-300 rounded-md outline outline-1 flex justify-between items-center cursor-pointer" data-id="<?php echo $question['details']['question_id']; ?>" onclick="duplicateQuestion(<?php echo $question['details']['question_id']; ?>)">
+
+                        <div>
+                            <p class="text-2xl font-semibold"><?php echo htmlspecialchars($question['details']['question_text'] ?? ''); ?></p>
+                            <?php if ($question['details']['question_image']) : ?>
+                                <?php
+                                $imgData = base64_encode($question['details']['question_image']);
+                                $src = 'data:image/jpeg;base64,' . $imgData;
+                                ?>
+                                <img src="<?php echo $src; ?>" alt="Question Image" class="max-w-xs max-h-xs">
+                            <?php endif; ?>
+                            <?php foreach ($question['choices'] as $choice) : ?>
+                                <div class="flex flex-col">
+                                    <span class="text-2xl"><?php echo htmlspecialchars($choice['letter'] ?? '') . '. ' . htmlspecialchars($choice['answer_text'] ?? ''); ?></span>
+                                    <?php if ($choice['answer_image']) : ?>
+                                        <?php
+                                        $choiceImgData = base64_encode($choice['answer_image']);
+                                        $choiceSrc = 'data:image/jpeg;base64,' . $choiceImgData;
+                                        ?>
+                                        <img src="<?php echo $choiceSrc; ?>" alt="Choice Image" class="max-w-xs max-h-xs mt-1">
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <div class="flex gap-4 items-center">
+                            <div class="flex flex-col items-start gap-1 justify-start">
+                                <div class="flex items-center gap-4 bg-[#FAFAFA] shadow-lg rounded-lg flex items-center justify-center p-2">
+                                    <?php
+                                    switch ($question['details']['difficulty']) {
+                                        case 'E':
+                                            echo '<span class="text-green-500 font-medium text-2xl">Easy</span>';
+                                            break;
+                                        case 'N':
+                                            echo '<span class="text-yellow-500 font-medium text-2xl">Normal</span>';
+                                            break;
+                                        case 'H':
+                                            echo '<span class="text-red-500 font-medium text-2xl">Hard</span>';
+                                            break;
+                                        default:
+                                            echo '<span class="text-zinc-600 font-medium text-2xl">Unknown</span>';
+                                    }
+                                    ?>
+                                </div>
+                                <div class="flex items-center gap-4 bg-[#FAFAFA] shadow-lg rounded-lg flex items-center justify-center p-2">
+                                    <p class="font-semibold text-2xl"><?php echo htmlspecialchars($question['details']['question_points'] ?? ''); ?> pts.</p>
+                                </div>
+                                <div class="flex items-center gap-4 bg-[#FAFAFA] shadow-lg rounded-lg flex items-center justify-center p-2">
+                                    <p class="font-semibold text-2xl">CLO: <?php echo preg_replace('/[^0-9]/', '', $question['details']['clo_number'] ?? ''); ?></p>
+                                </div>
+                            </div>
+                            <!-- Plus Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-circle">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="16" />
+                                <line x1="8" y1="12" x2="16" y2="12" />
+                            </svg>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
 
-        <!-- DIV 2 -->
-        <div class="divb text-2xl flex flex-col gap-2" id="divb">
+
+
+        <!-- Exam Settings Section -->
+        <div id="exam-settings" class="text-2xl flex flex-col gap-2 p-6" style="display: none;">
             <!-- Text area for Exam Instruction -->
-            <div class="w-full flex flex-col gap-2">
-                <label class="w-full " for="exam_instruction">Exam Rules</label>
+            <div class="w-full flex flex-col gap-2 mb-2">
+                <label class="w-full text-white" for="exam_instruction">Exam Rules</label>
                 <textarea class="p-4 w-full text-zinc-800 rounded-xl" id="exam_instruction" cols="30" rows="10"></textarea>
             </div>
 
-            <div class="flex w-full items-center gap-2">
+            <div class="flex w-full items-center gap-2 mb-2">
                 <button class="w-full bg-white text-zinc-800 font-medium py-4 rounded-xl flex items-center justify-center" type="button">Preview</button>
                 <button id="download-exam-btn" class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Download</button>
             </div>
-            <button class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Save Progress</button>
-            <button class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Upload to Exam Library</button>
+            <button class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Save Progress</button>
+            <button class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Upload to Exam Library</button>
         </div>
     </div>
+
+
 
     <!-- Main Exam Creator -->
     <main class="ml-[400px] mt-[70px] px-20 py-10">
@@ -517,7 +718,7 @@ $clos_json = json_encode($clos);
 
             <div class="mt-4">
                 <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button" id="add_question">Add Question</button>
-                <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="submit" name="save_exam">Save Exam</button>
+                <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="submit">Save Exam</button>
             </div>
         </form>
     </main>
@@ -829,6 +1030,75 @@ $clos_json = json_encode($clos);
         </div>
     </div>
 
+    <script>
+        function duplicateQuestion(questionId) {
+            // Get the course topic ID from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseTopicId = urlParams.get('course_topic_id');
+
+            $.ajax({
+                url: 'duplicate_question.php',
+                type: 'POST',
+                data: {
+                    question_id: questionId,
+                    course_topic_id: courseTopicId
+                },
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        console.error(data.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                }
+            });
+        }
+    </script>
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var btn_diva = document.getElementById("btn_diva");
+            var btn_divb = document.getElementById("btn_divb");
+            var diva = document.getElementById("question-library");
+            var divb = document.getElementById("exam-settings");
+
+            function activateButton(activeButton) {
+                // Remove the active class from all buttons
+                document.querySelectorAll('.button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                // Add the active class to the clicked button
+                activeButton.classList.add('active');
+            }
+
+            // Event listeners for the buttons
+            btn_diva.addEventListener("click", (event) => {
+                event.preventDefault(); // Prevent the default behavior of the button
+                diva.style.display = "block";
+                divb.style.display = "none";
+                activateButton(btn_diva);
+            });
+
+            btn_divb.addEventListener("click", (event) => {
+                event.preventDefault(); // Prevent the default behavior of the button
+                diva.style.display = "none";
+                divb.style.display = "block";
+                activateButton(btn_divb);
+            });
+
+            // Display DIV A and set button DIV A as active on initial load
+            window.addEventListener('load', () => {
+                diva.style.display = "block";
+                divb.style.display = "none";
+                activateButton(btn_diva);
+            });
+        });
+    </script>
 
     <script>
         // Console log something when the download button is clicked
@@ -1159,11 +1429,13 @@ $clos_json = json_encode($clos);
                         const data = await response.json();
                         console.log(data.message);
 
+                        // Reload the page
+                        location.reload();
+
 
 
                     } catch (error) {
                         console.error("Error:", error.message);
-                        // Handle the error
                     }
                 }
 
@@ -1312,22 +1584,17 @@ $clos_json = json_encode($clos);
                     // Reload the page
                     location.reload();
                 }
-
-
             });
 
             // Add this script to pass CLO data to JavaScript
             const clos = <?php echo $clos_json; ?>;
 
-            $("#add_question").click(function() {
-                // Increment the new order
+            document.getElementById("add_question").addEventListener("click", function() {
                 totalQuestions++;
-                // Display the total questions
                 document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
 
-                var newOrder = $("#new_questions .question").length + 1;
-
                 const html = String.raw;
+                var newOrder = document.querySelectorAll("#new_questions .question").length + 1;
 
                 var cloOptions = clos.map(clo => `<option value="${clo.clo_id}">${clo.clo_number} - ${clo.clo_details}</option>`).join('');
 
@@ -1394,9 +1661,9 @@ $clos_json = json_encode($clos);
         </div>
     `;
 
-                // Append to the new_questions div
-                $("#new_questions").append(questionHTML);
+                document.getElementById("new_questions").insertAdjacentHTML('beforeend', questionHTML);
             });
+
 
 
             // Update total points dynamically, incrementing by the new question points
@@ -1421,42 +1688,6 @@ $clos_json = json_encode($clos);
                 });
                 $("#total-points").text(`(${newQuestionPoints} Points)`);
             });
-        });
-
-        var btn_diva = document.getElementById("btn_diva");
-        var btn_divb = document.getElementById("btn_divb");
-        var diva = document.getElementById("diva");
-        var divb = document.getElementById("divb");
-
-        function activateButton(activeButton) {
-            // Remove the active class from all buttons
-            document.querySelectorAll('.button').forEach(button => {
-                button.classList.remove('active');
-            });
-            // Add the active class to the clicked button
-            activeButton.classList.add('active');
-        }
-
-        // Event listeners for the buttons
-        btn_diva.addEventListener("click", (event) => {
-            event.preventDefault(); // Prevent the default behavior of the button
-            diva.style.display = "flex";
-            divb.style.display = "none";
-            activateButton(btn_diva);
-        });
-
-        btn_divb.addEventListener("click", (event) => {
-            event.preventDefault(); // Prevent the default behavior of the button
-            diva.style.display = "none";
-            divb.style.display = "flex";
-            activateButton(btn_divb);
-        });
-
-        // Display DIV A and set button DIV A as active on initial load
-        window.addEventListener('load', () => {
-            diva.style.display = "flex";
-            divb.style.display = "none";
-            activateButton(btn_diva);
         });
     </script>
 </body>
