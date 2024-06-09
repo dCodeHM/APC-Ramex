@@ -149,7 +149,7 @@ $clos_json = json_encode($clos);
 // ------------------- Question Library (Fetch Related Questions) -------------------
 
 // Function to fetch related questions based on course_topic_id
-function fetchRelatedQuestions($conn, $course_topic_id, $easy_limit, $normal_limit, $hard_limit)
+function fetchRelatedQuestions($conn, $course_topic_id)
 {
     // Get the course_subject_id based on the course_topic_id
     $sql = "SELECT course_subject_id FROM prof_course_topic WHERE course_topic_id = ?";
@@ -224,31 +224,6 @@ function fetchRelatedQuestions($conn, $course_topic_id, $easy_limit, $normal_lim
         $questions[$row['question_id']]['details'] = $row;
         $questions[$row['question_id']]['choices'][] = $row;
     }
-
-    // $easy_limit = 3;
-    // $normal_limit = 1;
-    // $hard_limit = 1;
-
-    // Easy - 'E', Normal - 'N', Hard - 'H'
-
-    $easy_questions = [];
-    $normal_questions = [];
-    $hard_questions = [];
-
-    foreach ($questions as $question) {
-        if ($question['details']['difficulty'] === 'E' && $easy_limit > 0) {
-            $easy_questions[] = $question;
-            $easy_limit--;
-        } elseif ($question['details']['difficulty'] === 'N' && $normal_limit > 0) {
-            $normal_questions[] = $question;
-            $normal_limit--;
-        } elseif ($question['details']['difficulty'] === 'H' && $hard_limit > 0) {
-            $hard_questions[] = $question;
-            $hard_limit--;
-        }
-    }
-
-    $questions = array_merge($easy_questions, $normal_questions, $hard_questions);
 
     return $questions;
 }

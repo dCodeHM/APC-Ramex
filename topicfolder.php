@@ -51,6 +51,76 @@ if (isset($_POST['create_exam'])) {
 
     $order = 1;
 
+    // Function to get a random question based on difficulty
+    function getRandomQuestion($conn, $difficulty)
+    {
+        $sql = "SELECT * FROM question WHERE difficulty = ? AND in_question_library = 1 ORDER BY RAND() LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            die("Error preparing statement: " . $conn->error);
+        }
+        $stmt->bind_param("s", $difficulty);
+        if (!$stmt->execute()) {
+            die("Error executing statement: " . $stmt->error);
+        }
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
+    // Add easy questions
+    for ($i = 0; $i < $easy_questions; $i++) {
+        $question = getRandomQuestion($conn, 'E');
+        if ($question) {
+            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, date_created, answer_id, in_question_library) 
+                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                die("Error preparing statement: " . $conn->error);
+            }
+            $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $question['answer_id']);
+            if (!$stmt->execute()) {
+                die("Error inserting easy question: " . $stmt->error);
+            }
+            $order++;
+        }
+    }
+
+    // Add normal questions
+    for ($i = 0; $i < $normal_questions; $i++) {
+        $question = getRandomQuestion($conn, 'N');
+        if ($question) {
+            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, date_created, answer_id, in_question_library) 
+                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                die("Error preparing statement: " . $conn->error);
+            }
+            $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $question['answer_id']);
+            if (!$stmt->execute()) {
+                die("Error inserting normal question: " . $stmt->error);
+            }
+            $order++;
+        }
+    }
+
+    // Add hard questions
+    for ($i = 0; $i < $hard_questions; $i++) {
+        $question = getRandomQuestion($conn, 'H');
+        if ($question) {
+            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, date_created, answer_id, in_question_library) 
+                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                die("Error preparing statement: " . $conn->error);
+            }
+            $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $question['answer_id']);
+            if (!$stmt->execute()) {
+                die("Error inserting hard question: " . $stmt->error);
+            }
+            $order++;
+        }
+    }
+
     // Redirect to the topic page with course_subject_id and course_code
     header("Location: topic.php?course_subject_id=$course_subject_id&course_code=$course_code");
     exit();
