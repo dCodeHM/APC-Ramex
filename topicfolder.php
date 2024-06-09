@@ -51,74 +51,141 @@ if (isset($_POST['create_exam'])) {
 
     $order = 1;
 
-    // Function to get a random question based on difficulty
-    function getRandomQuestion($conn, $difficulty)
+    // Function to get related questions based on course_topic_id
+    function getRelatedQuestions($conn, $course_topic_id)
     {
-        $sql = "SELECT * FROM question WHERE difficulty = ? AND in_question_library = 1 ORDER BY RAND() LIMIT 1";
+        // Get the course_subject_id based on the course_topic_id
+        $sql = "SELECT course_subject_id FROM prof_course_topic WHERE course_topic_id = ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             die("Error preparing statement: " . $conn->error);
         }
-        $stmt->bind_param("s", $difficulty);
+        $stmt->bind_param("i", $course_topic_id);
         if (!$stmt->execute()) {
             die("Error executing statement: " . $stmt->error);
         }
         $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        $row = $result->fetch_assoc();
+        $course_subject_id = $row['course_subject_id'];
+
+        // Get all the course_topic_ids with the same course_subject_id
+        $sql = "SELECT course_topic_id FROM prof_course_topic WHERE course_subject_id = ?";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            die("Error preparing statement: " . $conn->error);
+        }
+        $stmt->bind_param("i", $course_subject_id);
+        if (!$stmt->execute()) {
+            die("Error executing statement: " . $stmt->error);
+        }
+        $result = $stmt->get_result();
+        $course_topic_ids = [];
+        while ($row = $result->fetch_assoc()) {
+            $course_topic_ids[] = $row['course_topic_id'];
+        }
+
+        // Get all the exam_ids based on the course_topic_ids
+        $placeholders = implode(',', array_fill(0, count($course_topic_ids), '?'));
+        $sql = "SELECT exam_id FROM exam WHERE course_topic_id IN ($placeholders)";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            die("Error preparing statement: " . $conn->error);
+        }
+        $stmt->bind_param(str_repeat('i', count($course_topic_ids)), ...$course_topic_ids);
+        if (!$stmt->execute()) {
+            die("Error executing statement: " . $stmt->error);
+        }
+        $result = $stmt->get_result();
+        $exam_ids = [];
+        while ($row = $result->fetch_assoc()) {
+            $exam_ids[] = $row['exam_id'];
+        }
+
+        // Get related questions based on exam_ids
+        $placeholders = implode(',', array_fill(0, count($exam_ids), '?'));
+        $sql = "SELECT * FROM question WHERE exam_id IN ($placeholders) AND in_question_library = 1";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            die("Error preparing statement: " . $conn->error);
+        }
+        $stmt->bind_param(str_repeat('i', count($exam_ids)), ...$exam_ids);
+        if (!$stmt->execute()) {
+            die("Error executing statement: " . $stmt->error);
+        }
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // Get all related questions
+    $relatedQuestions = getRelatedQuestions($conn, $course_topic_id);
+
+    // Separate related questions by difficulty
+    $easyQuestions = array_filter($relatedQuestions, function ($question) {
+        return $question['difficulty'] === 'E';
+    });
+    $normalQuestions = array_filter($relatedQuestions, function ($question) {
+        return $question['difficulty'] === 'N';
+    });
+    $hardQuestions = array_filter($relatedQuestions, function ($question) {
+        return $question['difficulty'] === 'H';
+    });
+
+    $missingQuestions = [];
+
+    // Function to select and insert questions based on difficulty
+    function selectAndInsertQuestions($conn, $exam_id, $questions, $desiredCount, $difficulty, &$order)
+    {
+        if (count($questions) < $desiredCount) {
+            return $desiredCount - count($questions);
+        }
+
+        $selectedQuestions = array_rand($questions, $desiredCount);
+        if (!is_array($selectedQuestions)) {
+            $selectedQuestions = [$selectedQuestions];
+        }
+
+        foreach ($selectedQuestions as $questionIndex) {
+            $question = $questions[$questionIndex];
+            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, date_created, answer_id, in_question_library) 
+                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                die("Error preparing statement: " . $conn->error);
+            }
+            $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $question['answer_id']);
+            if (!$stmt->execute()) {
+                die("Error inserting question: " . $stmt->error);
+            }
+            $order++;
+        }
+
+        return 0;
     }
 
     // Add easy questions
-    for ($i = 0; $i < $easy_questions; $i++) {
-        $question = getRandomQuestion($conn, 'E');
-        if ($question) {
-            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, date_created, answer_id, in_question_library) 
-                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                die("Error preparing statement: " . $conn->error);
-            }
-            $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $question['answer_id']);
-            if (!$stmt->execute()) {
-                die("Error inserting easy question: " . $stmt->error);
-            }
-            $order++;
-        }
+    $missingEasyQuestions = selectAndInsertQuestions($conn, $exam_id, $easyQuestions, $easy_questions, 'easy', $order);
+    if ($missingEasyQuestions > 0) {
+        $missingQuestions['easy'] = $missingEasyQuestions;
     }
 
     // Add normal questions
-    for ($i = 0; $i < $normal_questions; $i++) {
-        $question = getRandomQuestion($conn, 'N');
-        if ($question) {
-            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, date_created, answer_id, in_question_library) 
-                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                die("Error preparing statement: " . $conn->error);
-            }
-            $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $question['answer_id']);
-            if (!$stmt->execute()) {
-                die("Error inserting normal question: " . $stmt->error);
-            }
-            $order++;
-        }
+    $missingNormalQuestions = selectAndInsertQuestions($conn, $exam_id, $normalQuestions, $normal_questions, 'normal', $order);
+    if ($missingNormalQuestions > 0) {
+        $missingQuestions['normal'] = $missingNormalQuestions;
     }
 
     // Add hard questions
-    for ($i = 0; $i < $hard_questions; $i++) {
-        $question = getRandomQuestion($conn, 'H');
-        if ($question) {
-            $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, date_created, answer_id, in_question_library) 
-                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                die("Error preparing statement: " . $conn->error);
-            }
-            $stmt->bind_param("issssii", $exam_id, $question['question_text'], $question['question_image'], $question['clo_id'], $question['difficulty'], $question['question_points'], $question['answer_id']);
-            if (!$stmt->execute()) {
-                die("Error inserting hard question: " . $stmt->error);
-            }
-            $order++;
+    $missingHardQuestions = selectAndInsertQuestions($conn, $exam_id, $hardQuestions, $hard_questions, 'hard', $order);
+    if ($missingHardQuestions > 0) {
+        $missingQuestions['hard'] = $missingHardQuestions;
+    }
+
+    if (!empty($missingQuestions)) {
+        $missingQuestionsMessage = "The following difficulties don't have enough related questions:\n";
+        foreach ($missingQuestions as $difficulty => $count) {
+            $missingQuestionsMessage .= "- " . ucfirst($difficulty) . ": " . $count . " question(s) missing\n";
         }
+        echo "<script>alert('$missingQuestionsMessage');</script>";
     }
 
     // Redirect to the topic page with course_subject_id and course_code
