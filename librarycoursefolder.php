@@ -17,17 +17,17 @@ if (isset($_POST['save'])) {
     $course_code = $_POST['course_code'];
     $program_name = $_POST['program_name'];
 
-    // Prepare and execute the check query to determine if the user has already created a course folder with the same course code
-    $checkQuery = "SELECT * FROM prof_course_subject WHERE account_id = ? AND course_code = ?";
+    // Prepare and execute the check query
+    $checkQuery = "SELECT * FROM prof_course_subject WHERE course_code = ?";
     $stmt = $mysqli->prepare($checkQuery);
-    $stmt->bind_param("is", $account_id, $course_code);
+    $stmt->bind_param("s", $course_code);
     $stmt->execute();
     $checkResult = $stmt->get_result();
 
     if ($checkResult->num_rows > 0) {
-        // The user has already created a course folder with the same course code
+        // Course code already exists
         echo "<script>
-            alert('You have already created a course folder with this course code. Please use a different course code.');
+            alert('Course code already exists. Please use a different course code.');
             window.location.href = 'myexams.php';
         </script>";
         exit; // terminate script execution after displaying the alert

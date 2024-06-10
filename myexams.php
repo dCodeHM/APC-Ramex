@@ -72,6 +72,7 @@ if ($user_role == 'Executive Director') {
                 <link rel="stylesheet" href="./css/header.css">
                 <link rel="stylesheet" href="./css/homepage.css">
                 <link rel="stylesheet" href="./css/helpbutton.css">
+                <link rel="stylesheet" href="./css/dots.css">
                 <script src="https://kit.fontawesome.com/e85940e9f2.js" crsossorigin="anonymous"></script>
             </head>
 
@@ -242,10 +243,11 @@ if ($user_role == 'Executive Director') {
                                             <p class="heading">Create a Course Folder</p>
                                             </div>
                                         <?php endif; ?>
+                                        
 
-                                        <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br />
+                                        <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly><br/>
 
-                                        <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br />
+                                        <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br/>
 
                                         <div class="inputcolumn">
                                             <div>
@@ -362,11 +364,9 @@ if ($user_role == 'Executive Director') {
 
 <div class="boxme">
     <img src="./img/dots.png" alt="Options" class="options-icon" onclick="showOptions(this)" class="selectOPTION" style="width: 15px;margin-left: auto;">
-    <div class="options">
-        <select onchange="handleAction(this)">
-            <option value="myexams.php?edit=<?php echo $row['course_subject_id']; ?>&update=true">Edit</option>
-            <option value="coursefolder.php?delete=<?php echo $row['course_subject_id']; ?>">Delete</option>
-        </select>
+    <div class="options" >
+        <img src="./img/pencil.png" alt="Edit" onclick="handleEdit('<?php echo $row['course_subject_id']; ?>')">
+        <img src="./img/delete.png" alt="Delete" onclick="handleDelete('<?php echo $row['course_subject_id']; ?>')">
     </div>
     <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
         <p class="malakingbox">
@@ -375,10 +375,74 @@ if ($user_role == 'Executive Director') {
     </a>
 </div>
 
-<script> function showOptions(img) {
+<script>
+
+document.addEventListener('click', function(event) {
+    const optionsIcon = document.querySelector('.options-icon');
+    const optionsDiv = document.querySelector('.options');
+
+    if (optionsIcon.contains(event.target)) {
+        optionsDiv.style.display = 'block';
+    } else if (!optionsDiv.contains(event.target)) {
+        optionsDiv.style.display = 'none';
+    }
+});
+
+function showOptions(icon) {
+    const optionsDiv = icon.nextElementSibling;
+    optionsDiv.style.display = optionsDiv.style.display === 'block' ? 'none' : 'block';
+}
+
+function handleEdit(course_subject_id) {
+    // Handle edit functionality here
+}
+
+function handleDelete(course_subject_id) {
+    // Handle delete functionality here
+}
+
+function showOptions(img) {
     var options = img.nextElementSibling;
     options.style.display = (options.style.display === "block") ? "none" : "block";
 }
+
+function handleEdit(courseSubjectId) {
+    var options = document.querySelector(".options");
+    options.style.display = "none";
+    showEditPopup(courseSubjectId, true);
+}
+
+function handleDelete(courseSubjectId) {
+    var options = document.querySelector(".options");
+    options.style.display = "none";
+    if (confirm('Are you sure you want to delete this course folder?')) {
+        window.location = 'coursefolder.php?delete=' + courseSubjectId;
+    }
+}
+
+function handleSearchInput() {
+    // Get the value of the search input
+    const searchQuery = document.getElementById("live_search").value.trim().toLowerCase();
+    // Get all course folder elements
+    const courseFolders = document.querySelectorAll(".mebox");
+
+    // Loop through each course folder
+    courseFolders.forEach(folder => {
+        // Get the text content of the course folder
+        const folderText = folder.textContent.toLowerCase();
+        // Check if the folder text contains the search query
+        if (folderText.includes(searchQuery)) {
+            // Show the folder if it matches the search query
+            folder.style.display = "block";
+        } else {
+            // Hide the folder if it does not match the search query
+            folder.style.display = "none";
+        }
+    });
+}
+
+// Attach an event listener to the search input
+document.getElementById("live_search").addEventListener("input", handleSearchInput);
 
 function handleAction(select) {
     var selectedValue = select.value;
@@ -419,14 +483,14 @@ function handleAction(select) {
                     return false;
                 }
 
-                function showEditPopup(course_code, updateStatus) {
-                    const popup = document.querySelector(".popup-hidden");
-                    popup.classList.remove("popup-hidden");
-                    document.getElementById("action").value = "edit";
-                    document.querySelector("form").action = `coursefolder.php?edit=${course_code}`;
-                    // Set the update variable to the provided status
-                    update = updateStatus;
-                }
+                function showEditPopup(course_subject_id, updateStatus) {
+    const popup = document.querySelector(".popup-hidden");
+    popup.classList.remove("popup-hidden");
+    document.getElementById("action").value = "edit";
+    document.querySelector("form").action = `coursefolder.php?edit=${course_subject_id}`;
+    // Set the update variable to the provided status
+    update = updateStatus;
+}
 
                 function handleAction(select) {
                     if (select.value.startsWith('coursefolder.php?delete=')) {

@@ -10,6 +10,23 @@
   align-items: center;
   justify-content: center;
 }
+.diva,
+.divb {
+  width: 360px; /* Use fixed width in pixels */
+  height: calc(100% - 80px); /* Adjust height to account for padding */
+  display: none;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  padding: 40px;
+}
+.diva {
+  background: #454c52;
+}
+.divb {
+  background: #454c52;
+  overflow-y: auto;
+}
 
 .buttons {
   display: flex;
@@ -70,17 +87,4 @@
   width: 100%;
   color: black;
   border-radius: 0.4rem;
-}
-
-.question-item img {
-  max-width: 200px;
-  max-height: 200px;
-  margin-top: 0.5rem;
-}
-
-.question-item img,
-.new-question img {
-  max-width: 200px;
-  max-height: 200px;
-  margin-top: 0.5rem;
 }
