@@ -56,7 +56,7 @@ if ($user_role == 'Executive Director') {
 ?>
 
             <!DOCTYPE html>
-            <html lang="en">
+            <lang="en">
             <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width">
@@ -214,85 +214,45 @@ if ($user_role == 'Executive Director') {
                             <div class="adminemline">
                             </div>
 
-
-                            <!--boxes-->
-
+<!-- boxes -->
                             <?php
-                            $result = $mysqli->query("SELECT * from prof_course_subject WHERE account_id = $account_id") or die(mysqli_error($mysqli));
-                            if ($result->num_rows === 0) { ?>
-                                <p class="header" style="margin-left: 50px;">You have no course folders.</p>
-                            <?php } else { ?>
-                                <div style="flex-wrap: wrap; margin-left: 30px;">
-                                    <?php while ($row = $result->fetch_assoc()) :
+                        $result = $mysqli->query("SELECT course_code, MIN(course_subject_id) AS course_subject_id FROM prof_course_subject GROUP BY course_code") or die(mysqli_error($mysqli));
+                        if ($result->num_rows === 0) { ?>
+                            <p class="header" style="margin-left: 50px;">No course folders found.</p>
+                        <?php } else { ?>
+                            <div style="flex-wrap: wrap; margin-left: 30px;">
+                                <?php while ($row = $result->fetch_assoc()) :
+                                    $course_subject_id = $row['course_subject_id'];
+                                    $courseCode = $row['course_code'];
+                                ?>
+                                    <section id="container2">
+                                        <div class="emservices">
+                                            <div class="mebox">
+                                                <div class="boxme">
+                                                    <div class="graphel">
+                                                        <a href="graphs.php" class="fill-div">
+                                                            <img src="./img/Graph.png" alt="Graph">
+                                                        </a>
+                                                    </div>
+                                                    <a href="librarytopic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
+                                                        <p class="malakingbox">
+                                                            <?php echo $courseCode; ?>
+                                                        </p>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                <?php endwhile; ?>
+                            </div>
+                        <?php } ?>
+                        </div>
+                    </div>
+                </div>
+            </body>
 
-                                        // **Fetch course_subject_id here:**
-                                        $course_subject_id = $row['course_subject_id'];
-                                        $courseCode = $row['course_code']; // Get the course code for the link
-                                    ?>
-                                        <section id="container2">
-                                            <div class="emservices">
-                                                <div class="mebox">
-                                          
 
-<div class="boxme">
-    <div class = "graphel">
-    <a href="graphs.php" class="fill-div">
-        <img src="./img/Graph.png" alt = "Graph">
-    </a>
-    </div>
-
-    <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
-        <p class="malakingbox">
-            <?php echo $courseCode; ?>
-        </p>
-    </a>
-</div>
-
-<script>
-
-document.addEventListener('click', function(event) {
-    const optionsIcon = document.querySelector('.options-icon');
-    const optionsDiv = document.querySelector('.options');
-
-    if (optionsIcon.contains(event.target)) {
-        optionsDiv.style.display = 'block';
-    } else if (!optionsDiv.contains(event.target)) {
-        optionsDiv.style.display = 'none';
-    }
-});
-
-function showOptions(icon) {
-    const optionsDiv = icon.nextElementSibling;
-    optionsDiv.style.display = optionsDiv.style.display === 'block' ? 'none' : 'block';
-}
-
-function handleEdit(course_subject_id) {
-    // Handle edit functionality here
-}
-
-function handleDelete(course_subject_id) {
-    // Handle delete functionality here
-}
-
-function showOptions(img) {
-    var options = img.nextElementSibling;
-    options.style.display = (options.style.display === "block") ? "none" : "block";
-}
-
-function handleEdit(courseSubjectId) {
-    var options = document.querySelector(".options");
-    options.style.display = "none";
-    showEditPopup(courseSubjectId, true);
-}
-
-function handleDelete(courseSubjectId) {
-    var options = document.querySelector(".options");
-    options.style.display = "none";
-    if (confirm('Are you sure you want to delete this course folder?')) {
-        window.location = 'librarycoursefolder.php?delete=' + courseSubjectId;
-    }
-}
-
+            <script>
 function handleSearchInput() {
     // Get the value of the search input
     const searchQuery = document.getElementById("live_search").value.trim().toLowerCase();
@@ -333,18 +293,8 @@ function handleAction(select) {
         window.location.href = selectedValue;
     }
     select.value = "";
-}</script>
-                                                </div>
-                                            </div>
-                                        </section>
-                                <?php endwhile;
-                                } ?>
-                                </div>
-                        </div>
-                    </div>
-                </div>
-            </body>
-            <script>
+}
+
 
                 function handleSearchInput() {
         // Get the value of the search input

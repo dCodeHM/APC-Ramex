@@ -53,39 +53,3 @@ if (isset($_POST['save'])) {
         }
     }
 }
-
-if (isset($_GET['edit'])) {
-    $course_subject_id = $_GET['edit'];
-
-    $result = $mysqli->query("SELECT * FROM prof_course_subject WHERE course_subject_id='$course_subject_id'") or die(mysqli_error($mysqli));
-
-    if (mysqli_num_rows($result) === 1) {
-        $row = $result->fetch_array();
-        $course_subject_id = $row['course_subject_id'];
-        $account_id = $row['account_id'];
-        $course_code = $row['course_code'];
-        $program_name = $row['program_name'];
-    }
-    $update = true;
-}
-
-if (isset($_POST['update'])) {
-    $course_subject_id = $_POST['course_subject_id'];
-    $account_id = $_POST['account_id'];
-    $course_code = $_POST['course_code'];
-    $program_name = $_POST['program_name'];
-
-    $mysqli->query("UPDATE prof_course_subject SET course_subject_id='$course_subject_id', account_id='$account_id', program_name='$program_name', course_code='$course_code' WHERE course_subject_id='$course_subject_id'")
-        or die(mysqli_error($mysqli));
-
-    header("location: myexams.php");
-    exit();
-}
-
-// Delete
-if (isset($_GET['delete'])) {
-    $course_subject_id = $_GET['delete'];
-    $mysqli->query("DELETE FROM prof_course_subject WHERE course_subject_id = '$course_subject_id'")
-        or die(mysqli_error($mysqli));
-    header("location: myexams.php");
-}
