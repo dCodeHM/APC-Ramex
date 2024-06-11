@@ -1,0 +1,15 @@
+.graphel img {
+  width: 20px; /* or any desired width */
+  height: auto; /* maintains the aspect ratio */
+}
+
+.graphel {
+  display: flex;
+  justify-content: center; /* center the image horizontally */
+  align-items: center; /* center the image vertically */
+  margin-right: auto;
+}
+
+.graphel a {
+  display: block;
+}
