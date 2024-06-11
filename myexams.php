@@ -322,8 +322,7 @@ if ($user_role == 'Executive Director') {
                             <div class="adminemline">
                             </div>
 
-
-                            <!--boxes-->
+<!--boxes-->
 <?php
 $result = $mysqli->query("SELECT cs.*, COUNT(ct.course_topic_id) as topic_count 
                           FROM prof_course_subject cs
@@ -343,40 +342,72 @@ if ($result->num_rows === 0) { ?>
             <section id="container2">
                 <div class="emservices">
                     <div class="mebox">
-                        
-                    <div class="boxme">
-    <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
-        <div class="options">
-            <img src="./img/delete.png" alt="Delete" onclick="handleDelete('<?php echo $row['course_subject_id']; ?>')" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
-        </div>
-        <p class="malakingbox">
-            <?php echo $courseCode; ?>
-        </p>
-    </a>
-</div>
+                        <div class="boxme">
+                            <div class="fill-div" onclick="handleClick(event, '<?php echo $course_subject_id; ?>', '<?php echo urlencode($courseCode); ?>')">
+                                <div class="options">
+                                    <img src="./img/delete.png" alt="Delete" onclick="confirmDelete(event, '<?php echo $row['course_subject_id']; ?>')" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
+                                </div>
+                                <p class="malakingbox">
+                                    <?php echo $courseCode; ?>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
         <?php endwhile; ?>
     </div>
 <?php } ?>
-                                </div>
-                        </div>
-                    </div>
-                </div>
-            </body>
-            <script>
+</div>
+</div>
+</div>
+</div>
+</body>
+<script>
+function handleClick(event, courseSubjectId, courseCode) {
+    event.preventDefault(); // Prevent the default link behavior
 
-function handleEdit(course_subject_id) {
-    // Handle edit functionality here
-    showEditPopup(course_subject_id, true);
+    // Check if the delete button was clicked
+    if (event.target.classList.contains('options')) {
+        return; // Do nothing if the delete button was clicked
+    }
+
+    // Redirect to the topic.php page with the course subject ID and course code
+    window.location.href = "topic.php?course_subject_id=" + courseSubjectId + "&course_code=" + courseCode;
 }
 
-function handleDelete(course_subject_id) {
-    // Handle delete functionality here
-    if (confirm('Are you sure you want to delete this course folder?')) {
-        window.location = 'coursefolder.php?delete=' + course_subject_id;
+function confirmDelete(event, courseSubjectId) {
+    event.stopPropagation(); // Stop the event from propagating to parent elements
+
+    // Display confirmation message with Yes/No options
+    if (confirm("Are you sure you want to delete this course folder?")) {
+        // User clicked Yes, proceed with deletion
+        deleteCourseFolder(courseSubjectId);
     }
+}
+
+function deleteCourseFolder(courseSubjectId) {
+    // Create an XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+
+    // Set up the request
+    xhr.open("GET", "coursefolder.php?delete=" + courseSubjectId, true);
+
+    // Set up the callback function
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Deletion successful, refresh the page
+                window.location.href = "myexams.php";
+            } else {
+                // Deletion failed, display an error message
+                alert("Failed to delete the course folder. Please try again.");
+            }
+        }
+    };
+
+    // Send the request
+    xhr.send();
 }
 
 function handleSearchInput() {
