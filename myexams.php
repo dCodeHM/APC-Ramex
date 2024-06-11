@@ -336,50 +336,41 @@ if ($result->num_rows === 0) { ?>
             <section id="container2">
                 <div class="emservices">
                     <div class="mebox">
-                        <div class="boxme">
-                            <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
-                                <div class="options">
-                                    <img src="./img/delete.png" alt="Delete" onclick="confirmDelete('<?php echo $row['course_subject_id']; ?>')" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
-                                </div>
-                                <p class="malakingbox">
-                                    <?php echo $courseCode; ?>
-                                </p>
-                            </a>
-                        </div>
+                        
+                    <div class="boxme">
+    <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
+        <div class="options">
+            <img src="./img/delete.png" alt="Delete" onclick="handleDelete('<?php echo $row['course_subject_id']; ?>')" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
+        </div>
+        <p class="malakingbox">
+            <?php echo $courseCode; ?>
+        </p>
+    </a>
+</div>
                     </div>
                 </div>
             </section>
         <?php endwhile; ?>
     </div>
 <?php } ?>
-</div>
-</div>
-</div>
-</body>
-<script>
-function confirmDelete(course_subject_id) {
-    if (confirm('Are you sure you want to delete this course folder?')) {
-        // Send an AJAX request to delete the course folder
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'coursefolder.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    // Course folder deleted successfully
-                    alert('Course folder deleted successfully.');
-                    // Reload the current page
-                    location.reload();
-                } else {
-                    // Error deleting course folder
-                    alert('Error deleting course folder. Please try again.');
-                }
-            }
-        };
-        xhr.send('course_subject_id=' + course_subject_id);
-    }
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            <script>
+
+function handleEdit(course_subject_id) {
+    // Handle edit functionality here
+    showEditPopup(course_subject_id, true);
 }
 
+function handleDelete(course_subject_id) {
+    // Handle delete functionality here
+    if (confirm('Are you sure you want to delete this course folder?')) {
+        window.location = 'coursefolder.php?delete=' + course_subject_id;
+    }
+}
 
 function handleSearchInput() {
     // Get the value of the search input
