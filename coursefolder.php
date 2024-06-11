@@ -1,5 +1,4 @@
 <?php
-
 $course_subject_id = 0;
 $course_subject = '';
 $course_code = '';
@@ -43,13 +42,11 @@ if (isset($_POST['save'])) {
                 alert('Course Folder Created.');
                 window.location.href = 'myexams.php';
             </script>";
-            exit; // terminate script execution after redirect
         } else {
             echo "<script>
                 alert('Course Folder Creation Failed.');
                 window.location.href = 'myexams.php';
             </script>";
-            exit; // terminate script execution after displaying the alert
         }
     }
 }

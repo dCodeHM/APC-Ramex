@@ -270,43 +270,50 @@ if ($user_role == 'Executive Director') {
                                         </div>
 
                                         <div class="inputcolumn">
+    <label class="labelName" for="course_code">Course Code</label>
+    <select class="input" name="course_code" required>
+        <option value="" disabled selected>None Selected</option>
+        <?php
+        $sql = "SELECT course_syllabus_id, course_code FROM course_syllabus";
+        $result = $mysqli->query($sql);
 
-                                            <label class="labelName" for="course_code">Course Code</label>
-                                            <select class="input" name="course_code" required>
-                                                <option value="" disabled selected>None Selected</option>
-                                                <?php
-                                                $sql = "SELECT course_syllabus_id, course_code FROM course_syllabus";
-                                                $result = $mysqli->query($sql);
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $course = $row['course_code'];
+                $selected = ($course === $course_code) ? 'selected' : '';
+                echo "<option value=\"$course\" $selected>$course</option>";
+            }
+        } else {
+            echo "<option value=\"\">No courses found</option>";
+        }
+        ?>
+    </select>
+</div>
 
-                                                if ($result->num_rows > 0) {
-                                                    while ($row = $result->fetch_assoc()) {
-                                                        $course = $row['course_code'];
-                                                        $selected = ($course === $course_code) ? 'selected' : '';
-                                                        echo "<option value=\"$course\" $selected>$course</option>";
-                                                    }
-                                                } else {
-                                                    echo "<option value=\"\">No courses found</option>";
-                                                }
-                                                ?>
-                                            </select>
+<input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
+<input type="hidden" name="course_topic_id" value="<?php echo $course_subject_id ?>" readonly><br />
+
+<?php if ($update == true) : ?>
+    <button class="update" type="submit" name="update">Update</button>
+<?php else : ?>
+    <div class="actionbuttons">
+        <button class="cancel" type="button" onclick="cancelForm()">Cancel</button>
+        <span class="button-gap"></span>
+        <button class="save" type="submit" name="save" onclick="return confirmCreate()">Create</button>
+    </div>
+    <script>
+    function cancelForm() {
+        if (confirm("Are you sure you want to cancel? Any selected program name and course code will not be saved.")) {
+            window.location.href = 'myexams.php';
+        }
+    }
+
+    function confirmCreate() {
+        return confirm("Are you sure you want to create the course folder?");
+    }
+    </script>
+<?php endif; ?>  
                                         
-                                        </div>
-
-                                        <input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
-                                        <input type="hidden" name="course_topic_id" value="<?php echo $course_subject_id ?>" readonly><br />
-
-                                        <?php if ($update == true) : ?>
-                                            <button class="update" type="submit" name="update">Update</button>
-                                        <?php else : ?>
-                                            <div class="actionbuttons">
-                                                <button class="cancel" onclick="window.location.href='myexams.php'" name = "cancel">Cancel</button>
-                                                <span class="button-gap"></span> <!-- Add a span for the gap -->
-                                                <button class="save" type="submit" name="save">Create</button>
-                                                <?php endif; ?>      
-                                            </div>
-                                        <!-- <div class="cancelbutton">
-                                            <a class="cancel" href="myexams.php">Cancel</a>
-                                        </div> -->
                                     </form>
                                 </div>
                                 </div>
