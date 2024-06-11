@@ -2,6 +2,8 @@
 include("../../config/db.php");
 include("../../config/functions.php");
 
+$log->info('POST request to post-question-choices.php');
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     try {
         // Retrieve the exam ID from the request
@@ -15,7 +17,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             throw new Exception("Missing question data");
         }
         $new_question_texts = $_POST['new_question_text'];
+        $log->info('New question texts: ' . print_r($new_question_texts, true));
+
         $new_clo_ids = $_POST['new_clo_id'];
+        $log->info('New clo ids: ' . print_r($new_clo_ids, true));
+
         $new_difficulties = $_POST['new_difficulty'];
         $new_question_points = $_POST['new_question_points'];
 
@@ -24,7 +30,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         for ($question_index = 0; $question_index < $num_questions; $question_index++) {
             // Prepare question data
             $question_text = mysqli_real_escape_string($conn, $new_question_texts[$question_index]);
-            $clo_id = mysqli_real_escape_string($conn, $new_clo_ids[$question_index]);
+            $log->info('Question text: ' . $question_text);
+
+            $clo_ids_array = $new_clo_ids[$question_index];
+            $clo_ids_string = implode(',', $clo_ids_array);
+
+            $log->info('Combined clo ids: ' . $clo_ids_string);
+
             $difficulty = mysqli_real_escape_string($conn, $new_difficulties[$question_index]);
             $points = intval($new_question_points[$question_index]);
 
@@ -61,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if (!$stmt) {
                     throw new Exception("Error preparing statement: " . $conn->error);
                 }
-                $stmt->bind_param("issssis", $exam_id, $question_text, $question_image, $clo_id, $difficulty, $points, $answer_id);
+                $stmt->bind_param("issssii", $exam_id, $question_text, $question_image, $clo_ids_string, $difficulty, $points, $answer_id);
             } else {
                 $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, answer_id, in_question_library)
             VALUES (?, ?, ?, ?, ?, ?, 1)";
@@ -69,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if (!$stmt) {
                     throw new Exception("Error preparing statement: " . $conn->error);
                 }
-                $stmt->bind_param("isssss", $exam_id, $question_text, $clo_id, $difficulty, $points, $answer_id);
+                $stmt->bind_param("isssii", $exam_id, $question_text, $clo_ids_string, $difficulty, $points, $answer_id);
             }
 
             // Execute SQL statement
@@ -108,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if (!$stmt) {
                         throw new Exception("Error preparing statement: " . $conn->error);
                     }
-                    $stmt->bind_param("ssssi", $new_answer_text, $new_image_content, $is_correct, $new_letter, $answer_id);
+                    $stmt->bind_param("ssisi", $new_answer_text, $new_image_content, $is_correct, $new_letter, $answer_id);
                 } else {
                     $sql = "INSERT INTO question_choices (answer_text, is_correct, letter, answer_id)
                             VALUES (?, ?, ?, ?)";
@@ -116,7 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if (!$stmt) {
                         throw new Exception("Error preparing statement: " . $conn->error);
                     }
-                    $stmt->bind_param("sssi", $new_answer_text, $is_correct, $new_letter, $answer_id);
+                    $stmt->bind_param("sisi", $new_answer_text, $is_correct, $new_letter, $answer_id);
                 }
 
                 // Execute SQL statement

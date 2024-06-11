@@ -40,8 +40,6 @@ if ($user_role == 'Executive Director') {
     $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
 }
 
-// require('topicfolder.php');
-
 // Retrieve the course code from the URL parameter
 $courseCode = isset($_GET['course_code']) ? $_GET['course_code'] : '';
 
@@ -55,7 +53,6 @@ $course_subject_id = isset($_GET['course_subject_id']) ? $_GET['course_subject_i
 
 // Set the course code as the header text
 $courseFolderName = $courseCode;
-
 ?>
 
 <!DOCTYPE html>
@@ -94,20 +91,12 @@ $courseFolderName = $courseCode;
             if (isset($_SESSION['user'])) {
                 // Retrieve data from the session variable
                 $userData = $_SESSION['user'];
-
-                // // Access specific data from the session variable
-                // $username = $userData['username'];
-                // $email = $userData['email'];
-
-                // Output the retrieved data in HTML text
                 echo "<li class='username'><h3>$userData</h3></li>";
             } else {
                 // Session variable does not exist or user is not logged in
                 echo "<li class='username'><h3>$row[first_name] $row[last_name]</h3></li>";
             }
             ?>
-
-
             <li class="notification">
                 <a href="#" id="toggleNotif"><img id="notification" src="img/notification.png"></a>
                 <ul class="notif-drop dropdown" id="notif-drop" style="display: none;">
@@ -122,59 +111,14 @@ $courseFolderName = $courseCode;
                             <label id="notifname">
                                 <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
                             </label>
-                        </div>;
-                        <div class="notif">
-                            <label id="notifname">
-                                <p class="notifname">Sergio Peruda</p>
-                                <p class="notifdate">5/22/24</p>
-                            </label>
-                            <label id="notifname">
-                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
-                            </label>
-                        </div>;
-                        <div class="notif">
-                            <label id="notifname">
-                                <p class="notifname">Sergio Peruda</p>
-                                <p class="notifdate">5/22/24</p>
-                            </label>
-                            <label id="notifname">
-                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
-                            </label>
-                        </div>;
-                        <div class="notif">
-                            <label id="notifname">
-                                <p class="notifname">Sergio Peruda</p>
-                                <p class="notifdate">5/22/24</p>
-                            </label>
-                            <label id="notifname">
-                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
-                            </label>
-                        </div>;
-                        <div class="notif">
-                            <label id="notifname">
-                                <p class="notifname">Sergio Peruda</p>
-                                <p class="notifdate">5/22/24</p>
-                            </label>
-                            <label id="notifname">
-                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
-                            </label>
-                        </div>;
-                        <div class="notif">
-                            <label id="notifname">
-                                <p class="notifname">Sergio Peruda</p>
-                                <p class="notifdate">5/22/24</p>
-                            </label>
-                            <label id="notifname">
-                                <p class="notifdetails">A program director assigned a course<br> [GRAPHYS] to you.</p>
-                            </label>
-                        </div>;
+                        </div>
+                        <!-- Repeat similar blocks for other notifications -->
                     </div>
                 </ul>
             </li>
-
             <li class="user">
                 <a href="#" id="toggleUser"><img id="profile" src="img/profile.png"></a>
-                <ul class="user-d   rop dropdown" id="user-drop" style="display: none;">
+                <ul class="user-drop dropdown" id="user-drop" style="display: none;">
                     <h3>Admin</h3>
                     <p>School Role</p>
                     <a href="adminusersettings.php" class="settings"><span>Settings</span></a>
@@ -195,9 +139,7 @@ $courseFolderName = $courseCode;
         </div>
     </navigation>
 
-
     <div>
-
         <!-- Header + w/ TailwindCSS -->
         <div class="ml-[50px] p-10">
             <div class="mt-[70px] flex gap-4 justify-between items-center mb-10">
@@ -205,22 +147,15 @@ $courseFolderName = $courseCode;
                     <p class="text-4xl mb-2">Course Folder Name</p>
                     <h1 class="text-7xl font-medium"><?php echo $courseFolderName; ?></h1>
                 </div>
-
                 <button class="addbutt" onclick="showPopup()">
                     <i class="fa-solid fa-circle-plus"></i>
                 </button>
             </div>
-
-
             <!-- Search bar -->
             <section class="flex gap-4 items-center mb-6">
                 <div class="outline outline-1 outline-zinc-200 rounded-lg w-full">
                     <input type="text" class="border-transparent p-4 w-full" id="topicSearch" placeholder="Search here...">
                 </div>
-                <!-- 
-                <div class="searchicon" style="position:relative; left: 45%">
-                        <input type="text" class="searchbar" id="topicSearch" placeholder="Search topics...">
-                    </div> -->
                 <button class="max-w-fit flex gap-4 items-center bg-[#293A82] py-4 px-6 rounded-xl text-white">
                     Search <i class="fa-solid fa-search"></i>
                 </button>
@@ -274,15 +209,8 @@ $courseFolderName = $courseCode;
                 </div>
             </div>
 
-            <script>
-                function goBack() {
-                    const popup = document.querySelector(".popup_bg");
-                    popup.classList.add("popup-hidden");
-                }
-            </script>
             <!--boxes-->
             <?php
-
             // Retrieve course_subject_id from URL parameters
             $course_subject_id = isset($_GET['course_subject_id']) ? $_GET['course_subject_id'] : 0;
 
@@ -290,9 +218,7 @@ $courseFolderName = $courseCode;
             $result = $mysqli->query("SELECT * from prof_course_topic WHERE account_id = $account_id AND course_subject_id = $course_subject_id") or die(mysqli_error($mysqli));
 
             if ($result->num_rows === 0) { ?>
-
                 <p class="header">You have no topic folders.</p>
-
             <?php } else { ?>
                 <div class="flex flex-col gap-4">
                     <?php while ($row = $result->fetch_assoc()) : ?>
@@ -317,83 +243,94 @@ $courseFolderName = $courseCode;
                             </a>
                             <select class="bg-transparent mb-2" onchange="handleAction(this)">
                                 <option value="">Select Action</option>
-                                <option value="topic.php?edit=<?php echo $row['course_topic_id']; ?>&update=true&course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>">Edit</option>
-                                <option value="topicfolder.php?delete=<?php echo $row['course_topic_id']; ?>">Delete</option>
+                                <option value="edit|<?php echo $row['course_topic_id']; ?>|<?php echo $update ? 'true' : 'false'; ?>">Edit</option>
+                                <option value="delete|<?php echo $row['course_topic_id']; ?>|<?php echo $course_subject_id; ?>|<?php echo urlencode($courseCode); ?>">Delete</option>
                             </select>
                         </div>
-                <?php endwhile;
-                }
-                ?>
+                    <?php endwhile; ?>
                 </div>
+            <?php } ?>
         </div>
     </div>
-</body>
 
-<script>
-    function showPopup() {
-        // Select the popup element
-        const popup = document.querySelector(".popup-hidden");
-        // Remove the "hidden" class to display the popup
-        popup.classList.remove("popup-hidden");
-        // Prevent default link behavior
-        return false;
-    }
 
-    function showEditPopup(course_topic_id, update) {
-        const popup = document.querySelector(".popup-hidden");
-        popup.classList.remove("popup-hidden");
-        document.getElementById("action").value = "edit";
-        document.querySelector("form").action = `topicfolder.php?edit=${course_topic_id}`;
-        // Optionally, you can pre-fill form fields here
-        // Set the value of the $update PHP variable based on the   update parameter
-        <?php if ($update) :
-        ?>document.getElementById("update").value = "true";
-    <?php endif; ?>
-    }
 
-    function handleAction(select) {
-        if (select.value.startsWith('topicfolder.php?delete=')) {
-            if (confirm('Are you sure you want to delete this topic folder?')) {
-                window.location = select.value;
-            }
-        } else if (select.value.startsWith('topic.php?edit=')) {
-            const editUrl = select.value;
-            const urlParams = new URLSearchParams(editUrl);
-            const courseTopicId = urlParams.get('edit');
-            const updateParam = urlParams.get('update');
-            // Set $update variable based on the updateParam
-            const update = updateParam === 'true';
-            showEditPopup(courseTopicId, update);
+    <script>
+        function goBack() {
+            const popup = document.querySelector(".popup_bg");
+            popup.classList.add("popup-hidden");
         }
-    }
 
-    function logFormData(event) {
-        event.preventDefault(); // Prevent form submission for now
-        const formData = new FormData(event.target);
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
+        function showPopup() {
+            // Select the popup element
+            const popup = document.querySelector(".popup-hidden");
+            // Remove the "hidden" class to display the popup
+            popup.classList.remove("popup-hidden");
+            // Prevent default link behavior
+            return false;
         }
-        // After logging, you can submit the form if needed:
-        // event.target.submit();
-    }
 
-    document.getElementById('topicSearch').addEventListener('input', function() {
-        const searchQuery = this.value.toLowerCase().trim();
-        const courseBoxes = document.querySelectorAll('topicBOX'); // Select all course boxes
-        // #topicBox > div
-        courseBoxes.forEach(courseBox => {
-            const courseName = courseBox.querySelector('CourseNameBox').textContent.toLowerCase();
-            // #CourseNameBox
-            // Check if the course name contains the search query
-            if (courseName.includes(searchQuery)) {
-                courseBox.style.display = 'flex'; // Show the course box
-            } else {
-                courseBox.style.display = 'none'; // Hide the course box
+        function showEditPopup(course_topic_id, update) {
+            const popup = document.querySelector(".popup-hidden");
+            popup.classList.remove("popup-hidden");
+            document.getElementById("action").value = "edit";
+            document.querySelector("form").action = `topicfolder.php?edit=${course_topic_id}`;
+            // Optionally, you can pre-fill form fields here
+            // Set the value of the update variable based on the update parameter
+            if (update) {
+                document.getElementById("update").value = "true";
             }
+        }
+
+        function handleAction(select) {
+            if (select.value.startsWith('delete')) {
+                const deleteData = select.value.split('|');
+                const courseTopicId = deleteData[1];
+                const courseSubjectId = deleteData[2];
+                const courseCode = deleteData[3];
+
+                if (confirm('Are you sure you want to delete this topic folder?')) {
+                    fetch(`http://localhost:8000/topicfolder.php?delete=${courseTopicId}&course_subject_id=${courseSubjectId}&course_code=${encodeURIComponent(courseCode)}`, {
+                            method: 'GET'
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // Reload the page after successful deletion
+                                window.location.reload();
+                            } else {
+                                throw new Error('Error deleting topic folder');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while deleting the topic folder.');
+                        });
+                }
+            } else if (select.value.startsWith('edit')) {
+                const editUrl = select.value;
+                const urlParams = new URLSearchParams(editUrl);
+                const courseTopicId = urlParams.get('edit');
+                const updateParam = urlParams.get('update');
+                // Set $update variable based on the updateParam
+                const update = updateParam === 'true';
+                showEditPopup(courseTopicId, update);
+            }
+        }
+
+        document.getElementById('topicSearch').addEventListener('input', function() {
+            const searchQuery = this.value.toLowerCase().trim();
+            const courseBoxes = document.querySelectorAll('#CourseNameBox'); // Select all course boxes
+            courseBoxes.forEach(courseBox => {
+                const courseName = courseBox.querySelector('#topicBox').textContent.toLowerCase();
+                // Check if the course name contains the search query
+                if (courseName.includes(searchQuery)) {
+                    courseBox.style.display = 'flex'; // Show the course box
+                } else {
+                    courseBox.style.display = 'none'; // Hide the course box
+                }
+            });
         });
-    });
-</script>
-<?php
-?>
+    </script>
+</body>
 
 </html>

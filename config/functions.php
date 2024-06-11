@@ -1,18 +1,41 @@
-<?php 
+<?php
+require __DIR__ . '/../vendor/autoload.php';
 
-function check_login($conn){
+use Monolog\Logger;
+use Monolog\Handler\ErrorLogHandler;
 
-  if(isset($_SESSION['account_id']))
-  {
+// Function to get the logger instance
+function getLogger()
+{
+  static $log = null;
+  if ($log === null) {
+    $log = new Logger('app');
+    $log->pushHandler(new ErrorLogHandler(ErrorLogHandler::OPERATING_SYSTEM, Logger::DEBUG));
+  }
+  return $log;
+}
+
+// Make the logger globally accessible
+$log = getLogger();
+
+function check_login($conn)
+{
+  global $log;
+
+  if (isset($_SESSION['account_id'])) {
     $id = $_SESSION['account_id'];
     $_query = "SELECT * FROM account WHERE account_id = '$id' LIMIT 1";
 
     $result = mysqli_query($conn, $_query);
-    if($result && mysqli_num_rows($result) > 0){
+    if ($result && mysqli_num_rows($result) > 0) {
       $user_data = mysqli_fetch_assoc($result);
+      $log->info('User logged in: ' . $id);
       return $user_data;
     }
   }
+
+  // Log redirection to login
+  $log->warning('User not logged in. Redirecting to login page.');
 
   //redirect to login
   header("Location: login.php");
