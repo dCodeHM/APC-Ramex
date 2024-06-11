@@ -130,16 +130,14 @@ if (isset($_POST['create_exam'])) {
         return $question['difficulty'] === 'H';
     });
 
-    $missingQuestions = [];
-
     // Function to select and insert questions based on difficulty
     function selectAndInsertQuestions($conn, $exam_id, $questions, $desiredCount, $difficulty, &$order)
     {
-        if (count($questions) < $desiredCount) {
-            return $desiredCount - count($questions);
+        if ($desiredCount === 0) {
+            return;
         }
 
-        $selectedQuestions = array_rand($questions, $desiredCount);
+        $selectedQuestions = array_rand($questions, min($desiredCount, count($questions)));
         if (!is_array($selectedQuestions)) {
             $selectedQuestions = [$selectedQuestions];
         }
@@ -147,7 +145,7 @@ if (isset($_POST['create_exam'])) {
         foreach ($selectedQuestions as $questionIndex) {
             $question = $questions[$questionIndex];
             $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, date_created, answer_id, in_question_library) 
-                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)";
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 die("Error preparing statement: " . $conn->error);
@@ -158,40 +156,26 @@ if (isset($_POST['create_exam'])) {
             }
             $order++;
         }
-
-        return 0;
     }
 
-    // Add easy questions
-    $missingEasyQuestions = selectAndInsertQuestions($conn, $exam_id, $easyQuestions, $easy_questions, 'easy', $order);
-    if ($missingEasyQuestions > 0) {
-        $missingQuestions['easy'] = $missingEasyQuestions;
+    // Prevent inserting if there's no questions found.
+    if (count($easyQuestions) > 0 && $easy_questions > 0) {
+        selectAndInsertQuestions($conn, $exam_id, $easyQuestions, $easy_questions, 'E', $order);
     }
 
-    // Add normal questions
-    $missingNormalQuestions = selectAndInsertQuestions($conn, $exam_id, $normalQuestions, $normal_questions, 'normal', $order);
-    if ($missingNormalQuestions > 0) {
-        $missingQuestions['normal'] = $missingNormalQuestions;
+    if (count($normalQuestions) > 0 && $normal_questions > 0) {
+        selectAndInsertQuestions($conn, $exam_id, $normalQuestions, $normal_questions, 'N', $order);
     }
 
-    // Add hard questions
-    $missingHardQuestions = selectAndInsertQuestions($conn, $exam_id, $hardQuestions, $hard_questions, 'hard', $order);
-    if ($missingHardQuestions > 0) {
-        $missingQuestions['hard'] = $missingHardQuestions;
-    }
-
-    if (!empty($missingQuestions)) {
-        $missingQuestionsMessage = "The following difficulties don't have enough related questions:\n";
-        foreach ($missingQuestions as $difficulty => $count) {
-            $missingQuestionsMessage .= "- " . ucfirst($difficulty) . ": " . $count . " question(s) missing\n";
-        }
-        echo "<script>alert('$missingQuestionsMessage');</script>";
+    if (count($hardQuestions) > 0 && $hard_questions > 0) {
+        selectAndInsertQuestions($conn, $exam_id, $hardQuestions, $hard_questions, 'H', $order);
     }
 
     // Redirect to the topic page with course_subject_id and course_code
     header("Location: topic.php?course_subject_id=$course_subject_id&course_code=$course_code");
     exit();
 }
+
 
 if (isset($_GET['delete'])) {
     $course_topic_id = $_GET['delete'];

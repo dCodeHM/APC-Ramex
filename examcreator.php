@@ -253,6 +253,8 @@ $hard = $exam['hard'];
 
 // Fetch the related questions
 $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $normal, $hard);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -468,7 +470,24 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                     <p class="font-semibold text-2xl"><?php echo htmlspecialchars($question['details']['question_points'] ?? ''); ?> pts.</p>
                                 </div>
                                 <div class="flex items-center gap-4 bg-[#FAFAFA] shadow-lg rounded-lg flex items-center justify-center p-2">
-                                    <p class="font-semibold text-2xl">CLO: <?php echo preg_replace('/[^0-9]/', '', $question['details']['clo_number'] ?? ''); ?></p>
+                                    <?php
+                                    $cloIds = explode(',', $question['details']['clo_id']);
+                                    $cloNumbers = array();
+                                    foreach ($cloIds as $cloId) {
+                                        $sql = "SELECT clo_number FROM course_outcomes WHERE clo_id = ?";
+                                        $stmt = $conn->prepare($sql);
+                                        $stmt->bind_param("i", $cloId);
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+                                        if ($result->num_rows > 0) {
+                                            $row = $result->fetch_assoc();
+                                            $cloNumbers[] = $row['clo_number'];
+                                        }
+                                    }
+                                    $cloNumbersString = implode(', ', $cloNumbers);
+                                    ?>
+                                    <p class="font-semibold text-2xl">CLO: <?php $cloNumbersString = str_replace('CLO', '', $cloNumbersString);
+                                                                            echo $cloNumbersString; ?></p>
                                 </div>
                             </div>
                             <!-- Plus Icon -->
@@ -482,7 +501,6 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
-
         <script>
             document.getElementById("add_5_questions").addEventListener("click", function() {
                 const questionItems = document.querySelectorAll(".question-item");
@@ -607,9 +625,12 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                         <span class="text-red-400">No CLO ID*</span>
                                     <?php endif; ?>
                                 </label>
-                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="clo_id[]">
-                                    <?php foreach ($clos as $clo) : ?>
-                                        <option value="<?php echo $clo['clo_id']; ?>" <?php if ($question['clo_id'] == $clo['clo_id']) echo 'selected'; ?>>
+                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="clo_id[]" multiple>
+                                    <?php
+                                    $selectedCloIds = explode(',', $question['clo_id']);
+                                    foreach ($clos as $clo) :
+                                    ?>
+                                        <option value="<?php echo $clo['clo_id']; ?>" <?php if (in_array($clo['clo_id'], $selectedCloIds)) echo 'selected'; ?>>
                                             <?php echo $clo['clo_number'] . ' - ' . $clo['clo_details']; ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -1172,7 +1193,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             const urlParams = new URLSearchParams(window.location.search);
             const courseTopicId = urlParams.get('course_topic_id');
 
-            var res = await fetch(`http://localhost/ramex/api/exam/get-exam-id-by-course-topic-id.php?course_topic_id=${courseTopicId}`);
+            var res = await fetch(`http://localhost:8000/api/exam/get-exam-id-by-course-topic-id.php?course_topic_id=${courseTopicId}`);
             var data = await res.json();
             if (data.error) {
                 console.error(data.error);
@@ -1181,7 +1202,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             var examId = data;
             console.log("Exam ID:", examId);
 
-            res = await fetch(`http://localhost/ramex/api/question/get-total-points-by-exam-id.php?exam_id=${examId}`);
+            res = await fetch(`http://localhost:8000/api/question/get-total-points-by-exam-id.php?exam_id=${examId}`);
             data = await res.json();
             if (data.error) {
                 console.error(data.error);
@@ -1190,7 +1211,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             var totalPointsData = data;
             console.log("Total Points:", totalPointsData);
 
-            res = await fetch(`http://localhost/ramex/api/question/get-total-questions-by-exam-id.php?exam_id=${examId}`)
+            res = await fetch(`http://localhost:8000/api/question/get-total-questions-by-exam-id.php?exam_id=${examId}`)
             data = await res.json();
             if (data.error) {
                 console.error(data.error);
@@ -1295,7 +1316,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
             if (confirm("Are you sure you want to delete this question?")) {
                 try {
-                    const res = await fetch(`http://localhost/ramex/api/question/delete-question-by-question-id.php?question_id=${questionId}`);
+                    const res = await fetch(`http://localhost:8000/api/question/delete-question-by-question-id.php?question_id=${questionId}`);
                     const data = await res.text();
                     console.log(data);
                     questionElement.remove();
@@ -1423,7 +1444,8 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                         }
 
                         // Send the form data using the Fetch API
-                        const response = await fetch("http://localhost/ramex/api/question-choices/post-question-choices.php", {
+                        // const response = await fetch("http://localhost/ramex/api/question-choices/post-question-choices.php", {
+                        const response = await fetch("http://localhost:8000/api/question-choices/post-question-choices.php", {
                             method: "POST",
                             body: formData
                         });
@@ -1493,7 +1515,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
                         try {
                             // Send the form data to the PHP script using fetch
-                            const response = await fetch('http://localhost/ramex/api/question/update-existing-questions.php', {
+                            const response = await fetch('http://localhost:8000/api/question/update-existing-questions.php', {
                                 method: 'POST',
                                 body: formData
                             });
@@ -1571,7 +1593,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
                         console.log('Form Data for Question Choices:', formData);
 
-                        const response = await fetch("http://localhost/ramex/api/question-choices/update-existing-question-choices.php", {
+                        const response = await fetch("http://localhost:8000/api/question-choices/update-existing-question-choices.php", {
                             method: "POST",
                             body: formData
                         });
@@ -1605,66 +1627,66 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                 var cloOptions = clos.map(clo => `<option value="${clo.clo_id}">${clo.clo_number} - ${clo.clo_details}</option>`).join('');
 
                 var questionHTML = `
-        <div class="new-question bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
-            <div class="flex flex-col">
-                <label class="mb-2" for="question_text">Question Text</label>
-                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
-            </div>
-            <div class="flex flex-col">
-                <label class="mb-2" for="question_image">Question Image</label>
-                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_question_image[]">
-            </div>
-            <div class="flex flex-col">
-                <label class="mb-2" for="clo_id">CLO ID</label>
-                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[]">
-                    ${cloOptions}
-                </select>
-            </div>
-            <div class="flex flex-col">
-                <label class="mb-2" for="difficulty">Difficulty</label>
-                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_difficulty[]">
-                    <option value="E">Easy</option>
-                    <option value="N">Normal</option>
-                    <option value="H">Hard</option>
-                </select>
-            </div>
-            <div class="flex flex-col">
-                <label class="mb-2" for="question_points">Question Points</label>
-                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 new-question-points" type="number" name="new_question_points[]">
-            </div>
-            <div class="flex flex-col">
-                <label class="mb-2" for="order">Order</label>
-                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_order[]" value="${newOrder}" readonly>
-            </div>
-            <hr class="my-6">
-            <div class="question-choices">
-                <h4 class="font-semibold mb-2">Question Choices</h4>
-                <div class="choices-container flex flex-col gap-4">
-                    <div class="choice flex gap-4 items-center">
-                        <input type="checkbox" name="new_is_correct[]" value="1">
-                        <p class="font-semibold">A</p>
-                        <div class="flex flex-col w-full">
-                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                        </div>
-                        <div class="flex flex-col">
-                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                        </div>
+    <div class="new-question bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
+        <div class="flex flex-col">
+            <label class="mb-2" for="question_text">Question Text</label>
+            <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
+        </div>
+        <div class="flex flex-col">
+            <label class="mb-2" for="question_image">Question Image</label>
+            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_question_image[]">
+        </div>
+        <div class="flex flex-col">
+            <label class="mb-2" for="new_clo_id">CLO ID</label>
+            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[${totalQuestions - 1}][]" multiple>
+                ${cloOptions}
+            </select>
+        </div>
+        <div class="flex flex-col">
+            <label class="mb-2" for="difficulty">Difficulty</label>
+            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_difficulty[]">
+                <option value="E">Easy</option>
+                <option value="N">Normal</option>
+                <option value="H">Hard</option>
+            </select>
+        </div>
+        <div class="flex flex-col">
+            <label class="mb-2" for="question_points">Question Points</label>
+            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 new-question-points" type="number" name="new_question_points[]">
+        </div>
+        <div class="flex flex-col">
+            <label class="mb-2" for="order">Order</label>
+            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_order[]" value="${newOrder}" readonly>
+        </div>
+        <hr class="my-6">
+        <div class="question-choices">
+            <h4 class="font-semibold mb-2">Question Choices</h4>
+            <div class="choices-container flex flex-col gap-4">
+                <div class="choice flex gap-4 items-center">
+                    <input type="checkbox" name="new_is_correct[]" value="1">
+                    <p class="font-semibold">A</p>
+                    <div class="flex flex-col w-full">
+                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
                     </div>
-                    <div class="choice flex gap-4 items-center">
-                        <input type="checkbox" name="new_is_correct[]" value="1">
-                        <p class="font-semibold">B</p>
-                        <div class="flex flex-col w-full">
-                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                        </div>
-                        <div class="flex flex-col">
-                            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                        </div>
+                    <div class="flex flex-col">
+                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
                     </div>
                 </div>
-                <button type="button" class="add-choice-btn px-4 py-2 bg-green-500 text-white rounded-md mt-2">+ Add Choice</button>
+                <div class="choice flex gap-4 items-center">
+                    <input type="checkbox" name="new_is_correct[]" value="1">
+                    <p class="font-semibold">B</p>
+                    <div class="flex flex-col w-full">
+                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                    </div>
+                    <div class="flex flex-col">
+                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
+                    </div>
+                </div>
             </div>
-            <button class="remove_question px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button">Remove Question</button>
+            <button type="button" class="add-choice-btn px-4 py-2 bg-green-500 text-white rounded-md mt-2">+ Add Choice</button>
         </div>
+        <button class="remove_question px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button">Remove Question</button>
+    </div>
     `;
 
                 document.getElementById("new_questions").insertAdjacentHTML('beforeend', questionHTML);
