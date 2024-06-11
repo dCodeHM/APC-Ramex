@@ -54,20 +54,11 @@ if (isset($_POST['save'])) {
     }
 }
 
+
 // Delete
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $course_subject_id = $_POST['course_subject_id'];
-
-    // Delete the course folder from the database
-    $sql = "DELETE FROM prof_course_subject WHERE course_subject_id = ?";
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        die("Error preparing statement: " . $conn->error);
-    }
-    $stmt->bind_param("i", $course_subject_id);
-    if (!$stmt->execute()) {
-        die("Error executing statement: " . $stmt->error);
-    }
-
-    echo "success";
+if (isset($_GET['delete'])) {
+    $course_subject_id = $_GET['delete'];
+    $mysqli->query("DELETE FROM prof_course_subject WHERE course_subject_id = '$course_subject_id'")
+        or die(mysqli_error($mysqli));
+    header("location: myexams.php");
 }
