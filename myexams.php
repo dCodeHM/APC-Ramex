@@ -67,7 +67,7 @@ if ($user_role == 'Executive Director') {
                 <link rel="stylesheet" href="./css/style.css">
                 <link rel="stylesheet" href="./css/adminstyle.css">
                 <link rel="stylesheet" href="./css/emstyle.css">
-                <link rel="stylesheet" href="./css/myexamstyle.css">
+                <link rel="stylesheet" href="./css/myexamstyle.css?v=<?php echo time(); ?>">">
                 <link rel="stylesheet" href="./css/sidebar.css">
                 <link rel="stylesheet" href="./css/header.css">
                 <link rel="stylesheet" href="./css/homepage.css">
@@ -215,10 +215,6 @@ if ($user_role == 'Executive Director') {
                                     <input type="text" class="searchbar" id="live_search" placeholder="Search a Course Folder...">
                                 </div>
                                 </div>
-
-                                
-
-
                             </div>
 
                             <div class="system-list">
@@ -321,104 +317,69 @@ if ($user_role == 'Executive Director') {
 
 
                             <!--boxes-->
-
-                            <?php
-                            $result = $mysqli->query("SELECT * from prof_course_subject WHERE account_id = $account_id") or die(mysqli_error($mysqli));
-                            if ($result->num_rows === 0) { ?>
-                                <p class="header" style="margin-left: 50px;">You have no course folders.</p>
-                            <?php } else { ?>
-                                <div style="flex-wrap: wrap; margin-left: 30px;">
-                                    <?php while ($row = $result->fetch_assoc()) :
-
-                                        // **Fetch course_subject_id here:**
-                                        $course_subject_id = $row['course_subject_id'];
-                                        $courseCode = $row['course_code']; // Get the course code for the link
-                                    ?>
-                                        <section id="container2">
-                                            <div class="emservices">
-                                                <div class="mebox">
-                                                <style>
-
-    .options-icon {
-        cursor: pointer;
-    }
-
-    .options {
-        position: absolute;
-        top: 30px;
-        right: 10px;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 5px;
-        display: none;
-        z-index: 1;
-    }
-
-    .options select {
-        width: 100%;
-        padding: 5px;
-        margin-top: 5px;
-    }
-</style>
-
-<div class="boxme">
-    <img src="./img/dots.png" alt="Options" class="options-icon" onclick="showOptions(this)" class="selectOPTION" style="width: 15px;margin-left: auto;">
-    <div class="options" >
-        <img src="./img/pencil.png" alt="Edit" onclick="handleEdit('<?php echo $row['course_subject_id']; ?>')">
-        <img src="./img/delete.png" alt="Delete" onclick="handleDelete('<?php echo $row['course_subject_id']; ?>')">
+<?php
+$result = $mysqli->query("SELECT cs.*, COUNT(ct.course_topic_id) as topic_count 
+                          FROM prof_course_subject cs
+                          LEFT JOIN prof_course_topic ct ON cs.course_subject_id = ct.course_subject_id
+                          WHERE cs.account_id = $account_id
+                          GROUP BY cs.course_subject_id") or die(mysqli_error($mysqli));
+if ($result->num_rows === 0) { ?>
+    <p class="header" style="margin-left: 50px;">You have no course folders.</p>
+<?php } else { ?>
+    <div style="flex-wrap: wrap; margin-left: 30px;">
+        <?php while ($row = $result->fetch_assoc()) :
+            // **Fetch course_subject_id here:**
+            $course_subject_id = $row['course_subject_id'];
+            $courseCode = $row['course_code']; // Get the course code for the link
+            $hasTopics = $row['topic_count'] > 0;
+        ?>
+            <section id="container2">
+                <div class="emservices">
+                    <div class="mebox">
+                        <div class="boxme">
+                            <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
+                                <div class="options">
+                                    <img src="./img/delete.png" alt="Delete" onclick="confirmDelete('<?php echo $row['course_subject_id']; ?>')" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
+                                </div>
+                                <p class="malakingbox">
+                                    <?php echo $courseCode; ?>
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <?php endwhile; ?>
     </div>
-    <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
-        <p class="malakingbox">
-            <?php echo $courseCode; ?>
-        </p>
-    </a>
+<?php } ?>
 </div>
-
+</div>
+</div>
+</body>
 <script>
-
-document.addEventListener('click', function(event) {
-    const optionsIcon = document.querySelector('.options-icon');
-    const optionsDiv = document.querySelector('.options');
-
-    if (optionsIcon.contains(event.target)) {
-        optionsDiv.style.display = 'block';
-    } else if (!optionsDiv.contains(event.target)) {
-        optionsDiv.style.display = 'none';
-    }
-});
-
-function showOptions(icon) {
-    const optionsDiv = icon.nextElementSibling;
-    optionsDiv.style.display = optionsDiv.style.display === 'block' ? 'none' : 'block';
-}
-
-function handleEdit(course_subject_id) {
-    // Handle edit functionality here
-}
-
-function handleDelete(course_subject_id) {
-    // Handle delete functionality here
-}
-
-function showOptions(img) {
-    var options = img.nextElementSibling;
-    options.style.display = (options.style.display === "block") ? "none" : "block";
-}
-
-function handleEdit(courseSubjectId) {
-    var options = document.querySelector(".options");
-    options.style.display = "none";
-    showEditPopup(courseSubjectId, true);
-}
-
-function handleDelete(courseSubjectId) {
-    var options = document.querySelector(".options");
-    options.style.display = "none";
+function confirmDelete(course_subject_id) {
     if (confirm('Are you sure you want to delete this course folder?')) {
-        window.location = 'coursefolder.php?delete=' + courseSubjectId;
+        // Send an AJAX request to delete the course folder
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'coursefolder.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Course folder deleted successfully
+                    alert('Course folder deleted successfully.');
+                    // Reload the current page
+                    location.reload();
+                } else {
+                    // Error deleting course folder
+                    alert('Error deleting course folder. Please try again.');
+                }
+            }
+        };
+        xhr.send('course_subject_id=' + course_subject_id);
     }
 }
+
 
 function handleSearchInput() {
     // Get the value of the search input
@@ -460,18 +421,8 @@ function handleAction(select) {
         window.location.href = selectedValue;
     }
     select.value = "";
-}</script>
-                                                </div>
-                                            </div>
-                                        </section>
-                                <?php endwhile;
-                                } ?>
-                                </div>
-                        </div>
-                    </div>
-                </div>
-            </body>
-            <script>
+}
+
                 var update = false;
 
                 function showPopup() {
