@@ -1617,6 +1617,9 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             // Add this script to pass CLO data to JavaScript
             const clos = <?php echo $clos_json; ?>;
 
+            // CLO Index Counter to make it 2D array
+            var cloIndex = 0;
+
             document.getElementById("add_question").addEventListener("click", function() {
                 totalQuestions++;
                 document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
@@ -1638,7 +1641,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
         </div>
         <div class="flex flex-col">
             <label class="mb-2" for="new_clo_id">CLO ID</label>
-            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[${totalQuestions - 1}][]" multiple>
+            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[${cloIndex}][]" multiple>
                 ${cloOptions}
             </select>
         </div>
@@ -1688,6 +1691,9 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
         <button class="remove_question px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button">Remove Question</button>
     </div>
     `;
+
+                // Increment the CLO index
+                cloIndex++;
 
                 document.getElementById("new_questions").insertAdjacentHTML('beforeend', questionHTML);
             });

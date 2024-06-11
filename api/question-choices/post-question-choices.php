@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             throw new Exception("Exam ID not provided");
         }
         $exam_id = $_POST['exam_id'];
+        $log->info('Exam ID: ' . $exam_id);
 
         // Insert new questions
         if (!isset($_POST['new_question_text']) || !isset($_POST['new_clo_id']) || !isset($_POST['new_difficulty']) || !isset($_POST['new_question_points'])) {
@@ -26,19 +27,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $new_question_points = $_POST['new_question_points'];
 
         $num_questions = count($new_question_texts);
+        $log->info('Number of questions: ' . $num_questions);
 
         for ($question_index = 0; $question_index < $num_questions; $question_index++) {
             // Prepare question data
             $question_text = mysqli_real_escape_string($conn, $new_question_texts[$question_index]);
             $log->info('Question text: ' . $question_text);
 
-            $clo_ids_array = $new_clo_ids[$question_index];
-            $clo_ids_string = implode(',', $clo_ids_array);
+            if (!isset($new_clo_ids[$question_index])) {
+                throw new Exception("CLO IDs not provided for question index: " . $question_index);
+            }
+            // $clo_ids_array = $new_clo_ids[$question_index];
+            // $clo_ids_string = implode(',', $clo_ids_array);
+
+            $clo_ids_string = implode(',', $new_clo_ids[$question_index]);
 
             $log->info('Combined clo ids: ' . $clo_ids_string);
 
             $difficulty = mysqli_real_escape_string($conn, $new_difficulties[$question_index]);
+            $log->info('Difficulty: ' . $difficulty);
+
             $points = intval($new_question_points[$question_index]);
+            $log->info('Points: ' . $points);
 
             // Get the highest answer_id from the question_choices table
             $sql = "SELECT MAX(answer_id) AS max_answer_id FROM question_choices";
@@ -54,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             } else {
                 $answer_id = 1;
             }
+            $log->info('Answer ID: ' . $answer_id);
 
             // Check if question image is uploaded
             $question_image = null;
@@ -68,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             // Prepare SQL statement based on the presence of question image
             if ($question_image !== null) {
                 $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, answer_id, in_question_library)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     throw new Exception("Error preparing statement: " . $conn->error);
@@ -76,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmt->bind_param("issssii", $exam_id, $question_text, $question_image, $clo_ids_string, $difficulty, $points, $answer_id);
             } else {
                 $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, answer_id, in_question_library)
-            VALUES (?, ?, ?, ?, ?, ?, 1)";
+                VALUES (?, ?, ?, ?, ?, ?, 1)";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
                     throw new Exception("Error preparing statement: " . $conn->error);
@@ -88,6 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!$stmt->execute()) {
                 throw new Exception("Error executing statement: " . $stmt->error);
             }
+            $log->info('Question inserted successfully: ' . $stmt->insert_id);
 
             // Parse the new_is_correct and new_answer_text arrays
             if (!isset($_POST['new_is_correct_string']) || !isset($_POST['new_answer_text_string'])) {
@@ -95,6 +107,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
             $new_is_correct_parsed = json_decode($_POST['new_is_correct_string'], true);
             $new_answer_text_parsed = json_decode($_POST['new_answer_text_string'], true);
+
+            $log->info('New is correct parsed: ' . print_r($new_is_correct_parsed, true));
+            $log->info('New answer text parsed: ' . print_r($new_answer_text_parsed, true));
 
             $num_choices = count($new_is_correct_parsed[$question_index]);
 
@@ -135,6 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if (!$stmt->execute()) {
                     throw new Exception("Error executing statement: " . $stmt->error);
                 }
+                $log->info('Question choice inserted successfully: ' . $stmt->insert_id);
 
                 // Close the prepared statement
                 $stmt->close();
@@ -146,6 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo json_encode(array("message" => "Exam saved successfully"));
     } catch (Exception $e) {
         // Log the error message
+        $log->error("Error saving exam: " . $e->getMessage());
         error_log("Error saving exam: " . $e->getMessage());
 
         // Send an error response with the exception message
