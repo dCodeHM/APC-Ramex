@@ -2,7 +2,7 @@
 session_start();
 
 $_SESSION;
-$conn = mysqli_connect("localhost:3307", "root", "", "ramexdb");
+$conn = mysqli_connect("localhost:3306", "root", "", "ramexdb");
 $id = $_SESSION['account_id'];
 $sql = "SELECT * FROM account WHERE account_id = '$id' LIMIT 1
         SELECT * FROM role
