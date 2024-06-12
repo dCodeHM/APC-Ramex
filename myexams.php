@@ -339,7 +339,7 @@ if ($result->num_rows === 0) { ?>
             $courseCode = $row['course_code']; // Get the course code for the link
             $hasTopics = $row['topic_count'] > 0;
         ?>
-            <section id="container2">
+            <section id="container2" style="cursor:pointer">
                 <div class="emservices">
                     <div class="mebox">
                         <div class="boxme">
