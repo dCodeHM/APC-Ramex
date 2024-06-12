@@ -1662,6 +1662,21 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                     return;
                 }
 
+                // Validate that each new question has at least one CLO selected
+                var allCLOSelected = true;
+                newQuestions.each(function() {
+                    var cloSelect = $(this).find("select[name^='new_clo_id']");
+                    if (cloSelect.val() === null || cloSelect.val().length === 0) {
+                        allCLOSelected = false;
+                        return false; // Exit the loop
+                    }
+                });
+
+                if (!allCLOSelected) {
+                    alert("Please select at least one CLO for each new question.");
+                    return;
+                }
+
                 // If there is new question, then there are no checked checkboxes for correct answers then alert
                 if (newQuestionsLength > 0) {
                     var newIsCorrect = [];
