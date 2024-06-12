@@ -14,9 +14,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $log->info('Exam ID: ' . $exam_id);
 
         // Insert new questions
-        if (!isset($_POST['new_question_text']) || !isset($_POST['new_clo_id']) || !isset($_POST['new_difficulty']) || !isset($_POST['new_question_points'])) {
-            throw new Exception("Missing question data");
-        }
+        // if (!isset($_POST['new_question_text']) || !isset($_POST['new_clo_id']) || !isset($_POST['new_difficulty']) || !isset($_POST['new_question_points'])) {
+        //     throw new Exception("Missing question data");
+        // }
         $new_question_texts = $_POST['new_question_text'];
         $log->info('New question texts: ' . print_r($new_question_texts, true));
 

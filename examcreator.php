@@ -522,12 +522,6 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                         questionItem.click();
                     }
                 }
-
-
-
-
-
-
             });
         </script>
 
@@ -718,7 +712,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                     <!-- Image -->
                                     <div class="flex flex-col">
                                         <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="answer_image[<?php echo $question['question_id']; ?>][]" <?php if ($question['in_question_library'] == 0) : ?> disabled<?php endif; ?>>
-                                        >
+
                                     </div>
 
                                     <!-- Hidden input field for question_choices_id -->
@@ -1705,21 +1699,34 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                         // Append the exam ID to the form data
                         formData.append("exam_id", <?php echo $exam_id; ?>);
 
-                        // Append the new_is_correct and new_answer_text arrays to the FormData object
-                        formData.append("new_is_correct", JSON.stringify(new_is_correct));
-                        formData.append("new_answer_text", JSON.stringify(new_answer_text));
+                        // Loop through each new question
+                        newQuestions.each(function(questionIndex) {
+                            var questionElement = $(this);
 
-                        // Append the new_answer_image files to the FormData object
-                        for (var i = 0; i < new_answer_image.length; i++) {
-                            for (var j = 0; j < new_answer_image[i].length; j++) {
-                                if (new_answer_image[i][j]) {
-                                    formData.append(`new_answer_image[${i}][${j}]`, new_answer_image[i][j]);
+                            // Get the new_is_correct values for the current question
+                            var newIsCorrect = [];
+                            questionElement.find("input[name='new_is_correct[]']").each(function() {
+                                newIsCorrect.push($(this).is(":checked") ? 1 : 0);
+                            });
+                            formData.append(`new_is_correct[${questionIndex}]`, JSON.stringify(newIsCorrect));
+
+                            // Get the new_answer_text values for the current question
+                            var newAnswerText = [];
+                            questionElement.find("input[name='new_answer_text[]']").each(function() {
+                                newAnswerText.push($(this).val());
+                            });
+                            formData.append(`new_answer_text[${questionIndex}]`, JSON.stringify(newAnswerText));
+
+                            // Append the new_answer_image files to the FormData object
+                            questionElement.find("input[name='new_answer_image[]']").each(function(choiceIndex) {
+                                var file = $(this)[0].files[0];
+                                if (file) {
+                                    formData.append(`new_answer_image[${questionIndex}][${choiceIndex}]`, file);
                                 }
-                            }
-                        }
+                            });
+                        });
 
                         // Send the form data using the Fetch API
-                        // const response = await fetch("http://localhost/ramex/api/question-choices/post-question-choices.php", {
                         const response = await fetch("http://localhost:8000/api/question-choices/post-question-choices.php", {
                             method: "POST",
                             body: formData
@@ -1731,6 +1738,8 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
                         const data = await response.json();
                         console.log(data.message);
+
+                        // 
 
                     } catch (error) {
                         console.error("Error:", error.message);
