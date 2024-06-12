@@ -203,7 +203,7 @@ if ($user_role == 'Executive Director') {
                             <div class="righthead">
 
                                 <div class="adminmehead" style="margin-left: 50px ;display: flex">
-                                    <p> Exam Library </p>
+                                    <p> Courses </p>
                                 
                                 <div class="searchicon" style="display: flex; align-items: center; margin-left: auto" >
                                     <input type="text" class="searchbar" id="live_search" placeholder="Search a Course Folder...">

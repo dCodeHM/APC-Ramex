@@ -202,8 +202,8 @@ $courseFolderName = $courseCode;
         <div class="ml-[50px] p-10">
             <div class="mt-[70px] flex gap-4 justify-between items-center mb-10">
                 <div>
-                    <p class="text-4xl mb-2">Course Folder Name</p>
-                    <h1 class="text-7xl font-medium"><?php echo $courseFolderName; ?></h1>
+                    <h1 class="text-7xl font-medium mb-2">Topic Exam Library</h1>
+                    <p class="text-4xl mb-2"><b>Course:</b> <?php echo $courseFolderName; ?></p>
                 </div>
 
                 <button class="addbutt" onclick="showPopup()">
@@ -217,13 +217,7 @@ $courseFolderName = $courseCode;
                 <div class="outline outline-1 outline-zinc-200 rounded-lg w-full">
                     <input type="text" class="border-transparent p-4 w-full" id="topicSearch" placeholder="Search here...">
                 </div>
-                <!-- 
-                <div class="searchicon" style="position:relative; left: 45%">
-                        <input type="text" class="searchbar" id="topicSearch" placeholder="Search topics...">
-                    </div> -->
-                <button class="max-w-fit flex gap-4 items-center bg-[#293A82] py-4 px-6 rounded-xl text-white">
-                    Search <i class="fa-solid fa-search"></i>
-                </button>
+
             </section>
 
             <div class="popup-hidden">
