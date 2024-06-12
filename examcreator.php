@@ -547,7 +547,14 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                 <button class="w-full bg-white text-zinc-800 font-medium py-4 rounded-xl flex items-center justify-center" type="button">Preview</button>
                 <button id="download-exam-btn" class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Download</button>
             </div>
-            <button class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Save Progress</button>
+            <button id="save-progress-btn" class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Save Progress</button>
+
+            <script>
+                // If save-progress-btn is clicked, click the Save Exam button
+                document.getElementById("save-progress-btn").addEventListener("click", function() {
+                    document.getElementById("save-exam-btn").click();
+                });
+            </script>
             <button class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Upload to Exam Library</button>
         </div>
     </div>
@@ -759,7 +766,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
             <div class="mt-4">
                 <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button" id="add_question">Add Question</button>
-                <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="submit">Save Exam</button>
+                <button id="save-exam-btn" class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white hidden" type="submit">Save Exam</button>
             </div>
         </form>
     </main>
