@@ -22,6 +22,25 @@ if (isset($_POST['create_exam'])) {
     $hard_questions = $_POST['hard_questions'];
     $course_code = $_POST['course_code']; // Retrieve course_code from POST data
 
+    // If course_topics already exists, exit
+    $sql = "SELECT * FROM prof_course_topic WHERE course_topics = ?";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Error preparing statement: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $course_topics);
+    if (!$stmt->execute()) {
+        die("Error executing statement: " . $stmt->error);
+    }
+
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        echo '<script>alert("Course topic already exists.")</script>';
+        echo "<script> window.location.assign('topic.php?course_subject_id=$course_subject_id&course_code=$course_code'); </script>";
+        exit();
+    }
+
     // Insert the course topic into the prof_course_topic table
     $sql = "INSERT INTO prof_course_topic (course_subject_id, account_id, course_topics, date_created) 
             VALUES (?, ?, ?, NOW())";
