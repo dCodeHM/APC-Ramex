@@ -274,9 +274,8 @@ $courseFolderName = $courseCode;
                     popup.classList.add("popup-hidden");
                 }
             </script>
-            <!--boxes-->
+            <!--boxes-->            <!--boxes-->
             <?php
-
             // Retrieve course_subject_id from URL parameters
             $course_subject_id = isset($_GET['course_subject_id']) ? $_GET['course_subject_id'] : 0;
 
@@ -284,13 +283,11 @@ $courseFolderName = $courseCode;
             $result = $mysqli->query("SELECT * from prof_course_topic WHERE account_id = $account_id AND course_subject_id = $course_subject_id") or die(mysqli_error($mysqli));
 
             if ($result->num_rows === 0) { ?>
-
                 <p class="header">You have no topic folders.</p>
-
             <?php } else { ?>
                 <div class="flex flex-col gap-4">
                     <?php while ($row = $result->fetch_assoc()) : ?>
-                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6" id="CourseNameBox">
+                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6 topic-box">
                             <!-- Topics -->
                             <?php
                             // Get the exam_id using the course_topic_id
@@ -304,21 +301,15 @@ $courseFolderName = $courseCode;
                             }
                             ?>
                             <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>&exam_id=<?php echo $exam_id; ?>">
-                                <h2 class="font-semibold text-4xl text-zinc-700" id="topicBox">
+                                <h2 class="font-semibold text-4xl text-zinc-700 topic-name">
                                     <?php echo $row['course_topics']; ?></h2>
                                 <!-- Date Created -->
                                 <p class="text-md text-gray-500">Date Created: <?php echo $row['date_created']; ?></p>
                             </a>
-                            <select class="bg-transparent mb-2" onchange="handleAction(this)">
-                                <option value="">Select Action</option>
-                                <option value="topic.php?edit=<?php echo $row['course_topic_id']; ?>&update=true&course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>">Edit</option>
-                                <option value="topicfolder.php?delete=<?php echo $row['course_topic_id']; ?>">Delete</option>
-                            </select>
                         </div>
-                <?php endwhile;
-                }
-                ?>
+                    <?php endwhile; ?>
                 </div>
+            <?php } ?>
         </div>
     </div>
 </body>
@@ -373,16 +364,15 @@ $courseFolderName = $courseCode;
 
     document.getElementById('topicSearch').addEventListener('input', function() {
         const searchQuery = this.value.toLowerCase().trim();
-        const courseBoxes = document.querySelectorAll('topicBOX'); // Select all course boxes
-        // #topicBox > div
-        courseBoxes.forEach(courseBox => {
-            const courseName = courseBox.querySelector('CourseNameBox').textContent.toLowerCase();
-            // #CourseNameBox
-            // Check if the course name contains the search query
-            if (courseName.includes(searchQuery)) {
-                courseBox.style.display = 'flex'; // Show the course box
+        const topicBoxes = document.querySelectorAll('.topic-box');
+
+        topicBoxes.forEach(topicBox => {
+            const topicName = topicBox.querySelector('.topic-name').textContent.toLowerCase();
+
+            if (topicName.includes(searchQuery)) {
+                topicBox.style.display = 'flex';
             } else {
-                courseBox.style.display = 'none'; // Hide the course box
+                topicBox.style.display = 'none';
             }
         });
     });
