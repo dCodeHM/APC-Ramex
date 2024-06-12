@@ -67,7 +67,7 @@ if ($user_role == 'Executive Director') {
                 <link rel="stylesheet" href="./css/style.css">
                 <link rel="stylesheet" href="./css/adminstyle.css">
                 <link rel="stylesheet" href="./css/emstyle.css">
-                <link rel="stylesheet" href="./css/myexamstyle.css">
+                <link rel="stylesheet" href="./css/myexamstyle.css?v=<?php echo time(); ?>">">
                 <link rel="stylesheet" href="./css/sidebar.css">
                 <link rel="stylesheet" href="./css/header.css">
                 <link rel="stylesheet" href="./css/homepage.css">
@@ -215,10 +215,6 @@ if ($user_role == 'Executive Director') {
                                     <input type="text" class="searchbar" id="live_search" placeholder="Search a Course Folder...">
                                 </div>
                                 </div>
-
-                                
-
-
                             </div>
 
                             <div class="system-list">
@@ -274,43 +270,50 @@ if ($user_role == 'Executive Director') {
                                         </div>
 
                                         <div class="inputcolumn">
+    <label class="labelName" for="course_code">Course Code</label>
+    <select class="input" name="course_code" required>
+        <option value="" disabled selected>None Selected</option>
+        <?php
+        $sql = "SELECT course_syllabus_id, course_code FROM course_syllabus";
+        $result = $mysqli->query($sql);
 
-                                            <label class="labelName" for="course_code">Course Code</label>
-                                            <select class="input" name="course_code" required>
-                                                <option value="" disabled selected>None Selected</option>
-                                                <?php
-                                                $sql = "SELECT course_syllabus_id, course_code FROM course_syllabus";
-                                                $result = $mysqli->query($sql);
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $course = $row['course_code'];
+                $selected = ($course === $course_code) ? 'selected' : '';
+                echo "<option value=\"$course\" $selected>$course</option>";
+            }
+        } else {
+            echo "<option value=\"\">No courses found</option>";
+        }
+        ?>
+    </select>
+</div>
 
-                                                if ($result->num_rows > 0) {
-                                                    while ($row = $result->fetch_assoc()) {
-                                                        $course = $row['course_code'];
-                                                        $selected = ($course === $course_code) ? 'selected' : '';
-                                                        echo "<option value=\"$course\" $selected>$course</option>";
-                                                    }
-                                                } else {
-                                                    echo "<option value=\"\">No courses found</option>";
-                                                }
-                                                ?>
-                                            </select>
+<input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
+<input type="hidden" name="course_topic_id" value="<?php echo $course_subject_id ?>" readonly><br />
+
+<?php if ($update == true) : ?>
+    <button class="update" type="submit" name="update">Update</button>
+<?php else : ?>
+    <div class="actionbuttons">
+        <button class="cancel" type="button" onclick="cancelForm()">Cancel</button>
+        <span class="button-gap"></span>
+        <button class="save" type="submit" name="save" onclick="return confirmCreate()">Create</button>
+    </div>
+    <script>
+    function cancelForm() {
+        if (confirm("Are you sure you want to cancel? Any selected program name and course code will not be saved.")) {
+            window.location.href = 'myexams.php';
+        }
+    }
+
+    function confirmCreate() {
+        return confirm("Are you sure you want to create the course folder?");
+    }
+    </script>
+<?php endif; ?>  
                                         
-                                        </div>
-
-                                        <input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
-                                        <input type="hidden" name="course_topic_id" value="<?php echo $course_subject_id ?>" readonly><br />
-
-                                        <?php if ($update == true) : ?>
-                                            <button class="update" type="submit" name="update">Update</button>
-                                        <?php else : ?>
-                                            <div class="actionbuttons">
-                                                <button class="cancel" onclick="window.location.href='myexams.php'" name = "cancel">Cancel</button>
-                                                <span class="button-gap"></span> <!-- Add a span for the gap -->
-                                                <button class="save" type="submit" name="save">Create</button>
-                                                <?php endif; ?>      
-                                            </div>
-                                        <!-- <div class="cancelbutton">
-                                            <a class="cancel" href="myexams.php">Cancel</a>
-                                        </div> -->
                                     </form>
                                 </div>
                                 </div>
@@ -319,105 +322,92 @@ if ($user_role == 'Executive Director') {
                             <div class="adminemline">
                             </div>
 
-
-                            <!--boxes-->
-
-                            <?php
-                            $result = $mysqli->query("SELECT * from prof_course_subject WHERE account_id = $account_id") or die(mysqli_error($mysqli));
-                            if ($result->num_rows === 0) { ?>
-                                <p class="header" style="margin-left: 50px;">You have no course folders.</p>
-                            <?php } else { ?>
-                                <div style="flex-wrap: wrap; margin-left: 30px;">
-                                    <?php while ($row = $result->fetch_assoc()) :
-
-                                        // **Fetch course_subject_id here:**
-                                        $course_subject_id = $row['course_subject_id'];
-                                        $courseCode = $row['course_code']; // Get the course code for the link
-                                    ?>
-                                        <section id="container2">
-                                            <div class="emservices">
-                                                <div class="mebox">
-                                                <style>
-
-    .options-icon {
-        cursor: pointer;
-    }
-
-    .options {
-        position: absolute;
-        top: 30px;
-        right: 10px;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 5px;
-        display: none;
-        z-index: 1;
-    }
-
-    .options select {
-        width: 100%;
-        padding: 5px;
-        margin-top: 5px;
-    }
-</style>
-
-<div class="boxme">
-    <img src="./img/dots.png" alt="Options" class="options-icon" onclick="showOptions(this)" class="selectOPTION" style="width: 15px;margin-left: auto;">
-    <div class="options" >
-        <img src="./img/pencil.png" alt="Edit" onclick="handleEdit('<?php echo $row['course_subject_id']; ?>')">
-        <img src="./img/delete.png" alt="Delete" onclick="handleDelete('<?php echo $row['course_subject_id']; ?>')">
+<!--boxes-->
+<?php
+$result = $mysqli->query("SELECT cs.*, COUNT(ct.course_topic_id) as topic_count 
+                          FROM prof_course_subject cs
+                          LEFT JOIN prof_course_topic ct ON cs.course_subject_id = ct.course_subject_id
+                          WHERE cs.account_id = $account_id
+                          GROUP BY cs.course_subject_id") or die(mysqli_error($mysqli));
+if ($result->num_rows === 0) { ?>
+    <p class="header" style="margin-left: 50px;">You have no course folders.</p>
+<?php } else { ?>
+    <div style="flex-wrap: wrap; margin-left: 30px;">
+        <?php while ($row = $result->fetch_assoc()) :
+            // **Fetch course_subject_id here:**
+            $course_subject_id = $row['course_subject_id'];
+            $courseCode = $row['course_code']; // Get the course code for the link
+            $hasTopics = $row['topic_count'] > 0;
+        ?>
+            <section id="container2" style="cursor:pointer">
+                <div class="emservices">
+                    <div class="mebox">
+                        <div class="boxme">
+                            <div class="fill-div" onclick="handleClick(event, '<?php echo $course_subject_id; ?>', '<?php echo urlencode($courseCode); ?>')">
+                                <div class="options">
+                                    <img src="./img/delete.png" alt="Delete" onclick="confirmDelete(event, '<?php echo $row['course_subject_id']; ?>')" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
+                                </div>
+                                <p class="malakingbox">
+                                    <?php echo $courseCode; ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <?php endwhile; ?>
     </div>
-    <a href="topic.php?course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>" class="fill-div">
-        <p class="malakingbox">
-            <?php echo $courseCode; ?>
-        </p>
-    </a>
+<?php } ?>
 </div>
-
+</div>
+</div>
+</div>
+</body>
 <script>
+function handleClick(event, courseSubjectId, courseCode) {
+    event.preventDefault(); // Prevent the default link behavior
 
-document.addEventListener('click', function(event) {
-    const optionsIcon = document.querySelector('.options-icon');
-    const optionsDiv = document.querySelector('.options');
-
-    if (optionsIcon.contains(event.target)) {
-        optionsDiv.style.display = 'block';
-    } else if (!optionsDiv.contains(event.target)) {
-        optionsDiv.style.display = 'none';
+    // Check if the delete button was clicked
+    if (event.target.classList.contains('options')) {
+        return; // Do nothing if the delete button was clicked
     }
-});
 
-function showOptions(icon) {
-    const optionsDiv = icon.nextElementSibling;
-    optionsDiv.style.display = optionsDiv.style.display === 'block' ? 'none' : 'block';
+    // Redirect to the topic.php page with the course subject ID and course code
+    window.location.href = "topic.php?course_subject_id=" + courseSubjectId + "&course_code=" + courseCode;
 }
 
-function handleEdit(course_subject_id) {
-    // Handle edit functionality here
-}
+function confirmDelete(event, courseSubjectId) {
+    event.stopPropagation(); // Stop the event from propagating to parent elements
 
-function handleDelete(course_subject_id) {
-    // Handle delete functionality here
-}
-
-function showOptions(img) {
-    var options = img.nextElementSibling;
-    options.style.display = (options.style.display === "block") ? "none" : "block";
-}
-
-function handleEdit(courseSubjectId) {
-    var options = document.querySelector(".options");
-    options.style.display = "none";
-    showEditPopup(courseSubjectId, true);
-}
-
-function handleDelete(courseSubjectId) {
-    var options = document.querySelector(".options");
-    options.style.display = "none";
-    if (confirm('Are you sure you want to delete this course folder?')) {
-        window.location = 'coursefolder.php?delete=' + courseSubjectId;
+    // Display confirmation message with Yes/No options
+    if (confirm("Are you sure you want to delete this course folder?")) {
+        // User clicked Yes, proceed with deletion
+        deleteCourseFolder(courseSubjectId);
     }
+}
+
+function deleteCourseFolder(courseSubjectId) {
+    // Create an XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+
+    // Set up the request
+    xhr.open("GET", "coursefolder.php?delete=" + courseSubjectId, true);
+
+    // Set up the callback function
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Deletion successful, refresh the page
+                window.location.href = "myexams.php";
+            } else {
+                // Deletion failed, display an error message
+                alert("Failed to delete the course folder. Please try again.");
+            }
+        }
+    };
+
+    // Send the request
+    xhr.send();
 }
 
 function handleSearchInput() {
@@ -460,18 +450,8 @@ function handleAction(select) {
         window.location.href = selectedValue;
     }
     select.value = "";
-}</script>
-                                                </div>
-                                            </div>
-                                        </section>
-                                <?php endwhile;
-                                } ?>
-                                </div>
-                        </div>
-                    </div>
-                </div>
-            </body>
-            <script>
+}
+
                 var update = false;
 
                 function showPopup() {

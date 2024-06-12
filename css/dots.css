@@ -2,10 +2,11 @@
   cursor: pointer;
 }
 .options {
+  margin-left:auto;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
-  padding: 5px;
+  padding: 2px;
   display: none;
   z-index: 1;
   display: flex;
