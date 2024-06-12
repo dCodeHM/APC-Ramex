@@ -156,9 +156,6 @@ $courseFolderName = $courseCode;
                 <div class="outline outline-1 outline-zinc-200 rounded-lg w-full">
                     <input type="text" class="border-transparent p-4 w-full" id="topicSearch" placeholder="Search here...">
                 </div>
-                <button class="max-w-fit flex gap-4 items-center bg-[#293A82] py-4 px-6 rounded-xl text-white">
-                    Search <i class="fa-solid fa-search"></i>
-                </button>
             </section>
 
             <div class="popup-hidden">
