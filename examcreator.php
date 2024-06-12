@@ -1131,6 +1131,32 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                         return;
                     }
 
+                    // If there are ay new question text is not filled out, alert and return
+                    var newQuestionText = [];
+
+                    newQuestions.each(function() {
+                        var questionText = $(this).find("textarea[name='new_question_text[]']").val();
+                        newQuestionText.push(questionText);
+                    });
+
+                    if (newQuestionText.includes("")) {
+                        alert("Please fill in all question texts for each new question.");
+                        return;
+                    }
+
+                    // If there are new question points that are not filled out, alert and return
+                    var newQuestionPoints = [];
+
+                    newQuestions.each(function() {
+                        var questionPoints = $(this).find("input[name='new_question_points[]']").val();
+                        newQuestionPoints.push(questionPoints);
+                    });
+
+                    if (newQuestionPoints.includes("")) {
+                        alert("Please fill in all question points for each new question.");
+                        return;
+                    }
+
                     // --
 
                     try {
