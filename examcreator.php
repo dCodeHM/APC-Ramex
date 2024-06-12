@@ -281,6 +281,10 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/vfs_fonts.js"></script>
+
+
 </head>
 
 <body>
@@ -534,7 +538,9 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             <!-- Text area for Exam Instruction -->
             <div class="w-full flex flex-col gap-2 mb-2">
                 <label class="w-full text-white" for="exam_instruction">Exam Rules</label>
-                <textarea class="p-4 w-full text-zinc-800 rounded-xl" id="exam_instruction" cols="30" rows="10"></textarea>
+                <textarea class="p-4 w-full text-zinc-800 rounded-xl" id="exam_instruction" name="exam_instruction" cols="30" rows="10"><?php echo
+                                                                                                                                        htmlspecialchars($exam['exam_instruction']);
+                                                                                                                                        ?></textarea>
             </div>
 
             <div class="flex w-full items-center gap-2 mb-2">
@@ -546,14 +552,22 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
         </div>
     </div>
 
-
-
     <!-- Main Exam Creator -->
     <main class="ml-[400px] mt-[70px] px-20 py-10">
         <form id="exam-form" class="w-full" method="POST" enctype="multipart/form-data">
+
             <h2 class="font-semibold mb-2">Exam Details</h2>
 
             <input class="mb-4 outline w-full outline-zinc-300 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
+
+            <h2 class="font-semibold mb-2">Exam Rules</h2>
+            <!-- Textarea -->
+            <textarea class="mb-4 outline w-full outline-zinc-200 p-4 font-normal rounded-lg text-xl" name="exam_instruction" id="exam_instruction" cols="30" rows="8" readonly><?php echo htmlspecialchars($exam['exam_instruction']); ?></textarea>
+
+            <!-- Divider -->
+            <hr class="mb-4">
+
+
             <h3 class="w-full font-semibold mb-2">Questions
                 <span class="text-base font-normal text-gray-400 ml-1" id="total-questions"></span>
                 <span class="text-base font-normal text-gray-400 ml-1" id="total-points"></span>
@@ -580,7 +594,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                     if ($item['type'] === 'question') {
                         $question = $item['data'];
                 ?>
-                        <div class="existing-question bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative">
+                        <div class="existing-question bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative <?php if ($question['in_question_library'] == 0) : ?>cursor-not-allowed<?php endif; ?>" data-question-id="<?php echo $question['question_id']; ?>">
                             <div class="flex w-full justify-between">
                                 <div class="flex flex-col">
                                     <label class="mb-2" for="question_id">Question ID</label>
@@ -603,19 +617,19 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                         <span class="text-red-400">No Question Text*</span>
                                     <?php endif; ?>
                                 </label>
-                                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_text[]"><?php echo htmlspecialchars($question['question_text']); ?></textarea>
+                                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_text[]" <?php if ($question['in_question_library'] == 0) : ?>readonly<?php endif; ?>><?php echo htmlspecialchars($question['question_text']); ?></textarea>
                             </div>
 
                             <div class="flex flex-col">
                                 <label class="mb-2" for="question_image">Question Image</label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="question_image[]">
+                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="question_image[]" <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
 
                                 <?php if (!empty($question['question_image'])) : ?>
                                     <?php
                                     $imgData = base64_encode($question['question_image']);
                                     $src = 'data:image/jpeg;base64,' . $imgData;
                                     ?>
-                                    <img src="<?php echo $src; ?>" alt="Question Image" style="max-width: 200px; max-height: 200px;">
+                                    <img src="<?php echo $src; ?>" alt="Question Image" style="max-width: 200px; max-height: 200px; object-fit: cover;" class="existing-question-image">
                                 <?php endif; ?>
                             </div>
 
@@ -625,7 +639,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                         <span class="text-red-400">No CLO ID*</span>
                                     <?php endif; ?>
                                 </label>
-                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="clo_id[]" multiple>
+                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="clo_id[]" multiple <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
                                     <?php
                                     $selectedCloIds = explode(',', $question['clo_id']);
                                     foreach ($clos as $clo) :
@@ -643,7 +657,8 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                         <span class="text-red-400">No Difficulty*</span>
                                     <?php endif; ?>
                                 </label>
-                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="difficulty[]">
+                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="difficulty[]" <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
+                                    >
                                     <option value="E" <?php if ($question['difficulty'] == 'E') echo 'selected'; ?>>Easy</option>
                                     <option value="N" <?php if ($question['difficulty'] == 'N') echo 'selected'; ?>>Normal</option>
                                     <option value="H" <?php if ($question['difficulty'] == 'H') echo 'selected'; ?>>Hard</option>
@@ -656,7 +671,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                         <span class="text-red-400">No Question Points*</span>
                                     <?php endif; ?>
                                 </label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 existing-question-points" type="number" name="question_points[]" value="<?php echo htmlspecialchars($question['question_points']); ?>">
+                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 existing-question-points" type="number" name="question_points[]" value="<?php echo htmlspecialchars($question['question_points']); ?>" <?php if ($question['in_question_library'] == 0) : ?>readonly<?php endif; ?>>
                             </div>
 
                             <!-- Display question choices -->
@@ -683,19 +698,20 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                 <!-- Main Question Choices -->
                                 <div class="choice flex gap-4 items-center">
                                     <!-- Is Correct -->
-                                    <input type="checkbox" name="is_correct[<?php echo $question['question_id']; ?>][]" value="<?php echo $choice['is_correct']; ?>" <?php if ($choice['is_correct']) echo 'checked'; ?>>
+                                    <input type="checkbox" name="is_correct[<?php echo $question['question_id']; ?>][]" value="<?php echo $choice['is_correct']; ?>" <?php if ($choice['is_correct']) echo 'checked'; ?><?php if ($question['in_question_library'] == 0) : ?> disabled<?php endif; ?>>
 
                                     <!-- Letter -->
                                     <p class="font-semibold"><?php echo $choiceLetter; ?></p>
 
                                     <!-- Answer Text -->
                                     <div class="flex flex-col w-full">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="answer_text[<?php echo $question['question_id']; ?>][]" value="<?php echo htmlspecialchars($choice['answer_text']); ?>">
+                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="answer_text[<?php echo $question['question_id']; ?>][]" value="<?php echo htmlspecialchars($choice['answer_text']); ?>" <?php if ($question['in_question_library'] == 0) : ?> readonly<?php endif; ?>>
                                     </div>
 
                                     <!-- Image -->
                                     <div class="flex flex-col">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="answer_image[<?php echo $question['question_id']; ?>][]">
+                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="answer_image[<?php echo $question['question_id']; ?>][]" <?php if ($question['in_question_library'] == 0) : ?> disabled<?php endif; ?>>
+                                        >
                                     </div>
 
                                     <!-- Hidden input field for question_choices_id -->
@@ -716,13 +732,11 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
                                         <button type="button" onclick="toggleImage_<?php echo $imageId; ?>()">Toggle Image</button>
 
-                                        <div id="<?php echo $imageId; ?>" style="display: none;">
-                                            <?php
-                                            $imgData = base64_encode($choice['answer_image']);
-                                            $src = 'data:image/jpeg;base64,' . $imgData;
-                                            ?>
-                                            <img src="<?php echo $src; ?>" alt="Answer Image" style="max-width: 200px; max-height: 200px;">
-                                        </div>
+                                        <?php
+                                        $imgData = base64_encode($choice['answer_image']);
+                                        $src = 'data:image/jpeg;base64,' . $imgData;
+                                        ?>
+                                        <img id="<?php echo $imageId; ?>" style="display: block; max-width: 200px; max-height: 200px;" src="<?php echo $src; ?>" alt="Answer Image" />
                                     <?php endif; ?>
                                 </div>
 
@@ -1056,6 +1070,300 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             </div>
         </div>
     </div>
+    <!-- Questionairre -->
+    <script>
+        // Create a PDF Answer Sheet using pdfmake onload
+        document.addEventListener('DOMContentLoaded', async function() {
+
+            // Get the course_code from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseCode = urlParams.get('course_code');
+
+            // Get the exam name
+            const examName = document.querySelector('input[name="exam_name"]').value;
+
+            // Get the question_text[]
+            const questionText = document.querySelectorAll('textarea[name="question_text[]"]');
+
+            // Get the question id
+            const questionId = document.querySelectorAll('input[name="question_id[]"]');
+
+            // Get the question image using existing-question-image
+            const questionImages = document.querySelectorAll('.existing-question-image');
+
+            // Generate the content for the PDF
+            const content = [];
+
+            // ----------------- Questionnaire -----------------
+
+            // Add a horizontal line, fill the width of the page
+            content.push({
+                table: {
+                    widths: ['*'],
+                    body: [
+                        [" "],
+                        [" "]
+                    ]
+                },
+                layout: {
+                    hLineWidth: function(i, node) {
+                        return (i === 0 || i === node.table.body.length) ? 0 : 2;
+                    },
+                    vLineWidth: function(i, node) {
+                        return 0;
+                    },
+                }
+            }, );
+
+            // Add the General Instructions
+            content.push({
+                text: 'General Instructions',
+                style: 'header',
+                margin: [0, 10, 0, 10]
+            });
+
+            let leftColumn = [];
+            let rightColumn = [];
+            let currentColumn = leftColumn;
+
+            // Add the questions
+            questionText.forEach((question, index) => {
+                const questionContent = [];
+
+                // Display the question image if it exists
+                if (questionImages[index]) {
+                    questionContent.push({
+                        image: questionImages[index].src,
+                        width: 200,
+                        height: 200,
+                        margin: [0, 0, 0, 10]
+                    });
+                }
+
+                questionContent.push({
+                    text: `${index + 1}. ${question.value}`,
+                    margin: [0, 0, 0, 10]
+                });
+
+                // Loop through the choices and question id to get the question choices
+                const choices = document.querySelectorAll(`input[name="answer_text[${questionId[index].value}][]"]`);
+
+                choices.forEach((choice, choiceIndex) => {
+                    const choiceImage = document.querySelector(`img[id="answer_image_${questionId[index].value}_${choiceIndex}"]`);
+                    const choiceLetter = String.fromCharCode(65 + choiceIndex);
+                    questionContent.push({
+                        text: `${choiceLetter}. ${choice.value}`,
+                        margin: [20, 0, 0, 0]
+                    });
+
+                    if (choiceImage) {
+                        questionContent.push({
+                            image: choiceImage.src,
+                            width: 200,
+                            height: 200,
+                            margin: [20, 0, 0, 10]
+                        });
+                    }
+                });
+
+                // Add question content to the current column
+                currentColumn.push({
+                    stack: questionContent,
+                    margin: [0, 0, 0, 20]
+                });
+
+                // Alternate columns
+                currentColumn = (currentColumn === leftColumn) ? rightColumn : leftColumn;
+            });
+
+            // Add columns to the content
+            content.push({
+                columns: [{
+                        width: '50%',
+                        stack: leftColumn
+                    },
+                    {
+                        width: '50%',
+                        stack: rightColumn
+                    }
+                ],
+                margin: [0, 0, 0, 20]
+            });
+
+
+
+            // ----------------- Answer Sheet -----------------
+
+            // Add a page break
+            content.push({
+                text: ' ',
+                pageBreak: 'after'
+            });
+
+
+            /*
+                // Example (2 columns)
+                1. (a), (b), (c), (d), (e) 2. (a), (b)
+                ...
+            */
+
+            // Add the Answer Sheet
+            content.push({
+                text: 'Answer Sheet',
+                style: 'header',
+                alignment: 'center',
+                margin: [30, 30, 30, 30]
+            });
+
+            // Create an array to store the answer sheet content
+            const answerSheetContent = [];
+
+            // Loop through the questions and divide them into columns
+            questionText.forEach((question, index) => {
+                // Loop through the choices and add them to the question content
+                const choices = document.querySelectorAll(`input[name="answer_text[${questionId[index].value}][]"]`);
+                const choiceTexts = [];
+                choices.forEach((choice, choiceIndex) => {
+                    // Add the choice letter
+                    const choiceLetter = String.fromCharCode(97 + choiceIndex);
+                    choiceTexts.push(`(${choiceLetter})`);
+                });
+
+                // Join the choices into a single string with a space in between
+                const choicesString = choiceTexts.join(' ');
+
+                // Add the question number and choices to the answer sheet content
+                answerSheetContent.push({
+                    text: `${index + 1}. ${choicesString}`,
+                    margin: [0, 0, 10, 0]
+                });
+            });
+
+            // Add the answer sheet content to the content
+            content.push({
+                columns: answerSheetContent,
+                columnGap: 20
+            });
+
+            // ----------------- Answer Keys -----------------
+
+            // Add a page break
+            content.push({
+                text: ' ',
+                pageBreak: 'after'
+            });
+
+            /*
+                // Example (2 columns)
+                1. (a) 2. (b)
+                ...
+            */
+
+            // Add the Answer Keys
+            content.push({
+                text: 'Answer Keys',
+                style: 'header',
+                alignment: 'center',
+                margin: [30, 30, 30, 30]
+            });
+
+            // Get correct answers
+            const correctAnswers = [];
+
+            // Loop through the existing questions and get the correct answers
+            questionId.forEach((questionId, index) => {
+                // Get the correct choices
+                const correctChoices = document.querySelectorAll(`input[name="is_correct[${questionId.value}][]"]`);
+
+                // Loop through the choices and get the correct choice
+                correctChoices.forEach((choice, choiceIndex) => {
+                    if (choice.checked) {
+                        const choiceLetter = String.fromCharCode(65 + choiceIndex);
+                        correctAnswers.push(choiceLetter);
+                    }
+                });
+            });
+
+            // Display the correct answers
+            const correctAnswerContent = [];
+
+            // Loop through the correct answers and divide them into columns
+            correctAnswers.forEach((correctAnswer, index) => {
+                correctAnswerContent.push({
+                    text: `${index + 1}. (${correctAnswer})`,
+                    margin: [0, 0, 10, 0]
+                });
+            });
+
+            // Add the correct answer content to the content
+            content.push({
+                columns: correctAnswerContent,
+                columnGap: 20
+            });
+
+
+
+
+
+
+            // Create a PDF document
+            const docDefinition = {
+                content: content,
+                pageMargins: [30, 30, 30, 30],
+                defaultStyle: {
+                    columnGap: 20
+                },
+                footer: function(currentPage, pageCount) {
+                    // Add APC AcademX Logo and Page Number
+
+                    return {
+                        columns: [{
+                                width: '50%',
+                                text: 'APC AcademX',
+                                alignment: 'left'
+                            },
+                            {
+                                width: '50%',
+                                text: currentPage.toString() + ' of ' + pageCount,
+                                alignment: 'right'
+                            }
+                        ],
+                        margin: [10, 10, 10, 10]
+                    };
+                },
+                header: function(currentPage, pageCount) {
+                    // Add the course code, APC AcademX Logo, and Exam Name
+
+                    return {
+                        columns: [{
+                                width: '33%',
+                                text: courseCode
+                            },
+                            {
+                                width: '33%',
+                                text: 'APC AcademX',
+                                alignment: 'center'
+                            },
+                            {
+                                width: '33%',
+                                text: examName,
+                                alignment: 'right'
+                            }
+                        ],
+                        margin: [10, 10, 10, 10]
+                    };
+                },
+            };
+
+            // Create a PDF document, make it narrow margins
+            const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+
+            // Save the PDF document
+            pdfDocGenerator.download('exam-preview.pdf');
+        });
+    </script>
+
+
 
     <script>
         function duplicateQuestion(questionId) {
@@ -1134,46 +1442,6 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             document.getElementById('exam-preview').style.position = 'fixed';
             document.getElementById('exam-preview').style.display = 'flex';
         });
-
-        // Download exam pages as PDF
-        document.getElementById('print-exam-btn').addEventListener('click', function() {
-            var examPages = document.querySelectorAll('.page');
-            var pdf = new jsPDF('p', 'mm', 'a4');
-            var margin = 10; // Define your margin size in mm
-
-            function generatePDF(index) {
-                if (index >= examPages.length) {
-                    pdf.save('exam.pdf');
-                    return;
-                }
-
-                html2canvas(examPages[index], {
-                    scale: 2, // Increase the scale for better quality
-                    useCORS: true, // Enable cross-origin resource sharing
-                    allowTaint: true // Allow cross-origin images
-                }).then(function(canvas) {
-                    var imgData = canvas.toDataURL('image/jpeg', 1.0);
-                    var imgWidth = 210 - margin * 2; // A4 page width - margins
-                    var pageHeight = 297; // A4 page height
-                    var imgHeight = canvas.height * imgWidth / canvas.width;
-                    var position = 0;
-
-                    pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
-
-                    if (index < examPages.length - 1) {
-                        pdf.addPage();
-                    }
-
-                    generatePDF(index + 1);
-                });
-            }
-
-            generatePDF(0);
-        });
-
-
-
-
 
         // Close the modal when the close button is clicked
         document.getElementById('close-exam-download-btn').addEventListener('click', function() {
@@ -1457,11 +1725,6 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                         const data = await response.json();
                         console.log(data.message);
 
-                        // Reload the page
-                        location.reload();
-
-
-
                     } catch (error) {
                         console.error("Error:", error.message);
                     }
@@ -1479,6 +1742,10 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
                         // Append the exam ID to the form data
                         formData.append("exam_id", <?php echo $exam_id; ?>);
+
+                        // Get the exam instruction
+                        var examInstruction = $("#exam_instruction").val();
+                        formData.append("exam_instruction", examInstruction);
 
                         // Loop through each existing question
                         $(".existing-question").each(function() {
@@ -1533,7 +1800,26 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                             // Handle any network or other errors here
                         }
 
+                        // Update the exam instruction
+                        try {
+                            const examInstructionResponse = await fetch('http://localhost:8000/api/exam/update-exam-instruction.php', {
+                                method: 'POST',
+                                body: formData
+                            });
 
+                            if (examInstructionResponse.ok) {
+                                const data = await examInstructionResponse.json();
+                                console.log("Exam instruction update response:", data);
+
+                                // Reload the page
+                                location.reload();
+                            } else {
+                                console.error("Error updating exam instruction");
+                            }
+                        } catch (error) {
+                            console.error("Error:", error);
+                            // Handle any network or other errors here
+                        }
                     }
 
                     async function updateExistingQuestionChoices() {
@@ -1609,8 +1895,6 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                     updateExistingQuestions();
                     updateExistingQuestionChoices();
 
-                    // Reload the page
-                    location.reload();
                 }
             });
 
