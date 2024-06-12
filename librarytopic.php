@@ -265,17 +265,13 @@ $courseFolderName = $courseCode;
 <div class="w-full mt-4 mb-4 hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6 topic-box">
 <div class="w-full mt-2 mb-2 hover:bg-zinc-100 transition-all duration-300 ease-in-out border-2 border-gray-800 flex justify-between rounded-lg p-6 topic-box">
 
-<div class="flex flex-col justify-start items-start w-full text-left">
-    <h1 class="text-5xl font-semibold text-black mb-4">Upload PDF</h1>
-    <p class="text-3xl text-black leading-relaxed mb-8">Easily upload your PDF documents here</p>
-
     <div class="flex flex-col justify-start items-start w-full text-left">
     <h1 class="text-5xl font-semibold text-black mb-4">Upload PDF</h1>
     <p class="text-3xl text-black leading-relaxed mb-8">Easily upload your PDF documents here</p>
 
     <form method="post" enctype="multipart/form-data" class="w-full">
         <div class="mb-6">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="file">File Upload</label>
+            <label class="block text-gray-700 text-2xl font-bold mb-2" for="file">File Upload</label>
             <input type="file" name="pdf_file" id="file" class="w-full border-2 border-gray-300 rounded-lg p-3 focus:outline-none focus:border-blue-500" accept="application/pdf" required>
         </div>
         <div class="mb-6">
@@ -349,7 +345,6 @@ $courseFolderName = $courseCode;
             </table>
         </div>
     </div>
-</div>
 </div>
 </div>
 </div>
