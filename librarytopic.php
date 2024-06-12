@@ -206,9 +206,6 @@ $courseFolderName = $courseCode;
                     <p class="text-4xl mb-2"><b>Course:</b> <?php echo $courseFolderName; ?></p>
                 </div>
 
-                <button class="addbutt" onclick="showPopup()">
-                    <i class="fa-solid fa-circle-plus"></i>
-                </button>
             </div>
 
 
@@ -220,63 +217,14 @@ $courseFolderName = $courseCode;
 
             </section>
 
-            <div class="popup-hidden">
-                <div class="popup_bg">
-                    <div class="Add_popup">
-                        <!-- Inside the form -->
-                        <form action="topicfolder.php" method="post" id="createExamForm">
-                            <input type="hidden" name="course_subject_id" value="<?php echo $course_subject_id ?>" readonly>
-                            <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly>
-                            <input type="hidden" name="course_code" value="<?php echo $_GET['course_code']; ?>" readonly>
-
-                            <div style="display: flex; align-items: center">
-                                <img src="img/folder.png">
-                                <p class="heading"> Create an Exam</p>
-                            </div>
-
-                            <div class="inputcolumn">
-                                <div>
-                                    <label class="label" for="course_topics">Course Topic</label>
-                                    <input class="input" type="text" name="course_topics" placeholder="Topic Name..." required><br />
-                                </div>
-                            </div>
-                            <div class="inputcolumn">
-                                <div style="display: flex; align-items: center; justify-items:center">
-                                    <div>
-                                        <label class="label" for="easy_questions">Easy</label>
-                                        <input class="difficultyinput" type="number" name="easy_questions" placeholder="0" required min="0">
-                                    </div>
-                                    <div>
-                                        <label class="label" for="normal_questions">Normal</label>
-                                        <input class="difficultyinput" type="number" name="normal_questions" placeholder="0" required min="0">
-                                    </div>
-                                    <div>
-                                        <label class="label" for="hard_questions">Hard</label>
-                                        <input class="difficultyinput" type="number" name="hard_questions" placeholder="0" required min="0">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div class="actionbuttons">
-                                    <button class="cancel" type="button" onclick="goBack()" style="margin-right: 10px;">Cancel</button>
-                                    <button class="create" type="submit" name="create_exam">Create</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
             <script>
                 function goBack() {
                     const popup = document.querySelector(".popup_bg");
                     popup.classList.add("popup-hidden");
                 }
             </script>
-            <!--boxes-->
+            <!--boxes-->            <!--boxes-->
             <?php
-
             // Retrieve course_subject_id from URL parameters
             $course_subject_id = isset($_GET['course_subject_id']) ? $_GET['course_subject_id'] : 0;
 
@@ -284,13 +232,11 @@ $courseFolderName = $courseCode;
             $result = $mysqli->query("SELECT * from prof_course_topic WHERE account_id = $account_id AND course_subject_id = $course_subject_id") or die(mysqli_error($mysqli));
 
             if ($result->num_rows === 0) { ?>
-
                 <p class="header">You have no topic folders.</p>
-
             <?php } else { ?>
                 <div class="flex flex-col gap-4">
                     <?php while ($row = $result->fetch_assoc()) : ?>
-                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6" id="CourseNameBox">
+                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6 topic-box">
                             <!-- Topics -->
                             <?php
                             // Get the exam_id using the course_topic_id
@@ -304,23 +250,104 @@ $courseFolderName = $courseCode;
                             }
                             ?>
                             <a href="examcreator.php?course_topic_id=<?php echo $row['course_topic_id']; ?>&course_code=<?php echo urlencode($courseCode); ?>&exam_id=<?php echo $exam_id; ?>">
-                                <h2 class="font-semibold text-4xl text-zinc-700" id="topicBox">
+                                <h2 class="font-semibold text-4xl text-zinc-700 topic-name">
                                     <?php echo $row['course_topics']; ?></h2>
                                 <!-- Date Created -->
                                 <p class="text-md text-gray-500">Date Created: <?php echo $row['date_created']; ?></p>
                             </a>
-                            <select class="bg-transparent mb-2" onchange="handleAction(this)">
-                                <option value="">Select Action</option>
-                                <option value="topic.php?edit=<?php echo $row['course_topic_id']; ?>&update=true&course_subject_id=<?php echo $course_subject_id; ?>&course_code=<?php echo urlencode($courseCode); ?>">Edit</option>
-                                <option value="topicfolder.php?delete=<?php echo $row['course_topic_id']; ?>">Delete</option>
-                            </select>
                         </div>
-                <?php endwhile;
-                }
-                ?>
+                    <?php endwhile; ?>
+
+
                 </div>
+            <?php } ?>
+<!-- Header + w/ TailwindCSS -->
+<div class="w-full mt-4 mb-4 hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6 topic-box">
+<div class="w-full mt-2 mb-2 hover:bg-zinc-100 transition-all duration-300 ease-in-out border-2 border-gray-800 flex justify-between rounded-lg p-6 topic-box">
+
+    <div class="flex flex-col justify-start items-start w-full text-left">
+    <h1 class="text-5xl font-semibold text-black mb-4">Upload PDF</h1>
+    <p class="text-3xl text-black leading-relaxed mb-8">Easily upload your PDF documents here</p>
+
+    <form method="post" enctype="multipart/form-data" class="w-full">
+        <div class="mb-6">
+            <label class="block text-gray-700 text-2xl font-bold mb-2" for="file">File Upload</label>
+            <input type="file" name="pdf_file" id="file" class="w-full border-2 border-gray-300 rounded-lg p-3 focus:outline-none focus:border-blue-500" accept="application/pdf" required>
+        </div>
+        <div class="mb-6">
+            <button type="submit" name="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline" value="Submit">Upload</button>
+        </div>
+    </form>
+
+        <?php
+    if (isset($_POST['submit'])) {
+        if (isset($_FILES['pdf_file']['name'])) {
+            $file_name = $_FILES['pdf_file']['name'];
+            $file_tmp = $_FILES['pdf_file']['tmp_name'];
+
+            // Move the uploaded file to the desired location
+            $upload_dir = "pdfs/";
+            $target_file = $upload_dir . basename($file_name);
+            if (move_uploaded_file($file_tmp, $target_file)) {
+                // Insert the file details into the database
+                $insertQuery = "INSERT INTO exam_upload (filename, course_subject_id) VALUES ('$file_name', '$course_subject_id')";
+                $iquery = mysqli_query($conn, $insertQuery);
+                if ($iquery) {
+                    echo '<div class="alert alert-success alert-dismissible fade show text-center">';
+                    echo '<a class="close" data-dismiss="alert" aria-label="close">×</a>';
+                    echo '<strong>Success!</strong> File uploaded successfully.';
+                    echo '</div>';
+                } else {
+                    echo '<div class="alert alert-danger alert-dismissible fade show text-center">';
+                    echo '<a class="close" data-dismiss="alert" aria-label="close">×</a>';
+                    echo '<strong>Failed!</strong> Error uploading file.';
+                    echo '</div>';
+                }
+            } else {
+                echo '<div class="alert alert-danger alert-dismissible fade show text-center">';
+                echo '<a class="close" data-dismiss="alert" aria-label="close">×</a>';
+                echo '<strong>Failed!</strong> Error moving the uploaded file.';
+                echo '</div>';
+            }
+        } else {
+            echo '<div class="alert alert-danger alert-dismissible fade show text-center">';
+            echo '<a class="close" data-dismiss="alert" aria-label="close">×</a>';
+            echo '<strong>Failed!</strong> No file selected.';
+            echo '</div>';
+        }
+    }
+    ?>
+
+<div class="card-body">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <th>ID</th>
+                    <th>FileName</th>
+                </thead>
+                <tbody>
+                    <?php
+                    // Check if the form was submitted before displaying the uploaded files
+                    if (isset($_POST['submit'])) {
+                        $selectQuery = "SELECT * FROM exam_upload";
+                        $squery = mysqli_query($conn, $selectQuery);
+                        while (($result = mysqli_fetch_assoc($squery))) {
+                            ?>
+                            <tr>
+                                <td><?php echo $result['upload_id']; ?></td>
+                                <td><?php echo $result['filename']; ?></td>
+                            </tr>
+                            <?php
+                        }
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
+</div>
+</div>
 </body>
 
 <script>
@@ -373,16 +400,15 @@ $courseFolderName = $courseCode;
 
     document.getElementById('topicSearch').addEventListener('input', function() {
         const searchQuery = this.value.toLowerCase().trim();
-        const courseBoxes = document.querySelectorAll('topicBOX'); // Select all course boxes
-        // #topicBox > div
-        courseBoxes.forEach(courseBox => {
-            const courseName = courseBox.querySelector('CourseNameBox').textContent.toLowerCase();
-            // #CourseNameBox
-            // Check if the course name contains the search query
-            if (courseName.includes(searchQuery)) {
-                courseBox.style.display = 'flex'; // Show the course box
+        const topicBoxes = document.querySelectorAll('.topic-box');
+
+        topicBoxes.forEach(topicBox => {
+            const topicName = topicBox.querySelector('.topic-name').textContent.toLowerCase();
+
+            if (topicName.includes(searchQuery)) {
+                topicBox.style.display = 'flex';
             } else {
-                courseBox.style.display = 'none'; // Hide the course box
+                topicBox.style.display = 'none';
             }
         });
     });
