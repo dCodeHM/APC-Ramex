@@ -9,12 +9,18 @@ error_reporting(E_ALL);
 $examId = $_POST["exam_id"];
 $examInstruction = $_POST["exam_instruction"];
 
+// Check if the exam instruction is null or an empty string
+if ($examInstruction === null || $examInstruction === '') {
+    // Set the exam instruction to an empty string or a default value
+    $examInstruction = '';
+}
+
 // Log
 $log->info('Updating exam instruction');
 
 // Log
-$log->info('Exam ID' . $examId);
-$log->info('Exam Instruction' . $examInstruction);
+$log->info('Exam ID: ' . $examId);
+$log->info('Exam Instruction: ' . $examInstruction);
 
 // Update the exam instruction in the database
 $sql = "UPDATE exam SET exam_instruction = ? WHERE exam_id = ?";

@@ -562,7 +562,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
             <h2 class="font-semibold mb-2">Exam Rules</h2>
             <!-- Textarea -->
-            <textarea class="mb-4 outline w-full outline-zinc-200 p-4 font-normal rounded-lg text-xl" name="exam_instruction" id="exam_instruction" cols="30" rows="8" readonly><?php echo htmlspecialchars($exam['exam_instruction']); ?></textarea>
+            <textarea class="mb-4 outline w-full outline-zinc-200 p-4 font-normal rounded-lg text-xl" name="exam_instruction" id="exam_instruction" cols="30" rows="8" readonly><?php echo htmlspecialchars($exam['exam_instruction'] ?? ''); ?></textarea>
 
             <!-- Divider -->
             <hr class="mb-4">
@@ -1745,6 +1745,13 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
                         // Get the exam instruction
                         var examInstruction = $("#exam_instruction").val();
+
+                        // Check if the exam instruction is null or an empty string
+                        if (examInstruction === null || examInstruction === '') {
+                            // Set the exam instruction to an empty string or a default value
+                            examInstruction = '';
+                        }
+
                         formData.append("exam_instruction", examInstruction);
 
                         // Loop through each existing question
