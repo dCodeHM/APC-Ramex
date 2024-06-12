@@ -524,6 +524,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
         <!-- Exam Settings Section -->
         <div id="exam-settings" class="text-2xl flex flex-col gap-2 p-6" style="display: none;">
+            <input type="hidden" id="exam_id" value="<?php echo $exam_id; ?>">
             <!-- Text area for Exam Instruction -->
             <div class="w-full flex flex-col gap-2 mb-2">
                 <label class="w-full text-white" for="exam_instruction">Exam Rules</label>
@@ -544,7 +545,39 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                     document.getElementById("save-exam-btn").click();
                 });
             </script>
-            <button class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Upload to Exam Library</button>
+            <button id="upload-to-exam-library-btn" class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Upload to Exam Library</button>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById("upload-to-exam-library-btn").addEventListener("click", function() {
+                        var exam_id = <?php echo $exam_id; ?>;
+
+                        fetch("http://localhost:8000/api/exam/upload-to-exam-library.php", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/x-www-form-urlencoded"
+                                },
+                                body: "exam_id=" + exam_id
+                            })
+                            .then(function(response) {
+                                if (response.ok) {
+                                    return response.text();
+                                } else {
+                                    throw new Error("An error occurred while uploading the exam to the library.");
+                                }
+                            })
+                            .then(function(text) {
+                                alert(text);
+                                // Optionally, you can reload the page or update the UI as needed
+                            })
+                            .catch(function(error) {
+                                console.error(error);
+                                alert(error.message);
+                            });
+                    });
+                });
+            </script>
+
         </div>
     </div>
 
@@ -562,7 +595,6 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
             <!-- Divider -->
             <hr class="mb-4">
-
 
             <h3 class="w-full font-semibold mb-2">Questions
                 <span class="text-base font-normal text-gray-400 ml-1" id="total-questions"></span>
