@@ -79,7 +79,7 @@ $totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
         <!-- Answer Sheet -->
         <?php
         $totalQuestions = count($combined_result);
-        $questionsPerPage = 30;
+        $questionsPerPage = 50;
         $totalPages = ceil($totalQuestions / $questionsPerPage);
 
         for ($page = 1; $page <= $totalPages; $page++) {
@@ -120,7 +120,6 @@ $totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
                     <p class="mb-6">
                         <!-- Exam Instructions -->
                         <?php echo htmlspecialchars($exam['exam_instruction']); ?>
-
                     </p>
                 <?php } ?>
 
@@ -128,7 +127,7 @@ $totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
                 <div id="answer-sheet">
                     <div class="flex justify-between">
                         <?php
-                        $questionsPerColumn = 15;
+                        $questionsPerColumn = 25;
                         $columnsPerPage = 2;
 
                         for ($column = 1; $column <= $columnsPerPage; $column++) {
@@ -185,11 +184,13 @@ $totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
                 <!-- Footer -->
                 <hr class="mt-8" />
                 <div class="w-full flex justify-center mt-4 text-lg">
-                    <p>Page <?php echo $page; ?></p>
+                    <p>Page <?php echo $page; ?> of <?php echo $totalPages; ?></p>
                 </div>
-
-
             </div>
+
+            <?php if ($page < $totalPages) { ?>
+                <div class="pagebreak"> </div>
+            <?php } ?>
         <?php } ?>
         <div class="pagebreak"> </div>
 
