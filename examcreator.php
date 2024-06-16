@@ -100,7 +100,7 @@ $questions_result = $stmt->get_result();
 
 // ------------------- Fetch CLOs -------------------
 
-// Fetch the course_subject_id using the course_code from the URL
+// Fetch the course_subject_id using the course_code from the URL EWAN KO RIN 
 $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
 
 $sql = "SELECT course_subject_id FROM prof_course_subject WHERE course_code = ?";
@@ -389,7 +389,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
         <div class="sidebar">
             <div class="back_button">
-                <a href="em.php">
+                <a href="myexams.php">
                     <img src="img/back.png">
                 </a>
             </div>
@@ -534,7 +534,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             </div>
 
             <div class="flex w-full items-center gap-2 mb-2">
-                <button class="w-full bg-white text-zinc-800 font-medium py-4 rounded-xl flex items-center justify-center" type="button">Preview</button>
+                <!-- <button class="w-full bg-white text-zinc-800 font-medium py-4 rounded-xl flex items-center justify-center" type="button">Preview</button> -->
                 <button id="download-exam-btn" class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Download</button>
             </div>
             <button id="save-progress-btn" class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Save Progress</button>
@@ -1208,8 +1208,10 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                         const data = await response.json();
                         console.log(data.message);
 
-                        // 
+                        // reload the page
+                        location.reload();
 
+                        
                     } catch (error) {
                         console.error("Error:", error.message);
                     }

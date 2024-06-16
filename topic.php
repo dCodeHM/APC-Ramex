@@ -179,13 +179,14 @@ $courseFolderName = $courseCode;
                                 </div>
                             </div>
                             <div class="inputcolumn">
+                                <p class="heading">Generate Questions</p>
                                 <div style="display: flex; align-items: center; justify-items:center">
                                     <div>
                                         <label class="label" for="easy_questions">Easy</label>
                                         <input class="difficultyinput" type="number" name="easy_questions" placeholder="0" required min="0">
                                     </div>
                                     <div>
-                                        <label class="label" for="normal_questions">Normal</label>
+                                        <label class="label" for="normal_questions">Moderate</label>
                                         <input class="difficultyinput" type="number" name="normal_questions" placeholder="0" required min="0">
                                     </div>
                                     <div>
@@ -240,7 +241,7 @@ $courseFolderName = $courseCode;
                             </a>
                             <select class="bg-transparent mb-2" onchange="handleAction(this)">
                                 <option value="">Select Action</option>
-                                <option value="edit|<?php echo $row['course_topic_id']; ?>|<?php echo $update ? 'true' : 'false'; ?>">Edit</option>
+                                <!-- <option value="edit|<?php echo $row['course_topic_id']; ?>|<?php echo $update ? 'true' : 'false'; ?>">Edit</option> -->
                                 <option value="delete|<?php echo $row['course_topic_id']; ?>|<?php echo $course_subject_id; ?>|<?php echo urlencode($courseCode); ?>">Delete</option>
                             </select>
                         </div>
