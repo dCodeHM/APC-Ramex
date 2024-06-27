@@ -803,11 +803,6 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             window.location.href = `
                 http://localhost:8000/exam-pdf.php?${urlParams.toString()}
             `;
-
-
-
-
-
         });
     </script>
 

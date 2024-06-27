@@ -2,14 +2,14 @@
   cursor: pointer;
 }
 .options {
-  margin-left:auto;
+  margin-left:143px;
+  margin-top:5px;
   background-color: #fff;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   border-radius: 5px;
-  padding: 2px;
   display: none;
   z-index: 1;
-  display: flex;
+  display:block;
   align-items: center;
   justify-content: center;
 }

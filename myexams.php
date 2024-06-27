@@ -67,12 +67,12 @@ if ($user_role == 'Executive Director') {
                 <link rel="stylesheet" href="./css/style.css">
                 <link rel="stylesheet" href="./css/adminstyle.css">
                 <link rel="stylesheet" href="./css/emstyle.css">
-                <link rel="stylesheet" href="./css/myexamstyle.css?v=<?php echo time(); ?>">">
+                <link rel="stylesheet" href="./css/myexamstyle.css?v=<?php echo time(); ?>">
                 <link rel="stylesheet" href="./css/sidebar.css">
                 <link rel="stylesheet" href="./css/header.css">
                 <link rel="stylesheet" href="./css/homepage.css">
                 <link rel="stylesheet" href="./css/helpbutton.css">
-                <link rel="stylesheet" href="./css/dots.css">
+                <link rel="stylesheet" href="./css/dots.css?v=<?php echo time(); ?>">
                 <script src="https://kit.fontawesome.com/e85940e9f2.js" crsossorigin="anonymous"></script>
             </head>
 
