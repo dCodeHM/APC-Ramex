@@ -400,7 +400,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
     </nav>
 
     <!-- Question Library -->
-    <div class="main_container overflow-y-scroll pb-36">
+    <div class="main_container pb-36">
         <div class="buttons">
             <button id="btn_diva" class="button active" type="button">
                 <img src="./img/book.png" alt="Icon"> Question Library
@@ -411,10 +411,16 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
         </div>
 
         <!-- Question Library Section -->
-        <div id="question-library" class="p-6 !overflow-y-scroll">
-            <!-- Don't display add 5 questions if there are less than 5 questions -->
-            <?php if (count($related_questions) >= 5) : ?>
-                <button id="add_5_questions" class="px-4 py-2 bg-white text-xl font-medium rounded-md text-black mb-4" type="button">Add 5 Questions</button>
+        <div id="question-library" class="p-6 !overflow-y-scroll flex flex-col items-center">
+    <!-- Don't display add 5 questions if there are less than 5 questions -->
+    <?php if (count($related_questions) >= 5) : ?>
+        <button 
+            id="add_5_questions" 
+            class="w-full max-w-3xl px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-2xl font-medium rounded-lg text-white mb-4 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
+            type="button"
+        >
+            Add 5 Questions
+        </button>
             <?php endif; ?>
 
             <?php if (empty($related_questions)) : ?>
@@ -520,24 +526,20 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             });
         </script>
 
-
-
         <!-- Exam Settings Section -->
-        <div id="exam-settings" class="text-2xl flex flex-col gap-2 p-6" style="display: none;">
+        <div id="exam-settings" class="text-2xl flex flex-col gap-4 p-6 " style="display: none;">
             <input type="hidden" id="exam_id" value="<?php echo $exam_id; ?>">
             <!-- Text area for Exam Instruction -->
-            <div class="w-full flex flex-col gap-2 mb-2">
-                <label class="w-full text-white" for="exam_instruction">Exam Rules</label>
-                <textarea class="p-4 w-full text-zinc-800 rounded-xl" id="exam_instruction" name="exam_instruction" cols="30" rows="10"><?php echo
-                                                                                                                                        htmlspecialchars($exam['exam_instruction']);
-                                                                                                                                        ?></textarea>
+            <div class="w-full flex flex-col gap-4 mb-4 flex-grow">
+                <label class="font-semibold mb-4 text-4xl text-white-800 drop-shadow-lg text-white" for="exam_instruction">Exam Rules:</label>
+                <textarea class="p-6 w-full h-[calc(100vh-400px)] min-h-[400px] font-medium text-black-800 text-2xl rounded-xl resize-none border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="exam_instruction" name="exam_instruction"><?php echo htmlspecialchars($exam['exam_instruction']);?></textarea>
             </div>
 
             <div class="flex w-full items-center gap-2 mb-2">
                 <!-- <button class="w-full bg-white text-zinc-800 font-medium py-4 rounded-xl flex items-center justify-center" type="button">Preview</button> -->
-                <button id="download-exam-btn" class="w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Download</button>
+                <button id="download-exam-btn" class="w-full bg-[#F3C44C] hover:bg-[#F5D78B] py-4 rounded-xl flex font-medium items-center justify-center transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg" type="button">Download</button>
             </div>
-            <button id="save-progress-btn" class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Save Progress</button>
+            <button id="save-progress-btn" class="hover:bg-[#F5D78B] transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Save Progress</button>
 
             <script>
                 // If save-progress-btn is clicked, click the Save Exam button
@@ -545,7 +547,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                     document.getElementById("save-exam-btn").click();
                 });
             </script>
-            <button id="upload-to-exam-library-btn" class="mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Upload to Exam Library</button>
+            <button id="upload-to-exam-library-btn" class="hover:bg-[#F5D78B] transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg mb-2 w-full bg-[#F3C44C] py-4 rounded-xl flex font-medium items-center justify-center" type="button">Upload to Exam Library</button>
 
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -585,22 +587,32 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
     <main class="ml-[400px] mt-[70px] px-20 py-10">
         <form id="exam-form" class="w-full" method="POST" enctype="multipart/form-data">
 
-            <h2 class="font-semibold mb-2">Exam Details</h2>
+        <div class="mb-8">
+    <h2 class="font-semibold mb-4 text-4xl text-blue-800 drop-shadow-lg">Exam Details:</h2>
+    
+    <p class="font-medium mb-6 w-full py-3 px-6 rounded-lg text-2xl bg-white shadow-lg border-l-4 border-blue-500 transition duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl">
+        <?php echo htmlspecialchars($exam['exam_name']); ?>
+    </p>
 
-            <input class="mb-4 outline w-full outline-zinc-300 outline-1 py-2 px-4 rounded-lg" type="text" name="exam_name" value="<?php echo htmlspecialchars($exam['exam_name']); ?>">
-
-            <h2 class="font-semibold mb-2">Exam Rules</h2>
-            <!-- Textarea -->
-            <textarea class="mb-4 outline w-full outline-zinc-200 p-4 font-normal rounded-lg text-xl" name="exam_instruction" id="exam_instruction" cols="30" rows="8" readonly><?php echo htmlspecialchars($exam['exam_instruction'] ?? ''); ?></textarea>
-
+    <h2 class="font-semibold mb-4 text-4xl text-blue-800 drop-shadow-lg">Exam Rules:</h2>
+    
+    <div class="font-medium mb-4 w-full p-6 rounded-lg text-2xl bg-white shadow-lg border-l-4 border-blue-500 transition duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl max-h-[300px] overflow-y-auto whitespace-pre-wrap"
+    ><?php echo htmlspecialchars(trim($exam['exam_instruction'] ?? '')); ?></div>   
+</div>
             <!-- Divider -->
-            <hr class="mb-4">
+            <hr class="mb-4 border-2 border-gray-400 rounded-lg">
 
-            <h3 class="w-full font-semibold mb-2">Questions
-                <span class="text-base font-normal text-gray-400 ml-1" id="total-questions"></span>
-                <span class="text-base font-normal text-gray-400 ml-1" id="total-points"></span>
-            </h3>
-
+            <div class="flex items-center mb-4 gap-6">
+                <h3 class="font-semibold text-3xl text-black drop-shadow-lg flex items-center">
+                    Total Questions
+                    <span class="text-xl font-medium text-green-400 ml-2" id="total-questions"></span>
+                </h3>
+                <h3 class="font-semibold text-3xl text-black drop-shadow-lg flex items-center">
+                    Total Points
+                    <span class="text-xl font-medium text-green-400 ml-2" id="total-points"></span>
+                </h3>
+            </div>
+            
             <div class="flex flex-col gap-6">
                 <?php
                 $combined_result = array();
@@ -786,7 +798,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             <div id="new_questions"></div>
 
             <div class="mt-4">
-                <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button" id="add_question">Add Question</button>
+                <button class="px-6 py-3 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white text-xl font-bold" type="button" id="add_question">Add Question</button>
                 <button id="save-exam-btn" class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white hidden" type="submit">Save Exam</button>
             </div>
         </form>

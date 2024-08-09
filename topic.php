@@ -220,7 +220,7 @@ $courseFolderName = $courseCode;
             <?php } else { ?>
                 <div class="flex flex-col gap-4">
                     <?php while ($row = $result->fetch_assoc()) : ?>
-                        <div class="w-full hover:bg-zinc-100 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 flex justify-between rounded-lg p-6" id="CourseNameBox">
+                        <div class="w-full bg-white hover:bg-zinc-50 transition-all duration-300 ease-in-out outline outline-zinc-200 outline-1 hover:outline-zinc-300 flex justify-between rounded-lg p-6 shadow-lg shadow-zinc-400/50 hover:shadow-xl hover:shadow-zinc-400/60" id="CourseNameBox">
                             <!-- Topics -->
                             <?php
                             // Get the exam_id using the course_topic_id

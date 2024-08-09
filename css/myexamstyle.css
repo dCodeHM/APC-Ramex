@@ -80,17 +80,26 @@ header #branding #emactive {
     align-content: space-around;
     flex-direction: column;
     flex-wrap: wrap;
+    transition: all 0.3s ease; /* Add transition for smooth effect */
+}
+
+.boxme:hover {
+    transform: translateY(-5px); /* Lift the box slightly on hover */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+    border-color: #0761c2; /* Change border color on hover */
+    background-color: #f8f9fa; /* Slightly change background color on hover */
 }
 
 .boxme a {
     display: block;
-    /* Make the anchor fill the entire box */
     width: 100%;
-    /* Ensure full width for clickable area */
     height: 100%;
-    /* Ensure full height for clickable area */
     text-decoration: none;
-    /* Remove underline from anchor */
+    color: inherit; /* Ensure text color matches parent */
+}
+
+.boxme {
+    position: relative;
 }
 
 
@@ -342,9 +351,7 @@ THIS IS FOR THE COLORIZATION OF THE POPUP BACKGROUND
     font-weight: bold; /* This makes the text bold */
   }
 
-  .boxme {
-    position: relative;
-}
+
 
 .fill-div {
     display: block;
@@ -355,7 +362,6 @@ THIS IS FOR THE COLORIZATION OF THE POPUP BACKGROUND
 
 .options {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    
+    top: 15px;
+    left: 30px;
 }
