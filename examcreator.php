@@ -411,16 +411,10 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
         </div>
 
         <!-- Question Library Section -->
-        <div id="question-library" class="p-6 !overflow-y-scroll flex flex-col items-center">
-    <!-- Don't display add 5 questions if there are less than 5 questions -->
-    <?php if (count($related_questions) >= 5) : ?>
-        <button 
-            id="add_5_questions" 
-            class="w-full max-w-3xl px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-2xl font-medium rounded-lg text-white mb-4 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
-            type="button"
-        >
-            Add 5 Questions
-        </button>
+        <div id="question-library" class="p-6 !overflow-y-scroll">
+            <!-- Don't display add 5 questions if there are less than 5 questions -->
+            <?php if (count($related_questions) >= 5) : ?>
+                <button id="add_5_questions" class="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-2xl font-medium rounded-lg text-white mb-4 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg" type="button">Add 5 Questions </button>
             <?php endif; ?>
 
             <?php if (empty($related_questions)) : ?>
@@ -531,8 +525,12 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             <input type="hidden" id="exam_id" value="<?php echo $exam_id; ?>">
             <!-- Text area for Exam Instruction -->
             <div class="w-full flex flex-col gap-4 mb-4 flex-grow">
-                <label class="font-semibold mb-4 text-4xl text-white-800 drop-shadow-lg text-white" for="exam_instruction">Exam Rules:</label>
-                <textarea class="p-6 w-full h-[calc(100vh-400px)] min-h-[400px] font-medium text-black-800 text-2xl rounded-xl resize-none border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="exam_instruction" name="exam_instruction"><?php echo htmlspecialchars($exam['exam_instruction']);?></textarea>
+            <div class="flex items-center space-x-4">
+                    <label class="font-semibold mb-4 text-4xl text-white-800 drop-shadow-lg text-white" for="exam_instruction">Exam Rules:</label>
+                    <label class="font-medium mb-4 text-xl text-green-400 drop-shadow-lg" for="exam_instruction_description">(Input rule/s for this exam.)</label>
+                </div>
+                    <textarea class="p-6 w-full h-[calc(100vh-400px)] min-h-[400px] font-medium text-black-800 text-2xl rounded-xl resize-none border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="exam_instruction" name="exam_instruction"><?php echo htmlspecialchars($exam['exam_instruction']);?></textarea>
+
             </div>
 
             <div class="flex w-full items-center gap-2 mb-2">
@@ -634,35 +632,50 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                     if ($item['type'] === 'question') {
                         $question = $item['data'];
                 ?>
-                        <div class="existing-question bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative <?php if ($question['in_question_library'] == 0) : ?>cursor-not-allowed<?php endif; ?>" data-question-id="<?php echo $question['question_id']; ?>">
-                            <div class="flex w-full justify-between">
-                                <div class="flex flex-col">
+
+                                                                <!-- hide or unhide to check the question id if its working from the database: please refer it -->
+                                <!-- <div class="flex flex-row"> 
                                     <label class="mb-2" for="question_id">Question ID</label>
-                                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_id[]" value="<?php echo htmlspecialchars($question['question_id']); ?>" readonly>
+                                    <input class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_id[]" value="<?php echo htmlspecialchars($question['question_id']); ?>" readonly>
+                                </div> -->
+                        <div class="existing-question bg-blue-100/40 shadow-xl p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col relative <?php if ($question['in_question_library'] == 0) : ?>cursor-not-allowed<?php endif; ?>" data-question-id="<?php echo $question['question_id']; ?>">
+            <div class="ml-auto relative">
+                <svg class="trash-icon cursor-pointer" data-question-id="<?php echo $question['question_id']; ?>" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    <line x1="10" x2="10" y1="11" y2="17" />
+                    <line x1="14" x2="14" y1="11" y2="17" />
+                </svg>
+                
+                <!-- Tooltip -->
+                <span class="absolute hidden bg-gray-700 text-white text-xl font-semibold px-2 py-1 rounded-lg -top-8 left-1/2 transform -translate-x-1/2 trash-tooltip">
+                    Delete
+                </span>
+            </div>
 
+            <script>
+                // JavaScript to handle hover effect
+                document.querySelector('.trash-icon').addEventListener('mouseenter', function() {
+                    this.nextElementSibling.classList.remove('hidden');
+                });
 
-                                </div>
-                                <svg class="trash-icon" data-question-id="<?php echo $question['question_id']; ?>" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2">
-                                    <path d="M3 6h18" />
-                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                    <line x1="10" x2="10" y1="11" y2="17" />
-                                    <line x1="14" x2="14" y1="11" y2="17" />
-                                </svg>
-                            </div>
-
+                document.querySelector('.trash-icon').addEventListener('mouseleave', function() {
+                    this.nextElementSibling.classList.add('hidden');
+                });
+            </script>
                             <div class="flex flex-col">
-                                <label class="mb-2" for="question_text">Question Text
+                                <label class="mb-2 text-2xl font-bold" for="question_text">Question Text
                                     <?php if (empty($question['question_text'])) : ?>
-                                        <span class="text-red-400">No Question Text*</span>
+                                        <span class="text-red-400 font-bold font-medium text-xl">No Question Text*</span>
                                     <?php endif; ?>
                                 </label>
-                                <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_text[]" <?php if ($question['in_question_library'] == 0) : ?>readonly<?php endif; ?>><?php echo htmlspecialchars($question['question_text']); ?></textarea>
+                                <textarea class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_text[]" <?php if ($question['in_question_library'] == 0) : ?>readonly<?php endif; ?>><?php echo htmlspecialchars($question['question_text']); ?></textarea>
                             </div>
 
                             <div class="flex flex-col">
-                                <label class="mb-2" for="question_image">Question Image</label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="question_image[]" <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
+                                <label class="mb-2 text-2xl font-bold" for="question_image">Question Image</label>
+                                <input class="bg-white py-2 font-medium text-xl px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="question_image[]" <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
 
                                 <?php if (!empty($question['question_image'])) : ?>
                                     <?php
@@ -674,12 +687,12 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                             </div>
 
                             <div class="flex flex-col">
-                                <label class="mb-2" for="clo_id">CLO ID
+                                <label class="mb-2 text-2xl font-bold" for="clo_id">Course Learning Outcome (CLO) ID
                                     <?php if (empty($question['clo_id'])) : ?>
-                                        <span class="text-red-400">No CLO ID*</span>
+                                        <span class="text-red-400 font-medium text-xl">No CLO ID*</span>
                                     <?php endif; ?>
                                 </label>
-                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="clo_id[]" multiple <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
+                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 font-medium text-xl" name="clo_id[]" multiple <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
                                     <?php
                                     $selectedCloIds = explode(',', $question['clo_id']);
                                     foreach ($clos as $clo) :
@@ -692,12 +705,12 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                             </div>
 
                             <div class="flex flex-col">
-                                <label class="mb-2" for="difficulty">Difficulty
+                                <label class="mb-2 font-bold text-2xl" for="difficulty">Difficulty
                                     <?php if (empty($question['difficulty'])) : ?>
-                                        <span class="text-red-400">No Difficulty*</span>
+                                        <span class="text-red-400 font-medium text-xl">No Difficulty*</span>
                                     <?php endif; ?>
                                 </label>
-                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="difficulty[]" <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
+                                <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 font-medium text-xl" name="difficulty[]" <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
                                     >
                                     <option value="E" <?php if ($question['difficulty'] == 'E') echo 'selected'; ?>>Easy</option>
                                     <option value="N" <?php if ($question['difficulty'] == 'N') echo 'selected'; ?>>Normal</option>
@@ -706,16 +719,16 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                             </div>
 
                             <div class="flex flex-col">
-                                <label class="mb-2" for="question_points">Question Points
+                                <label class="mb-2 font-bold text-2xl" for="question_points">Question Points
                                     <?php if (empty($question['question_points'])) : ?>
-                                        <span class="text-red-400">No Question Points*</span>
+                                        <span class="text-red-400 font-medium text-xl">No Question Points*</span>
                                     <?php endif; ?>
                                 </label>
-                                <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 existing-question-points" type="number" name="question_points[]" value="<?php echo htmlspecialchars($question['question_points']); ?>" <?php if ($question['in_question_library'] == 0) : ?>readonly<?php endif; ?>>
+                                <input class="bg-white py-2 px-4 rounded-lg font-medium text-xl outline outline-1 outline-zinc-300 existing-question-points" type="number" name="question_points[]" value="<?php echo htmlspecialchars($question['question_points']); ?>" <?php if ($question['in_question_library'] == 0) : ?>readonly<?php endif; ?>>
                             </div>
 
                             <!-- Display question choices -->
-                            <h3 class="font-semibold mt-4">Choices</h3>
+                            <h3 class="font-bold text-2xl mt-4">Choices</h3>
                             <?php
                             $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
                             $stmt = $conn->prepare($sql);
@@ -735,17 +748,23 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                 $choiceLetter = chr(65 + $choiceIndex);
                                 $imageId = "answer_image_{$question['question_id']}_{$choiceIndex}";
                             ?>
-                                <!-- Main Question Choices -->
-                                <div class="choice flex gap-4 items-center">
-                                    <!-- Is Correct -->
-                                    <input type="checkbox" name="is_correct[<?php echo $question['question_id']; ?>][]" value="<?php echo $choice['is_correct']; ?>" <?php if ($choice['is_correct']) echo 'checked'; ?><?php if ($question['in_question_library'] == 0) : ?> disabled<?php endif; ?>>
+<!-- Main Question Choices -->
+<div class="choice flex gap-6 items-center">
+    <!-- Is Correct -->
+    <input type="checkbox" 
+           name="is_correct[<?php echo $question['question_id']; ?>][]" 
+           value="<?php echo $choice['is_correct']; ?>" 
+           <?php if ($choice['is_correct']) echo 'checked'; ?>
+           <?php if ($question['in_question_library'] == 0) : ?> disabled<?php endif; ?>
+           class="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
 
-                                    <!-- Letter -->
-                                    <p class="font-semibold"><?php echo $choiceLetter; ?></p>
+    <!-- Letter -->
+    <p class="font-semibold text-2xl"><?php echo $choiceLetter; ?></p>
+
 
                                     <!-- Answer Text -->
                                     <div class="flex flex-col w-full">
-                                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="answer_text[<?php echo $question['question_id']; ?>][]" value="<?php echo htmlspecialchars($choice['answer_text']); ?>" <?php if ($question['in_question_library'] == 0) : ?> readonly<?php endif; ?>>
+                                        <input class="bg-white py-2 px-4 font-medium text-xl rounded-lg outline outline-1 outline-zinc-300" type="text" name="answer_text[<?php echo $question['question_id']; ?>][]" value="<?php echo htmlspecialchars($choice['answer_text']); ?>" <?php if ($question['in_question_library'] == 0) : ?> readonly<?php endif; ?>>
                                     </div>
 
                                     <!-- Image -->
@@ -1054,14 +1073,17 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                 var choiceHTML = `
             <div class="choice flex gap-4 items-center">
                 <input type="checkbox" name="new_is_correct[]" value="1">
-                <p class="font-semibold">${choiceLetter}</p>
+                <p class="font-semibold text-2xl">${choiceLetter}</p>
                 <div class="flex flex-col w-full">
-                    <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                    <input class="font-medium text-xl bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
                 </div>
                 <div class="flex flex-col">
                     <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
                 </div>
-                <button type="button" class="remove-choice-btn px-2 py-1 bg-red-500 text-white rounded-md">X</button>
+                <button type="button" class="remove-choice-btn px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition duration-200 ease-in-out">
+    X
+</button>
+
             </div>
         `;
                 choicesContainer.append(choiceHTML);
@@ -1414,47 +1436,50 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
                 var cloOptions = clos.map(clo => `<option value="${clo.clo_id}">${clo.clo_number} - ${clo.clo_details}</option>`).join('');
 
+                // This is for the questionHTML below to know the ORDER ID
+        //         <div class="flex flex-col">
+        //     <label class="mb-2" for="order">Order</label>
+        //     <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_order[]" value="${newOrder}" readonly>
+        // </div>
                 var questionHTML = `
     <div class="new-question bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
         <div class="flex flex-col">
-            <label class="mb-2" for="question_text">Question Text</label>
-            <textarea class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
+            <label class="mb-2 text-2xl font-bold" for="question_text">Question Text</label>
+            <textarea class="bg-white py-2 px-4 font-medium text-xl rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
         </div>
         <div class="flex flex-col">
-            <label class="mb-2" for="question_image">Question Image</label>
-            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_question_image[]">
+            <label class=" mb-2 text-2xl font-bold" for="question_image">Question Image</label>
+            <input class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_question_image[]">
         </div>
         <div class="flex flex-col">
-            <label class="mb-2" for="new_clo_id">CLO ID</label>
-            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[${cloIndex}][]" multiple>
+            <label class="mb-2 text-2xl font-bold" for="new_clo_id">Course Learning Outcome (CLO) ID</label>
+            <select class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[${cloIndex}][]" multiple>
                 ${cloOptions}
             </select>
         </div>
         <div class="flex flex-col">
-            <label class="mb-2" for="difficulty">Difficulty</label>
-            <select class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_difficulty[]">
+            <label class="mb-2 font-bold text-2xl" for="difficulty">Difficulty</label>
+            <select class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_difficulty[]">
                 <option value="E">Easy</option>
                 <option value="N">Normal</option>
                 <option value="H">Hard</option>
             </select>
         </div>
         <div class="flex flex-col">
-            <label class="mb-2" for="question_points">Question Points</label>
-            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300 new-question-points" type="number" name="new_question_points[]">
+            <label class="mb-2 font-bold text-2xl" for="question_points">Question Points</label>
+            <input class="bg-white py-2 font-medium text-xl px-4 rounded-lg outline outline-1 outline-zinc-300 new-question-points" type="number" name="new_question_points[]">
         </div>
-        <div class="flex flex-col">
-            <label class="mb-2" for="order">Order</label>
-            <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="number" name="new_order[]" value="${newOrder}" readonly>
-        </div>
-        <hr class="my-6">
+
+        <hr class="mb-4 border-2 border-gray-400 rounded-lg">
+        
         <div class="question-choices">
-            <h4 class="font-semibold mb-2">Question Choices</h4>
+            <h4 class="font-bold mb-2 text-2xl">Choices</h4>
             <div class="choices-container flex flex-col gap-4">
                 <div class="choice flex gap-4 items-center">
                     <input type="checkbox" name="new_is_correct[]" value="1">
-                    <p class="font-semibold">A</p>
+                    <p class="font-semibold text-2xl">A</p>
                     <div class="flex flex-col w-full">
-                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                        <input class="font-medium text-xl bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
                     </div>
                     <div class="flex flex-col">
                         <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
@@ -1462,9 +1487,9 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                 </div>
                 <div class="choice flex gap-4 items-center">
                     <input type="checkbox" name="new_is_correct[]" value="1">
-                    <p class="font-semibold">B</p>
+                    <p class="font-semibold text-2xl">B</p>
                     <div class="flex flex-col w-full">
-                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
+                        <input class="font-medium text-xl bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
                     </div>
                     <div class="flex flex-col">
                         <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
