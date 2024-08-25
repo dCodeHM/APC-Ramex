@@ -255,6 +255,72 @@ $hard = $exam['hard'];
 $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $normal, $hard);
 
 
+function resizeImage($imageData, $maxWidth, $maxHeight) {
+    $image = imagecreatefromstring($imageData);
+    if ($image === false) {
+        return false;
+    }
+
+    $width = imagesx($image);
+    $height = imagesy($image);
+
+    // Calculate new dimensions
+    if ($width > $height) {
+        if ($width > $maxWidth) {
+            $newWidth = $maxWidth;
+            $newHeight = ($height / $width) * $maxWidth;
+        } else {
+            return $imageData; // No resize needed
+        }
+    } else {
+        if ($height > $maxHeight) {
+            $newHeight = $maxHeight;
+            $newWidth = ($width / $height) * $maxHeight;
+        } else {
+            return $imageData; // No resize needed
+        }
+    }
+
+    $newImage = imagecreatetruecolor($newWidth, $newHeight);
+    imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+    ob_start();
+    imagejpeg($newImage, null, 100); // Use 100 for maximum quality
+    $resizedImageData = ob_get_contents();
+    ob_end_clean();
+
+    imagedestroy($image);
+    imagedestroy($newImage);
+
+    return $resizedImageData;
+}
+// For question images
+if (!empty($_FILES['question_image']['name'][0])) {
+    $uploadedFile = $_FILES['question_image']['tmp_name'][0];
+    $imageData = file_get_contents($uploadedFile);
+    $resizedImageData = resizeImage($imageData, 800, 600);
+    if ($resizedImageData !== false) {
+        // Save $resizedImageData to your database
+        // $stmt = $pdo->prepare("UPDATE questions SET question_image = ? WHERE id = ?");
+        // $stmt->execute([$resizedImageData, $questionId]);
+    }
+}
+
+// For answer images
+if (!empty($_FILES['answer_image']['name'][0])) {
+    foreach ($_FILES['answer_image']['tmp_name'] as $key => $tmp_name) {
+        if (!empty($tmp_name)) {
+            $imageData = file_get_contents($tmp_name);
+            $resizedImageData = resizeImage($imageData, 400, 300);
+            if ($resizedImageData !== false) {
+                // Save $resizedImageData to your database
+                // $stmt = $pdo->prepare("UPDATE answers SET answer_image = ? WHERE id = ?");
+                // $stmt->execute([$resizedImageData, $answerId]);
+            }
+        }
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -400,7 +466,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
     </nav>
 
     <!-- Question Library -->
-    <div class="main_container pb-36">
+    <div class="main_container pb-36 max-h-xs">
         <div class="buttons">
             <button id="btn_diva" class="button active" type="button">
                 <img src="./img/book.png" alt="Icon"> Question Library
@@ -410,96 +476,99 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             </button>
         </div>
 
-        <!-- Question Library Section -->
-        <div id="question-library" class="p-6 !overflow-y-scroll">
-            <!-- Don't display add 5 questions if there are less than 5 questions -->
-            <?php if (count($related_questions) >= 5) : ?>
-                <button id="add_5_questions" class="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-2xl font-medium rounded-lg text-white mb-4 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg" type="button">Add 5 Questions </button>
-            <?php endif; ?>
+<!-- Question Library Section -->
+<div id="question-library" class="p-6 overflow-y-auto h-[calc(100vh-200px)] bg-gray-100 rounded-lg shadow-inner">
+    <!-- Don't display add 5 questions if there are less than 5 questions -->
+    <?php if (count($related_questions) >= 5) : ?>
+        <button id="add_5_questions" class="sticky top-0 z-10 w-full px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-2xl font-medium rounded-lg text-white mb-4 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg" type="button">Add 5 Questions</button>
+    <?php endif; ?>
 
-            <?php if (empty($related_questions)) : ?>
-                <p class="text-white text-2xl">No related questions found.</p>
-            <?php else : ?>
-                <?php foreach ($related_questions as $question) : ?>
-                    <div class="question-item bg-zinc-100 p-6 gap-4 mb-2 outline-zinc-300 rounded-md outline outline-1 flex justify-between items-center cursor-pointer" data-id="<?php echo $question['details']['question_id']; ?>" onclick="duplicateQuestion(<?php echo $question['details']['question_id']; ?>)">
-
-                        <div>
-                            <p class="text-2xl font-semibold"><?php echo htmlspecialchars($question['details']['question_text'] ?? ''); ?></p>
+    <?php if (empty($related_questions)) : ?>
+        <p class="text-gray-700 text-2xl">No related questions found.</p>
+    <?php else : ?>
+        <div class="space-y-4">
+            <?php foreach ($related_questions as $question) : ?>
+                <div class="question-item bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer" data-id="<?php echo $question['details']['question_id']; ?>" onclick="duplicateQuestion(<?php echo $question['details']['question_id']; ?>)">
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-4 flex-grow">
+                            <p class="text-2xl font-semibold text-gray-800"><?php echo htmlspecialchars($question['details']['question_text'] ?? ''); ?></p>
                             <?php if ($question['details']['question_image']) : ?>
                                 <?php
                                 $imgData = base64_encode($question['details']['question_image']);
                                 $src = 'data:image/jpeg;base64,' . $imgData;
                                 ?>
-                                <img src="<?php echo $src; ?>" alt="Question Image" class="max-w-xs max-h-xs">
+                                <img src="<?php echo $src; ?>" alt="Question Image" class="max-w-xs max-h-xs object-contain rounded-md">
                             <?php endif; ?>
-                            <?php foreach ($question['choices'] as $choice) : ?>
-                                <div class="flex flex-col">
-                                    <span class="text-2xl"><?php echo htmlspecialchars($choice['letter'] ?? '') . '. ' . htmlspecialchars($choice['answer_text'] ?? ''); ?></span>
-                                    <?php if ($choice['answer_image']) : ?>
-                                        <?php
-                                        $choiceImgData = base64_encode($choice['answer_image']);
-                                        $choiceSrc = 'data:image/jpeg;base64,' . $choiceImgData;
-                                        ?>
-                                        <img src="<?php echo $choiceSrc; ?>" alt="Choice Image" class="max-w-xs max-h-xs mt-1">
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
+                            <div class="space-y-2">
+                                <?php foreach ($question['choices'] as $choice) : ?>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xl text-gray-700"><?php echo htmlspecialchars($choice['letter'] ?? '') . '. ' . htmlspecialchars($choice['answer_text'] ?? ''); ?></span>
+                                        <?php if ($choice['answer_image']) : ?>
+                                            <?php
+                                            $choiceImgData = base64_encode($choice['answer_image']);
+                                            $choiceSrc = 'data:image/jpeg;base64,' . $choiceImgData;
+                                            ?>
+                                            <img src="<?php echo $choiceSrc; ?>" alt="Choice Image" class="max-w-xs max-h-xs object-contain rounded-md">
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
 
-                        <div class="flex gap-4 items-center">
-                            <div class="flex flex-col items-start gap-1 justify-start">
-                                <div class="flex items-center gap-4 bg-[#FAFAFA] shadow-lg rounded-lg flex items-center justify-center p-2">
-                                    <?php
-                                    switch ($question['details']['difficulty']) {
-                                        case 'E':
-                                            echo '<span class="text-green-500 font-medium text-2xl">Easy</span>';
-                                            break;
-                                        case 'N':
-                                            echo '<span class="text-yellow-500 font-medium text-2xl">Normal</span>';
-                                            break;
-                                        case 'H':
-                                            echo '<span class="text-red-500 font-medium text-2xl">Hard</span>';
-                                            break;
-                                        default:
-                                            echo '<span class="text-zinc-600 font-medium text-2xl">Unknown</span>';
+                        <div class="flex flex-col items-end space-y-2 ml-4">
+                            <div class="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
+                                <?php
+                                switch ($question['details']['difficulty']) {
+                                    case 'E':
+                                        echo '<span class="text-green-500 font-medium text-xl">Easy</span>';
+                                        break;
+                                    case 'N':
+                                        echo '<span class="text-yellow-500 font-medium text-xl">Normal</span>';
+                                        break;
+                                    case 'H':
+                                        echo '<span class="text-red-500 font-medium text-xl">Hard</span>';
+                                        break;
+                                    default:
+                                        echo '<span class="text-gray-500 font-medium text-xl">Unknown</span>';
+                                }
+                                ?>
+                            </div>
+                            <div class="bg-gray-100 rounded-full px-4 py-2">
+                                <p class="font-semibold text-xl text-gray-700"><?php echo htmlspecialchars($question['details']['question_points'] ?? ''); ?> pts.</p>
+                            </div>
+                            <div class="bg-gray-100 rounded-full px-4 py-2">
+                                <?php
+                                $cloIds = explode(',', $question['details']['clo_id']);
+                                $cloNumbers = array();
+                                foreach ($cloIds as $cloId) {
+                                    $sql = "SELECT clo_number FROM course_outcomes WHERE clo_id = ?";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->bind_param("i", $cloId);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
+                                    if ($result->num_rows > 0) {
+                                        $row = $result->fetch_assoc();
+                                        $cloNumbers[] = $row['clo_number'];
                                     }
-                                    ?>
-                                </div>
-                                <div class="flex items-center gap-4 bg-[#FAFAFA] shadow-lg rounded-lg flex items-center justify-center p-2">
-                                    <p class="font-semibold text-2xl"><?php echo htmlspecialchars($question['details']['question_points'] ?? ''); ?> pts.</p>
-                                </div>
-                                <div class="flex items-center gap-4 bg-[#FAFAFA] shadow-lg rounded-lg flex items-center justify-center p-2">
-                                    <?php
-                                    $cloIds = explode(',', $question['details']['clo_id']);
-                                    $cloNumbers = array();
-                                    foreach ($cloIds as $cloId) {
-                                        $sql = "SELECT clo_number FROM course_outcomes WHERE clo_id = ?";
-                                        $stmt = $conn->prepare($sql);
-                                        $stmt->bind_param("i", $cloId);
-                                        $stmt->execute();
-                                        $result = $stmt->get_result();
-                                        if ($result->num_rows > 0) {
-                                            $row = $result->fetch_assoc();
-                                            $cloNumbers[] = $row['clo_number'];
-                                        }
-                                    }
-                                    $cloNumbersString = implode(', ', $cloNumbers);
-                                    ?>
-                                    <p class="font-semibold text-2xl">CLO: <?php $cloNumbersString = str_replace('CLO', '', $cloNumbersString);
-                                                                            echo $cloNumbersString; ?></p>
-                                </div>
+                                }
+                                $cloNumbersString = implode(', ', $cloNumbers);
+                                $cloNumbersString = str_replace('CLO', '', $cloNumbersString);
+                                ?>
+                                <p class="font-semibold text-xl text-gray-700">CLO: <?php echo $cloNumbersString; ?></p>
                             </div>
                             <!-- Plus Icon -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-circle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 hover:text-blue-600">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="12" y1="8" x2="12" y2="16" />
                                 <line x1="8" y1="12" x2="16" y2="12" />
                             </svg>
                         </div>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
         </div>
+    <?php endif; ?>
+</div>
         <script>
             document.getElementById("add_5_questions").addEventListener("click", function() {
                 const questionItems = document.querySelectorAll(".question-item");
@@ -673,18 +742,95 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                                 <textarea class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="question_text[]" <?php if ($question['in_question_library'] == 0) : ?>readonly<?php endif; ?>><?php echo htmlspecialchars($question['question_text']); ?></textarea>
                             </div>
 
-                            <div class="flex flex-col">
-                                <label class="mb-2 text-2xl font-bold" for="question_image">Question Image</label>
-                                <input class="bg-white py-2 font-medium text-xl px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="question_image[]" <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>>
+                            <div class="flex flex-col space-y-2">
+            <label class="mb-2 text-2xl font-bold" for="question_image">Question Image</label>
+            <input 
+                class="bg-white py-2 font-medium text-xl px-4 rounded-lg outline outline-1 outline-zinc-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
+                type="file" 
+                name="question_image[]" 
+                accept=".jpeg,.jpg,.png"
+                onchange="validateAndPreviewImage(this, 'imagePreview<?php echo $question['question_id']; ?>')"
+                <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>
+            >
+            <p class="text-sm text-gray-500">Only JPEG or PNG files, max 10MB. Image will be resized to 800x600 pixels.</p>
 
-                                <?php if (!empty($question['question_image'])) : ?>
-                                    <?php
-                                    $imgData = base64_encode($question['question_image']);
-                                    $src = 'data:image/jpeg;base64,' . $imgData;
-                                    ?>
-                                    <img src="<?php echo $src; ?>" alt="Question Image" style="max-width: 200px; max-height: 200px; object-fit: cover;" class="existing-question-image">
-                                <?php endif; ?>
-                            </div>
+            <div id="imagePreview<?php echo $question['question_id']; ?>" class="mt-2">
+                <?php if (!empty($question['question_image'])) : ?>
+                    <?php
+                    $imgData = base64_encode($question['question_image']);
+                    $src = 'data:image/jpeg;base64,' . $imgData;
+                    ?>
+                    <img src="<?php echo $src; ?>" alt="Question Image" class="max-w-[200px] max-h-[200px] object-contain rounded-lg">
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <script>
+        function validateAndPreviewImage(input, previewId) {
+            const file = input.files[0];
+            const preview = document.getElementById(previewId);
+            const maxSize = 10 * 1024 * 1024; // 10MB
+
+            // Clear previous preview
+            preview.innerHTML = '';
+
+            if (file) {
+                // Check file type
+                if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                    alert('Please select a JPEG or PNG image.');
+                    input.value = '';
+                    return;
+                }
+
+                // Check file size
+                if (file.size > maxSize) {
+                    alert('File size exceeds 10MB. Please choose a smaller image.');
+                    input.value = '';
+                    return;
+                }
+
+                // Preview image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Question Image';
+                    img.className = 'max-w-[200px] max-h-[200px] object-contain rounded-lg';
+                    preview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        </script>
+
+        <?php
+        // Place this PHP code in your form processing script
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_FILES['question_image']['name'][0])) {
+            $uploadedFile = $_FILES['question_image']['tmp_name'][0];
+            $sourceImage = imagecreatefromstring(file_get_contents($uploadedFile));
+            $sourceWidth = imagesx($sourceImage);
+            $sourceHeight = imagesy($sourceImage);
+
+            $targetWidth = 800;
+            $targetHeight = 600;
+
+            $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
+            imagecopyresampled($targetImage, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $sourceWidth, $sourceHeight);
+
+            ob_start();
+            imagejpeg($targetImage, null, 90);
+            $imageData = ob_get_clean();
+
+            // Here you would typically save $imageData to your database
+            // For example:
+            // $stmt = $pdo->prepare("UPDATE questions SET question_image = ? WHERE id = ?");
+            // $stmt->execute([$imageData, $questionId]);
+
+            imagedestroy($sourceImage);
+            imagedestroy($targetImage);
+        }
+        ?>
 
                             <div class="flex flex-col">
                                 <label class="mb-2 text-2xl font-bold" for="clo_id">Course Learning Outcome (CLO) ID
@@ -1249,6 +1395,7 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
 
                 // TODO: Fix updating of existing questions
                 if (existingQuestionsLength > 0) {
+                    
                     console.log('Existing Questions Length:', existingQuestionsLength);
 
                     // -- Update Existing Questions --
@@ -1345,81 +1492,109 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                         }
                     }
 
-                    async function updateExistingQuestionChoices() {
-                        var questionData = [];
+async function updateExistingQuestionChoices() {
+    var questionData = [];
 
-                        $(".existing-question").each(function() {
-                            var questionElement = $(this);
+    $(".existing-question").each(function() {
+        var questionElement = $(this);
+        var questionId = questionElement.data("question-id");
+        console.log("Processing question ID:", questionId);
 
-                            var questionId = questionElement.find("input[name='question_id[]']").val();
-                            console.log("Processing question ID:", questionId);
+        var questionChoices = [];
+        var newChoices = [];
 
-                            var questionChoices = [];
+        questionElement.find(".choice").each(function(index) {
+            var choiceElement = $(this);
+            var isCorrectValue = choiceElement.find("input[type='checkbox']").is(":checked") ? 1 : 0;
+            var answerTextValue = choiceElement.find("input[type='text']").val();
+            var answerImageInput = choiceElement.find("input[type='file']")[0];
+            var questionChoicesId = choiceElement.find("input[name^='question_choices_id']").val();
 
-                            questionElement.find(".choice").each(function() {
-                                var choiceElement = $(this);
-                                var isCorrectValue = choiceElement.find("input[name='is_correct[" + questionId + "][]']").is(":checked") ? 1 : 0;
-                                var answerTextValue = choiceElement.find("input[name='answer_text[" + questionId + "][]']").val();
-                                var answerImageValue = choiceElement.find("input[name='answer_image[" + questionId + "][]']")[0].files[0];
-                                var questionChoicesId = choiceElement.find("input[name='question_choices_id[" + questionId + "][]']").val();
+            if (questionChoicesId) {
+                // Existing choice
+                questionChoices.push({
+                    is_correct: isCorrectValue,
+                    answer_text: answerTextValue,
+                    question_choices_id: questionChoicesId
+                });
 
-                                console.log('Answer Image Value:', answerImageValue);
-
-                                questionChoices.push({
-                                    is_correct: isCorrectValue,
-                                    answer_text: answerTextValue,
-                                    question_choices_id: questionChoicesId
-                                });
-
-                                if (answerImageValue) {
-                                    questionChoices[questionChoices.length - 1].answer_image = answerImageValue;
-                                }
-                            });
-
-                            questionData.push({
-                                question_id: questionId,
-                                choices: questionChoices
-                            });
-                        });
-
-                        console.log("Question Data:", questionData);
-
-                        var formData = new FormData();
-
-                        questionData.forEach((question, questionIndex) => {
-                            formData.append(`question_data[${questionIndex}][question_id]`, question.question_id);
-
-                            question.choices.forEach((choice, choiceIndex) => {
-                                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][is_correct]`, choice.is_correct);
-                                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][answer_text]`, choice.answer_text);
-                                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][question_choices_id]`, choice.question_choices_id);
-
-                                if (choice.answer_image) {
-                                    formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][answer_image]`, choice.answer_image);
-                                }
-                            });
-                        });
-
-                        console.log('Form Data for Question Choices:', formData);
-
-                        const response = await fetch("http://localhost:8000/api/question-choices/update-existing-question-choices.php", {
-                            method: "POST",
-                            body: formData
-                        });
-
-                        if (response.ok) {
-                            const data = await response.json();
-                            console.log(data.message);
-                        } else {
-                            console.error("Error updating question choices");
-                        }
-                    }
-
-                    updateExistingQuestions();
-                    updateExistingQuestionChoices();
-
+                if (answerImageInput && answerImageInput.files[0]) {
+                    questionChoices[questionChoices.length - 1].answer_image = answerImageInput.files[0];
                 }
-            });
+            } else {
+                // New choice
+                newChoices.push({
+                    is_correct: isCorrectValue,
+                    answer_text: answerTextValue,
+                    letter: String.fromCharCode(65 + index) // A, B, C, ...
+                });
+
+                if (answerImageInput && answerImageInput.files[0]) {
+                    newChoices[newChoices.length - 1].answer_image = answerImageInput.files[0];
+                }
+            }
+        });
+
+        questionData.push({
+            question_id: questionId,
+            choices: questionChoices,
+            new_choices: newChoices
+        });
+    });
+
+    console.log("Question Data:", questionData);
+
+    var formData = new FormData();
+
+    questionData.forEach((question, questionIndex) => {
+        formData.append(`question_data[${questionIndex}][question_id]`, question.question_id);
+
+        question.choices.forEach((choice, choiceIndex) => {
+            formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][is_correct]`, choice.is_correct);
+            formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][answer_text]`, choice.answer_text);
+            formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][question_choices_id]`, choice.question_choices_id);
+
+            if (choice.answer_image) {
+                formData.append(`question_data[${questionIndex}][choices][${choiceIndex}][answer_image]`, choice.answer_image);
+            }
+        });
+
+        question.new_choices.forEach((choice, choiceIndex) => {
+            formData.append(`question_data[${questionIndex}][new_choices][${choiceIndex}][is_correct]`, choice.is_correct);
+            formData.append(`question_data[${questionIndex}][new_choices][${choiceIndex}][answer_text]`, choice.answer_text);
+            formData.append(`question_data[${questionIndex}][new_choices][${choiceIndex}][letter]`, choice.letter);
+
+            if (choice.answer_image) {
+                formData.append(`question_data[${questionIndex}][new_choices][${choiceIndex}][answer_image]`, choice.answer_image);
+            }
+        });
+    });
+
+    console.log('Form Data for Question Choices:', formData);
+
+    try {
+        const response = await fetch("http://localhost:8000/api/question-choices/update-existing-question-choices.php", {
+            method: "POST",
+            body: formData
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data.message);
+            // Optionally, update the UI to reflect the changes
+            // You might want to reload the page or update the question choices dynamically
+            location.reload();
+        } else {
+            console.error("Error updating question choices");
+            alert("Error updating question choices. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred while updating question choices. Please try again.");
+    }
+}
+                }
+});
 
             // Add this script to pass CLO data to JavaScript
             const clos = <?php echo $clos_json; ?>;
@@ -1447,10 +1622,19 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
             <label class="mb-2 text-2xl font-bold" for="question_text">Question Text</label>
             <textarea class="bg-white py-2 px-4 font-medium text-xl rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
         </div>
-        <div class="flex flex-col">
-            <label class=" mb-2 text-2xl font-bold" for="question_image">Question Image</label>
-            <input class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_question_image[]">
-        </div>
+<div class="flex flex-col space-y-2">
+    <label class="mb-2 text-2xl font-bold" for="question_image">Question Image</label>
+    <input 
+        class="bg-white py-2 font-medium text-xl px-4 rounded-lg outline outline-1 outline-zinc-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
+        type="file" 
+        name="new_question_image[]"
+        accept=".jpeg,.jpg,.png"
+        onchange="validateAndPreviewImage(this, 'imagePreview_${questionCounter}', 'fileSizeMessage_${questionCounter}')"
+    >
+    <p id="fileSizeMessage_${questionCounter}" class="text-sm mt-1 hidden"></p>
+    <p class="text-sm text-gray-500">Only JPEG or PNG files, max 10MB. Image will be resized if larger than 800x600 pixels.</p>
+    <div id="imagePreview_${questionCounter}" class="mt-2"></div>
+</div>
         <div class="flex flex-col">
             <label class="mb-2 text-2xl font-bold" for="new_clo_id">Course Learning Outcome (CLO) ID</label>
             <select class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_clo_id[${cloIndex}][]" multiple>
@@ -1508,8 +1692,111 @@ $related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $norm
                 document.getElementById("new_questions").insertAdjacentHTML('beforeend', questionHTML);
             });
 
+            function resizeImage(file, maxWidth, maxHeight) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = function() {
+            let width = img.width;
+            let height = img.height;
+
+            // Only resize if the image is larger than the max dimensions
+            if (width > maxWidth || height > maxHeight) {
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+                resolve(new File([blob], file.name, {
+                    type: file.type,
+                    lastModified: Date.now()
+                }));
+            }, file.type);
+        };
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+    });
+}
+
+function validateAndPreviewImage(input, previewId, messageId) {
+    const file = input.files[0];
+    const preview = document.getElementById(previewId);
+    const messageElement = document.getElementById(messageId);
+    const maxSize = 10 * 1024 * 1024; // 10MB
+
+    // Clear previous preview and message
+    preview.innerHTML = '';
+    messageElement.classList.add('hidden');
+
+    if (file) {
+        // Check file type
+        if (!['image/jpeg', 'image/png'].includes(file.type)) {
+            messageElement.textContent = 'Please select a JPEG or PNG image.';
+            messageElement.classList.remove('hidden', 'text-green-500');
+            messageElement.classList.add('text-red-500');
+            input.value = '';
+            return;
+        }
+
+        // Check file size
+        if (file.size > maxSize) {
+            messageElement.textContent = `File size (${(file.size / 1024 / 1024).toFixed(2)} MB) exceeds the 10 MB limit.`;
+            messageElement.classList.remove('hidden', 'text-green-500');
+            messageElement.classList.add('text-red-500');
+            input.value = '';
+            return;
+        }
+
+        // Resize image if necessary
+        resizeImage(file, 800, 600).then(resizedFile => {
+            // Preview resized image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Question Image';
+                img.className = 'max-w-[200px] max-h-[200px] object-contain rounded-lg';
+                preview.appendChild(img);
+
+                messageElement.textContent = `Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB, Resized size: ${(resizedFile.size / 1024 / 1024).toFixed(2)} MB`;
+                messageElement.classList.remove('hidden', 'text-red-500');
+                messageElement.classList.add('text-green-500');
+            }
+            reader.readAsDataURL(resizedFile);
+
+            // Update the input's files with the resized file
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(resizedFile);
+            input.files = dataTransfer.files;
+        }).catch(error => {
+            console.error('Error resizing image:', error);
+            messageElement.textContent = 'Error processing image. Please try again.';
+            messageElement.classList.remove('hidden', 'text-green-500');
+            messageElement.classList.add('text-red-500');
+            input.value = '';
+        });
+    }
+}
 
 
+
+// Ensure you have a counter for unique IDs
+let questionCounter = 0;
             // Update total points dynamically, incrementing by the new question points
             $(document).on("input", ".new-question-points", function() {
                 var newQuestionPoints = totalPoints;

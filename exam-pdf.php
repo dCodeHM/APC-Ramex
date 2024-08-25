@@ -29,6 +29,12 @@ $totalPagesWithChoices = ceil($totalQuestionsWithChoices / $questionsPerPageWith
 $totalAnswerKeys = count($combined_result);
 $answerKeysPerPage = 30;
 $totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
+
+function displayImage($imageData, $alt, $maxWidth = 200, $maxHeight = 150) {
+    $imgData = base64_encode($imageData);
+    $src = 'data:image/jpeg;base64,' . $imgData;
+    return "<img src='{$src}' alt='{$alt}' style='max-width:{$maxWidth}px; max-height:{$maxHeight}px; width:auto; height:auto; object-fit:contain; display:inline-block; vertical-align:middle;'>";
+}
 ?>
 
 <!DOCTYPE html>
@@ -225,104 +231,80 @@ $totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
                 </div>
                 <hr class="my-8" />
 
-                <div class="flex justify-between">
-                    <?php
-                    $questionsPerColumnWithChoices = 15;
-                    $columnsPerPageWithChoices = 2;
-                    $columnIndex = 0;
+                    <div class="flex justify-between">
+        <?php
+        $questionsPerColumnWithChoices = 15;
+        $columnsPerPageWithChoices = 2;
+        $columnIndex = 0;
 
-                    while ($columnIndex < $columnsPerPageWithChoices && $questionIndex < $totalQuestionsWithChoices) {
-                        $questionsInColumn = 0;
-                        $imagesInColumn = 0;
-                    ?>
-                        <div class="column w-1/2">
+        while ($columnIndex < $columnsPerPageWithChoices && $questionIndex < $totalQuestionsWithChoices) {
+            $questionsInColumn = 0;
+            $imagesInColumn = 0;
+        ?>
+            <div class="column w-1/2 pr-4">
+                <?php
+                while ($questionsInColumn < $questionsPerColumnWithChoices && $questionIndex < $totalQuestionsWithChoices) {
+                    $item = $combined_result[$questionIndex];
+                    if ($item['type'] === 'question') {
+                        $question = $item['data'];
+                        $hasQuestionImage = !empty($question['question_image']);
+                ?>
+                    <div class="question mb-6">
+                        <div class="flex items-start mb-2">
+                            <span class="font-semibold mr-2"><?php echo $questionIndex + 1; ?>.</span>
+                            <div>
+                                <?php if ($hasQuestionImage) : ?>
+                                    <?php echo displayImage($question['question_image'], 'Question Image', 200, 150); ?>
+                                <?php endif; ?>
+                                <p class="font-semibold mt-2"><?php echo $question['question_text']; ?></p>
+                            </div>
+                        </div>
+                        <div class="choices-container pl-6">
                             <?php
-                            while ($questionsInColumn < $questionsPerColumnWithChoices && $questionIndex < $totalQuestionsWithChoices) {
-                                $item = $combined_result[$questionIndex];
-                                if ($item['type'] === 'question') {
-                                    $question = $item['data'];
-                                    $hasQuestionImage = !empty($question['question_image']);
-                                    $choiceImages = 0;
+                            $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+                            $stmt = $conn->prepare($sql);
+                            if (!$stmt) {
+                                die("Error preparing statement: " . $conn->error);
+                            }
 
-                                    // Count the number of choice images
-                                    $sql = "SELECT COUNT(*) AS count FROM question_choices WHERE answer_id = ? AND answer_image IS NOT NULL";
-                                    $stmt = $conn->prepare($sql);
-                                    if (!$stmt) {
-                                        die("Error preparing statement: " . $conn->error);
-                                    }
-                                    $stmt->bind_param("i", $question['answer_id']);
-                                    if (!$stmt->execute()) {
-                                        die("Error executing statement: " . $stmt->error);
-                                    }
-                                    $choices_result = $stmt->get_result();
-                                    $row = $choices_result->fetch_assoc();
-                                    $choiceImages = $row['count'];
+                            $stmt->bind_param("i", $question['answer_id']);
+                            if (!$stmt->execute()) {
+                                die("Error executing statement: " . $stmt->error);
+                            }
 
-                                    $totalImages = ($hasQuestionImage ? 1 : 0) + $choiceImages;
+                            $choices_result = $stmt->get_result();
+                            $choiceIndex = 0;
 
-                                    if ($imagesInColumn + $totalImages <= 3) {
-                                        $imagesInColumn += $totalImages;
+                            while ($choice = $choices_result->fetch_assoc()) {
+                                $choiceLetter = chr(65 + $choiceIndex);
                             ?>
-                                        <div class="question mb-4">
-                                            <!-- Show question image -->
-                                            <?php if ($hasQuestionImage) : ?>
-                                                <?php
-                                                $imgData = base64_encode($question['question_image']);
-                                                $src = 'data:image/jpeg;base64,' . $imgData;
-                                                ?>
-                                                <img src="<?php echo $src; ?>" alt="Question Image" class="max-w-xs max-h-xs mt-4">
-                                            <?php endif; ?>
-                                            <p class="font-semibold mb-2 mt-4"><?php echo $questionIndex + 1; ?>. <?php echo $question['question_text']; ?></p>
-                                            <div class="choices-container">
-                                                <?php
-                                                $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
-                                                $stmt = $conn->prepare($sql);
-                                                if (!$stmt) {
-                                                    die("Error preparing statement: " . $conn->error);
-                                                }
-
-                                                $stmt->bind_param("i", $question['answer_id']);
-                                                if (!$stmt->execute()) {
-                                                    die("Error executing statement: " . $stmt->error);
-                                                }
-
-                                                $choices_result = $stmt->get_result();
-                                                $choiceIndex = 0;
-
-                                                while ($choice = $choices_result->fetch_assoc()) {
-                                                    $choiceLetter = chr(65 + $choiceIndex);
-                                                ?>
-                                                    <!-- Show answer image -->
-                                                    <?php if (!empty($choice['answer_image'])) : ?>
-                                                        <?php
-                                                        $imgData = base64_encode($choice['answer_image']);
-                                                        $src = 'data:image/jpeg;base64,' . $imgData;
-                                                        ?>
-                                                        <img src="<?php echo $src; ?>" alt="Answer Image" class="max-w-xs max-h-xs mt-4">
-                                                    <?php endif; ?>
-
-                                                    <p class="mt-2"><?php echo $choiceLetter; ?>. <?php echo $choice['answer_text']; ?></p>
-                                                <?php
-                                                    $choiceIndex++;
-                                                }
-                                                ?>
-                                            </div>
-                                        </div>
+                                <div class="choice flex items-center mb-2">
+                                    <span class="mr-2"><?php echo $choiceLetter; ?>.</span>
+                                    <div class="flex items-center">
+                                        <?php if (!empty($choice['answer_image'])) : ?>
+                                            <?php echo displayImage($choice['answer_image'], 'Answer Image', 100, 75); ?>
+                                        <?php endif; ?>
+                                        <p class="ml-2"><?php echo $choice['answer_text']; ?></p>
+                                    </div>
+                                </div>
                             <?php
-                                        $questionsInColumn++;
-                                        $questionIndex++;
-                                    } else {
-                                        break;
-                                    }
-                                }
+                                $choiceIndex++;
                             }
                             ?>
                         </div>
-                    <?php
-                        $columnIndex++;
+                    </div>
+                <?php
+                        $questionsInColumn++;
+                        $questionIndex++;
                     }
-                    ?>
-                </div>
+                }
+                ?>
+            </div>
+        <?php
+            $columnIndex++;
+        }
+        ?>
+    </div>
 
                 <!-- Footer -->
                 <hr class="mt-8" />
