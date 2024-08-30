@@ -477,7 +477,7 @@ if (!empty($_FILES['answer_image']['name'][0])) {
         </div>
 
 <!-- Question Library Section -->
-<div id="question-library" class="p-6 overflow-y-auto h-[calc(100vh-200px)] bg-gray-100 rounded-lg shadow-inner">
+<div id="question-library" class="p-6 overflow-y-auto h-[calc(100vh-110px)] bg-gray-100 rounded-lg shadow-inner">
     <!-- Don't display add 5 questions if there are less than 5 questions -->
     <?php if (count($related_questions) >= 5) : ?>
         <button id="add_5_questions" class="sticky top-0 z-10 w-full px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-2xl font-medium rounded-lg text-white mb-4 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg" type="button">Add 5 Questions</button>
@@ -489,17 +489,17 @@ if (!empty($_FILES['answer_image']['name'][0])) {
         <div class="space-y-4">
             <?php foreach ($related_questions as $question) : ?>
                 <div class="question-item bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out cursor-pointer" data-id="<?php echo $question['details']['question_id']; ?>" onclick="duplicateQuestion(<?php echo $question['details']['question_id']; ?>)">
-                    <div class="flex justify-between items-start">
-                        <div class="space-y-4 flex-grow">
+                <div class="flex flex-col lg:flex-row justify-between items-start">
+                <div class="space-y-4 flex-grow w-full lg:w-3/4 mb-4 lg:mb-0">
                             <p class="text-2xl font-semibold text-gray-800"><?php echo htmlspecialchars($question['details']['question_text'] ?? ''); ?></p>
                             <?php if ($question['details']['question_image']) : ?>
                                 <?php
                                 $imgData = base64_encode($question['details']['question_image']);
                                 $src = 'data:image/jpeg;base64,' . $imgData;
                                 ?>
-                                <img src="<?php echo $src; ?>" alt="Question Image" class="max-w-xs max-h-xs object-contain rounded-md">
+                                <img src="<?php echo $src; ?>" alt="Question Image" class="max-w-full h-auto object-contain rounded-md" style="max-height: 200px;">
                             <?php endif; ?>
-                            <div class="space-y-2">
+                            <div class="space-y-2 max-h-60 overflow-y-auto">
                                 <?php foreach ($question['choices'] as $choice) : ?>
                                     <div class="flex items-center space-x-2">
                                         <span class="text-xl text-gray-700"><?php echo htmlspecialchars($choice['letter'] ?? '') . '. ' . htmlspecialchars($choice['answer_text'] ?? ''); ?></span>
@@ -508,16 +508,16 @@ if (!empty($_FILES['answer_image']['name'][0])) {
                                             $choiceImgData = base64_encode($choice['answer_image']);
                                             $choiceSrc = 'data:image/jpeg;base64,' . $choiceImgData;
                                             ?>
-                                            <img src="<?php echo $choiceSrc; ?>" alt="Choice Image" class="max-w-xs max-h-xs object-contain rounded-md">
+                                            <img src="<?php echo $choiceSrc; ?>" alt="Choice Image" class="max-w-full h-auto object-contain rounded-md" style="max-height: 100px;">
                                         <?php endif; ?>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
                         </div>
 
-                        <div class="flex flex-col items-end space-y-2 ml-4">
-                            <div class="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
-                                <?php
+                        <div class="flex flex-col items-end space-y-2 lg:ml-4 w-full lg:w-1/4">
+                        <div class="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2 w-full justify-center">
+                        <?php
                                 switch ($question['details']['difficulty']) {
                                     case 'E':
                                         echo '<span class="text-green-500 font-medium text-xl">Easy</span>';
@@ -533,10 +533,10 @@ if (!empty($_FILES['answer_image']['name'][0])) {
                                 }
                                 ?>
                             </div>
-                            <div class="bg-gray-100 rounded-full px-4 py-2">
+                            <div class="bg-gray-100 rounded-full px-4 py-2 w-full text-center">
                                 <p class="font-semibold text-xl text-gray-700"><?php echo htmlspecialchars($question['details']['question_points'] ?? ''); ?> pts.</p>
                             </div>
-                            <div class="bg-gray-100 rounded-full px-4 py-2">
+                            <div class="bg-gray-100 rounded-full px-4 py-2 w-full text-center">
                                 <?php
                                 $cloIds = explode(',', $question['details']['clo_id']);
                                 $cloNumbers = array();
@@ -744,15 +744,15 @@ if (!empty($_FILES['answer_image']['name'][0])) {
 
                             <div class="flex flex-col space-y-2">
             <label class="mb-2 text-2xl font-bold" for="question_image">Question Image</label>
-            <input 
+            <!-- <input 
                 class="bg-white py-2 font-medium text-xl px-4 rounded-lg outline outline-1 outline-zinc-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
                 type="file" 
                 name="question_image[]" 
                 accept=".jpeg,.jpg,.png"
                 onchange="validateAndPreviewImage(this, 'imagePreview<?php echo $question['question_id']; ?>')"
                 <?php if ($question['in_question_library'] == 0) : ?>disabled<?php endif; ?>
-            >
-            <p class="text-sm text-gray-500">Only JPEG or PNG files, max 10MB. Image will be resized to 800x600 pixels.</p>
+            > -->
+            <!-- <p class="text-sm text-gray-500">Only JPEG or PNG files, max 10MB. Image will be resized to 800x600 pixels.</p> -->
 
             <div id="imagePreview<?php echo $question['question_id']; ?>" class="mt-2">
                 <?php if (!empty($question['question_image'])) : ?>
@@ -1733,6 +1733,79 @@ async function updateExistingQuestionChoices() {
     });
 }
 
+function compressImage(file, quality = 0.6) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = event => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob(
+                    blob => {
+                        if (blob === null) {
+                            return reject(new Error('Canvas is empty'));
+                        }
+                        resolve(new File([blob], file.name, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        }));
+                    },
+                    'image/jpeg',
+                    quality
+                );
+            };
+            img.onerror = error => reject(error);
+        };
+        reader.onerror = error => reject(error);
+    });
+}
+
+function resizeAndCompressImage(file, maxWidth, maxHeight, quality = 0.6) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = function() {
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth || height > maxHeight) {
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+                compressImage(new File([blob], file.name, {
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
+                }), quality).then(resolve).catch(reject);
+            }, 'image/jpeg');
+        };
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+    });
+}
+
 function validateAndPreviewImage(input, previewId, messageId) {
     const file = input.files[0];
     const preview = document.getElementById(previewId);
@@ -1741,6 +1814,7 @@ function validateAndPreviewImage(input, previewId, messageId) {
 
     // Clear previous preview and message
     preview.innerHTML = '';
+    messageElement.textContent = '';
     messageElement.classList.add('hidden');
 
     if (file) {
@@ -1755,16 +1829,16 @@ function validateAndPreviewImage(input, previewId, messageId) {
 
         // Check file size
         if (file.size > maxSize) {
-            messageElement.textContent = `File size (${(file.size / 1024 / 1024).toFixed(2)} MB) exceeds the 10 MB limit.`;
+            messageElement.textContent = `File size (${(file.size / 1024 / 1024).toFixed(2)} MB) exceeds the 10 MB limit. Please choose a smaller file.`;
             messageElement.classList.remove('hidden', 'text-green-500');
             messageElement.classList.add('text-red-500');
-            input.value = '';
+            input.value = ''; // Clear the input
             return;
         }
 
-        // Resize image if necessary
-        resizeImage(file, 800, 600).then(resizedFile => {
-            // Preview resized image
+        // Resize and compress image
+        resizeAndCompressImage(file, 800, 600, 0.6).then(processedFile => {
+            // Preview processed image
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = document.createElement('img');
@@ -1773,18 +1847,18 @@ function validateAndPreviewImage(input, previewId, messageId) {
                 img.className = 'max-w-[200px] max-h-[200px] object-contain rounded-lg';
                 preview.appendChild(img);
 
-                messageElement.textContent = `Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB, Resized size: ${(resizedFile.size / 1024 / 1024).toFixed(2)} MB`;
+                messageElement.textContent = `Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB, Processed size: ${(processedFile.size / 1024 / 1024).toFixed(2)} MB`;
                 messageElement.classList.remove('hidden', 'text-red-500');
                 messageElement.classList.add('text-green-500');
             }
-            reader.readAsDataURL(resizedFile);
+            reader.readAsDataURL(processedFile);
 
-            // Update the input's files with the resized file
+            // Update the input's files with the processed file
             const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(resizedFile);
+            dataTransfer.items.add(processedFile);
             input.files = dataTransfer.files;
         }).catch(error => {
-            console.error('Error resizing image:', error);
+            console.error('Error processing image:', error);
             messageElement.textContent = 'Error processing image. Please try again.';
             messageElement.classList.remove('hidden', 'text-green-500');
             messageElement.classList.add('text-red-500');
