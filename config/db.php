@@ -5,6 +5,12 @@ $db_user = "root";
 $db_pass = "";
 $db_name = "ramexdb";
 
+// connection for AIRHUB change if
+// $db_server = "localhost";
+// $db_user = "marj";
+// $db_pass = "RAMIcpe211";
+// $db_name = "ramexdb";
+
 $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
 
 if ($conn) {

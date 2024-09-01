@@ -914,10 +914,10 @@ if (!empty($_FILES['answer_image']['name'][0])) {
                                     </div>
 
                                     <!-- Image -->
-                                    <div class="flex flex-col">
+                                    <!-- <div class="flex flex-col">
                                         <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="answer_image[<?php echo $question['question_id']; ?>][]" <?php if ($question['in_question_library'] == 0) : ?> disabled<?php endif; ?>>
 
-                                    </div>
+                                    </div> -->
 
                                     <!-- Hidden input field for question_choices_id -->
                                     <input type="hidden" name="question_choices_id[<?php echo $question['question_id']; ?>][]" value="<?php echo $choice['question_choices_id']; ?>">
@@ -935,7 +935,11 @@ if (!empty($_FILES['answer_image']['name'][0])) {
                                             }
                                         </script>
 
-                                        <button type="button" onclick="toggleImage_<?php echo $imageId; ?>()">Toggle Image</button>
+                                    <button type="button" 
+                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                        onclick="toggleImage_<?php echo $imageId; ?>()">
+                                        Hide Image
+                                    </button>
 
                                         <?php
                                         $imgData = base64_encode($choice['answer_image']);
@@ -1680,9 +1684,11 @@ async function updateExistingQuestionChoices() {
                     </div>
                 </div>
             </div>
-            <button type="button" class="add-choice-btn px-4 py-2 bg-green-500 text-white rounded-md mt-2">+ Add Choice</button>
+            <button type="button" class="add-choice-btn px-4 py-2 bg-[#19da19] hover:bg-[#38dc38]/80 text-white text-xl font-bold rounded-md mt-2">+ Add Choice</button>
         </div>
-        <button class="remove_question px-4 py-2 bg-[#1E3A8A] hover:bg-[#1E3A8A]/80 rounded-md text-white" type="button">Remove Question</button>
+        <div class = "flex justify-end">
+        <button class="remove_question px-6 py-3 bg-[#f04a26] hover:bg-[#ff6643]/80 rounded-md text-white text-xl font-bold" type="button">Remove Question</button>
+        </div>
     </div>
     `;
 
