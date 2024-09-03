@@ -3,6 +3,12 @@ session_start();
 include("config/db.php");
 include("config/functions.php");
 
+// Make sure you have the Endroid QR Code library installed via Composer
+require "vendor/autoload.php";
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\SvgWriter;
+use Endroid\QrCode\Encoding\Encoding;
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -67,6 +73,33 @@ if (isset($_POST['create_exam'])) {
         die("Error creating exam: " . $stmt->error);
     }
     $exam_id = $stmt->insert_id;
+
+   // Generate QR Code
+   $qrCodeData = $exam_id . '-' . urlencode($exam_name);
+   $qrCode = QrCode::create($qrCodeData)
+       ->setEncoding(new Encoding('UTF-8'))
+       ->setSize(300)
+       ->setMargin(10);
+
+   $writer = new SvgWriter();
+   $result = $writer->write($qrCode);
+
+   // Generate a unique filename
+   $qrCodeFilename = 'qrcodes/exam_' . $exam_id . '_' . time() . '.svg';
+   
+   // Save the QR code image
+   $result->saveToFile($qrCodeFilename);
+
+   // Store the QR code filename in the database
+   $sql = "UPDATE exam SET qr_code = ? WHERE exam_id = ?";
+   $stmt = $conn->prepare($sql);
+   if (!$stmt) {
+       die("Error preparing statement: " . $conn->error);
+   }
+   $stmt->bind_param("si", $qrCodeFilename, $exam_id);
+   if (!$stmt->execute()) {
+       die("Error updating exam with QR code filename: " . $stmt->error);
+   }
 
     $order = 1;
 

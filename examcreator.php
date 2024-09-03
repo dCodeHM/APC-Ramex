@@ -346,6 +346,7 @@ if (!empty($_FILES['answer_image']['name'][0])) {
     <!-- Jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -654,17 +655,48 @@ if (!empty($_FILES['answer_image']['name'][0])) {
     <main class="ml-[400px] mt-[70px] px-20 py-10">
         <form id="exam-form" class="w-full" method="POST" enctype="multipart/form-data">
 
+        <!-- // In examcreator.php -->
         <div class="mb-8">
-    <h2 class="font-semibold mb-4 text-4xl text-blue-800 drop-shadow-lg">Exam Details:</h2>
+    <h2 class="font-semibold mb-4 text-4xl text-blue-800 drop-shadow-lg">Exam Information:</h2>
     
-    <p class="font-medium mb-6 w-full py-3 px-6 rounded-lg text-2xl bg-white shadow-lg border-l-4 border-blue-500 transition duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl">
-        <?php echo htmlspecialchars($exam['exam_name']); ?>
-    </p>
+    <div class="flex flex-col md:flex-row gap-6">
+        <!-- Exam Details and Rules Column -->
+        <div class="flex-grow md:w-3/4">
+            <!-- Exam Details -->
+            <div class="mb-6">
+                <h3 class="font-semibold mb-2 text-3xl text-blue-800 drop-shadow-lg">Exam Details:</h3>
+                <p class="font-medium w-full py-3 px-6 rounded-lg text-2xl bg-white shadow-lg border-l-4 border-blue-500 transition duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl">
+                    <?php echo htmlspecialchars($exam['exam_name']); ?>
+                </p>
+            </div>
 
-    <h2 class="font-semibold mb-4 text-4xl text-blue-800 drop-shadow-lg">Exam Rules:</h2>
-    
-    <div class="font-medium mb-4 w-full p-6 rounded-lg text-2xl bg-white shadow-lg border-l-4 border-blue-500 transition duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl max-h-[300px] overflow-y-auto whitespace-pre-wrap"
-    ><?php echo htmlspecialchars(trim($exam['exam_instruction'] ?? '')); ?></div>   
+<!-- Exam Rules -->
+<div>
+    <h3 class="font-semibold mb-2 text-3xl text-blue-800 drop-shadow-lg">Exam Rules:</h3>
+    <p class="font-medium w-full py-3 px-6 rounded-lg text-2xl bg-white shadow-lg border-l-4 border-blue-500 transition duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl">
+        <?php $examInstruction = $exam['exam_instruction'] ?? '';
+        // Trim the entire string, then remove leading spaces or tabs from each line
+        $formattedInstruction = preg_replace('/^[ \t]+/m', '', trim($examInstruction));
+        echo htmlspecialchars($formattedInstruction);?>
+    </p>
+</div>
+        </div>
+
+        <!-- Exam QR Code -->
+        <div class="flex-shrink-0 md:w-1/8 flex flex-col items-center">
+            <h3 class="font-bold mb-2 text-xl text-blue-800 drop-shadow-lg">Exam QR Code:</h3>
+            <?php
+            if (!empty($exam['qr_code']) && file_exists($exam['qr_code'])) {
+                $qrCodePath = htmlspecialchars($exam['qr_code']);
+                echo "<div class='flex justify-center items-center bg-white p-4 rounded-lg shadow-lg'>";
+                echo "<img src='$qrCodePath' alt='Exam QR Code' class='w-32 h-32 object-contain'>";
+                echo "</div>";
+            } else {
+                echo '<p class="text-red-500">QR Code not available</p>';
+            }
+            ?>
+        </div>
+    </div>
 </div>
             <!-- Divider -->
             <hr class="mb-4 border-2 border-gray-400 rounded-lg">
