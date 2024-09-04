@@ -23,21 +23,21 @@ $questionsPerPage = 100;
 $totalPages = ceil($totalQuestions / $questionsPerPage);
 
 // questions and choices
-// $totalQuestionsWithChoices = count($combined_result);
-// $questionsPerPageWithChoices = 30;
-// $totalPagesWithChoices = ceil($totalQuestionsWithChoices / $questionsPerPageWithChoices);
+$totalQuestionsWithChoices = count($combined_result);
+$questionsPerPageWithChoices = 30;
+$totalPagesWithChoices = ceil($totalQuestionsWithChoices / $questionsPerPageWithChoices);
 
 // answer keys
-// $totalAnswerKeys = count($combined_result);
-// $answerKeysPerPage = 30;
-// $totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
+$totalAnswerKeys = count($combined_result);
+$answerKeysPerPage = 30;
+$totalAnswerKeyPages = ceil($totalAnswerKeys / $answerKeysPerPage);
 
-// Update the displayImage function
-// function displayImage($imageData, $alt, $maxWidth = 150, $maxHeight = 100) {
-//     $imgData = base64_encode($imageData);
-//     $src = 'data:image/jpeg;base64,' . $imgData;
-//     return "<img src='{$src}' alt='{$alt}' style='max-width:{$maxWidth}px; max-height:{$maxHeight}px; width:auto; height:auto; object-fit:contain; display:inline-block; vertical-align:middle;'>";
-// }
+// // Update the displayImage function
+function displayImage($imageData, $alt, $maxWidth = 100, $maxHeight = 75) {
+    $imgData = base64_encode($imageData);
+    $src = 'data:image/jpeg;base64,' . $imgData;
+    return "<img src='{$src}' alt='{$alt}' style='max-width:{$maxWidth}px; max-height:{$maxHeight}px; width:auto; height:auto; object-fit:contain; display:inline-block; vertical-align:middle;'>";
+}
 
 
 // header and footer
@@ -159,7 +159,8 @@ function renderFooter($page, $totalPages) {
 <body>
     <!-- Student Answer Sheet Preview -->
     <table id="exam-preview" class="text-white w-full flex flex-col bg-zinc-400 gap-10">
-    <?php
+        <tr>
+        <?php
         $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
         $questionsPerColumn = 25;
         $columnsPerPage = 4;
@@ -270,6 +271,175 @@ function renderFooter($page, $totalPages) {
                 <div class="pagebreak"></div>
             <?php } ?>
         <?php } ?>
+
+        </tr>
+
+        <tr>
+            <!-- DONE Answer Keys --> 
+<?php
+        $answerPerColumn = 35;
+        $columnsPerAnswerKeyPage = 4;
+        $questionsPerPage = $answerPerColumn * $columnsPerAnswerKeyPage;
+        $totalAnswerKeyPages = ceil($totalQuestions / $questionsPerPage);
+
+        for ($page = 1; $page <= $totalAnswerKeyPages; $page++) {
+            $startIndex = ($page - 1) * $questionsPerPage;
+            $endIndex = min($startIndex + $questionsPerPage, $totalQuestions);
+        ?>
+            <div class="page py-8 px-20 bg-white text-2xl text-zinc-800 w-[210mm]">
+                <!-- Header content remains the same -->
+                <?php renderHeader($course_code, $exam['exam_name'], $exam['qr_code']); ?>
+
+                <div class="flex justify-between">
+                    <?php
+                    for ($column = 1; $column <= $columnsPerAnswerKeyPage; $column++) {
+                        $columnStartIndex = $startIndex + ($column - 1) * $answerPerColumn;
+                        $columnEndIndex = min($columnStartIndex + $answerPerColumn, $endIndex);
+                    ?>
+                        <div class="column w-1/2 pr-4">
+                            <?php
+                            for ($i = $columnStartIndex; $i < $columnEndIndex; $i++) {
+                                $item = $combined_result[$i];
+                                if ($item['type'] === 'question') {
+                                    $question = $item['data'];
+                            ?>
+                                <div class="question mb-2">
+                                    <span class="font-semibold"><?php echo $i + 1; ?>.</span>
+                                    <?php
+                                    $sql = "SELECT * FROM question_choices WHERE answer_id = ? AND is_correct = 1";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->bind_param("i", $question['answer_id']);
+                                    $stmt->execute();
+                                    $choices_result = $stmt->get_result();
+                                    $choiceIndex = 0;
+
+                                    while ($choice = $choices_result->fetch_assoc()) {
+                                        $choiceLetter = chr(65 + $choiceIndex);
+                                        echo ' ' . $choiceLetter;
+                                        $choiceIndex++;
+                                    }
+                                    ?>
+                                </div>
+                            <?php
+                                }
+                            }
+                            ?>
+                        </div>
+                    <?php } ?>
+                </div>
+
+                <!-- Footer -->
+                <hr class="mt-8" />
+                <div class="w-full flex justify-center mt-4 text-lg">
+                    <p>Answer Keys - Page <?php echo $page; ?> of <?php echo $totalAnswerKeyPages; ?></p>
+                </div>
+            </div>
+
+            <?php if ($page < $totalAnswerKeyPages) : ?>
+                <div class="pagebreak"></div>
+            <?php endif; ?>
+        <?php } ?>
+        </tr>
+
+        <tr>
+            <!-- update Q and A -->
+<!-- Question and Choices Sheet -->
+<div id="exam-preview" class="text-white w-full flex flex-col bg-zinc-400 gap-10">
+<?php
+$questionsPerPage = 10; // Adjust this number based on how many questions fit comfortably on one page
+$columnsPerPage = 2; 
+$questionsPerColumn = $questionsPerPage / $columnsPerPage;
+$totalPagesWithChoices = ceil($totalQuestions / $questionsPerPage);
+
+for ($page = 1; $page <= $totalPagesWithChoices; $page++) {
+    $startIndex = ($page - 1) * $questionsPerPage;
+    $endIndex = min($startIndex + $questionsPerPage, $totalQuestions);
+?>
+    <div class="page py-8 px-20 bg-white text-xl text-zinc-800 w-[210mm]">
+        <div class="w-full flex items-center justify-between gap-4 text-xl font-normal text-zinc-800">
+            <p><?php echo $course_code; ?></p>
+            <img src="img/APC AcademX Logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
+            <h4 class="text-zinc-800"><?php echo htmlspecialchars($exam['exam_name']); ?></h4>
+        </div>
+        <hr class="my-8" />
+
+        <div class="flex justify-between">
+            <?php for ($column = 0; $column < $columnsPerPage; $column++) { ?>
+                <div class="column w-1/2 pr-4">
+                    <?php
+                    $columnStartIndex = $startIndex + ($column * $questionsPerColumn);
+                    $columnEndIndex = min($columnStartIndex + $questionsPerColumn, $endIndex);
+                    
+                    for ($i = $columnStartIndex; $i < $columnEndIndex; $i++) {
+                        $item = $combined_result[$i];
+                        if ($item['type'] === 'question') {
+                            $question = $item['data'];
+                            $hasQuestionImage = !empty($question['question_image']);
+                    ?>
+                            <div class="question mb-6">
+                                <div class="flex items-start mb-2">
+                                    <span class="font-semibold mr-2"><?php echo $i + 1; ?>.</span>
+                                    <div class="flex-1">
+                                        <!-- flex flex-wrap items-start justify-between w-full -->
+                                        <p class="font-semibold"><?php echo $question['question_text']; ?></p>
+                                        <?php if ($hasQuestionImage) : ?>
+                                            <div class="mt-2">
+                                                <?php echo displayImage($question['question_image'], 'Question Image', 100, 75); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <div class="choices-container pl-6">
+                                   <?php
+                                    $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->bind_param("i", $question['answer_id']);
+                                    $stmt->execute();
+                                    $choices_result = $stmt->get_result();
+                                    $choiceIndex = 0;
+
+                                    while ($choice = $choices_result->fetch_assoc()) {
+                                        $choiceLetter = chr(65 + $choiceIndex);
+                                    ?>
+<div class="choice flex items-start mb-2">
+    <span class="mr-2 flex-shrink-0"><?php echo $choiceLetter; ?>.</span>
+    <div class="flex flex-wrap items-start justify-between w-full">
+        <p class="text-justify flex-grow mr-2"><?php echo $choice['answer_text']; ?></p>
+        <?php if (!empty($choice['answer_image'])) : ?>
+            <div class="flex-shrink-0">
+                <?php echo displayImage($choice['answer_image'], 'Answer Image', 75, 50); ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+                                    <?php
+                                        $choiceIndex++;
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                    <?php
+                        }
+                    }
+                    ?>
+                </div>
+            <?php } ?>
+        </div>
+
+        <!-- Footer -->
+        <div class="w-full flex justify-center mt-4 text-lg">
+            <p>Page <?php echo $page; ?> of <?php echo $totalPagesWithChoices; ?></p>
+        </div>
+    </div>
+
+    <?php if ($page < $totalPagesWithChoices) : ?>
+        <div class="pagebreak"></div>
+    <?php endif; ?>
+<?php } ?>
+</div>
+        </tr>
+
 </table>
 
     <script>
@@ -279,10 +449,6 @@ function renderFooter($page, $totalPages) {
         }
     </script>
 
-<!-- Question and Choices Sheet -->
-<div id="exam-preview" class="text-white w-full flex flex-col bg-zinc-400 gap-10">
 
-
-    </div>
 </body>
 </html>
