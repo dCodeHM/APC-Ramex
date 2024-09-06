@@ -39,9 +39,7 @@ function displayImage($imageData, $alt, $maxWidth = 100, $maxHeight = 75) {
     return "<img src='{$src}' alt='{$alt}' style='max-width:{$maxWidth}px; max-height:{$maxHeight}px; width:auto; height:auto; object-fit:contain; display:inline-block; vertical-align:middle;'>";
 }
 
-
 // header and footer
-
 function renderHeader($course_code, $exam_name, $qr_code_path) {
     ?>
 <div class="w-full flex items-center justify-between text-xl font-normal text-zinc-800">
@@ -84,8 +82,6 @@ function renderFooter($page, $totalPages) {
     </div>
     <?php
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -120,7 +116,12 @@ function renderFooter($page, $totalPages) {
             background: white;
             box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
             position: relative;
+            page-break-after: always;
         }
+        .page-break {
+        display: none;
+    }
+        /* Student Answer Sheet */
         .answer-sheet {
         position: relative;
         border: 1px solid white;
@@ -132,7 +133,23 @@ function renderFooter($page, $totalPages) {
         .answer-sheet-content {
         padding: 10px;
         height: 100%;
-    }
+        }
+        /* Answer Sheet Boxes */
+        .top-left { top: 110px; left: 0px; }
+        .top-right { top: 110px; right: 0px; }
+        .bottom-left { bottom: 0px; left: 0px; }
+        .bottom-right { bottom: 0px; right: 0px; }
+
+        /* Student Answer Sheet */
+        .keyanswer-sheet {
+        position: relative;
+        border: 1px solid white;
+        margin-top: 20px;
+        width: 170mm; /* Fixed width */
+        height: 210mm; /* Fixed height - adjust as needed */
+        overflow: hidden; /* Prevents content from spilling out */
+        }
+
         .corner-square {
             position: absolute;
             width: 8px;
@@ -141,10 +158,21 @@ function renderFooter($page, $totalPages) {
             border: 5px solid black;
             z-index: 10;
         }
-        .top-left { top: 110px; left: 0px; }
-        .top-right { top: 110px; right: 0px; }
-        .bottom-left { bottom: 0px; left: 0px; }
-        .bottom-right { bottom: 0px; right: 0px; }
+        .questions-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem 1rem;
+}
+.question {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+.choices-container {
+    margin-top: 0.25rem;
+}
+.choice {
+    margin-bottom: 0.25rem;
+}
     </style>
 
     <script>
@@ -157,8 +185,9 @@ function renderFooter($page, $totalPages) {
 </head>
 
 <body>
-    <!-- Student Answer Sheet Preview -->
+<!-- Whole Pages -->
     <table id="exam-preview" class="text-white w-full flex flex-col bg-zinc-400 gap-10">
+<!-- Student Answer Sheet Preview -->
         <tr>
         <?php
         $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
@@ -192,12 +221,12 @@ function renderFooter($page, $totalPages) {
 
                 <!-- Answer Sheet -->
                 <div id="answer-sheet" class="answer-sheet">
-    <!-- Corner Squares -->
-    <div class="corner-square top-left"></div>
-    <div class="corner-square top-right"></div>
-    <div class="corner-square bottom-left"></div>
-    <div class="corner-square bottom-right"></div>
-    <div class="w-full flex items-center h-[100px] border-black border-1 mb-6">
+                    <!-- Corner Squares -->
+                    <div class="corner-square top-left"></div>
+                    <div class="corner-square top-right"></div>
+                    <div class="corner-square bottom-left"></div>
+                    <div class="corner-square bottom-right"></div>
+                    <div class="w-full flex items-center h-[100px] border-black border-1 mb-6">
                         <div class="w-[80%] flex flex-col h-full">
                             <div class="h-full p-4 border-[1px] border-black">Name:</div>
                             <div class="flex h-full">
@@ -274,11 +303,12 @@ function renderFooter($page, $totalPages) {
 
         </tr>
 
+<!-- Professor Answer Keys --> 
         <tr>
-            <!-- DONE Answer Keys --> 
+
 <?php
-        $answerPerColumn = 35;
-        $columnsPerAnswerKeyPage = 4;
+        $answerPerColumn = 32;
+        $columnsPerAnswerKeyPage = 5;
         $questionsPerPage = $answerPerColumn * $columnsPerAnswerKeyPage;
         $totalAnswerKeyPages = ceil($totalQuestions / $questionsPerPage);
 
@@ -290,6 +320,7 @@ function renderFooter($page, $totalPages) {
                 <!-- Header content remains the same -->
                 <?php renderHeader($course_code, $exam['exam_name'], $exam['qr_code']); ?>
 
+                <div id="keyanswer-sheet" class="keyanswer-sheet">
                 <div class="flex justify-between">
                     <?php
                     for ($column = 1; $column <= $columnsPerAnswerKeyPage; $column++) {
@@ -303,7 +334,9 @@ function renderFooter($page, $totalPages) {
                                 if ($item['type'] === 'question') {
                                     $question = $item['data'];
                             ?>
+
                                 <div class="question mb-2">
+                                
                                     <span class="font-semibold"><?php echo $i + 1; ?>.</span>
                                     <?php
                                     $sql = "SELECT * FROM question_choices WHERE answer_id = ? AND is_correct = 1";
@@ -327,6 +360,7 @@ function renderFooter($page, $totalPages) {
                         </div>
                     <?php } ?>
                 </div>
+                </div>
 
                 <!-- Footer -->
                 <hr class="mt-8" />
@@ -341,103 +375,118 @@ function renderFooter($page, $totalPages) {
         <?php } ?>
         </tr>
 
-        <tr>
-            <!-- update Q and A -->
 <!-- Question and Choices Sheet -->
-<div id="exam-preview" class="text-white w-full flex flex-col bg-zinc-400 gap-10">
-<?php
-$questionsPerPage = 10; // Adjust this number based on how many questions fit comfortably on one page
-$columnsPerPage = 2; 
-$questionsPerColumn = $questionsPerPage / $columnsPerPage;
-$totalPagesWithChoices = ceil($totalQuestions / $questionsPerPage);
+        <tr>
 
-for ($page = 1; $page <= $totalPagesWithChoices; $page++) {
-    $startIndex = ($page - 1) * $questionsPerPage;
-    $endIndex = min($startIndex + $questionsPerPage, $totalQuestions);
-?>
+<div id="exam-preview" class="text-white w-full flex flex-col bg-zinc-400">
+    <?php
+    $questionsPerPage = 10;
+    $totalPages = ceil(count($combined_result) / $questionsPerPage);
+    
+    for ($page = 1; $page <= $totalPages; $page++) {
+        $startIndex = ($page - 1) * $questionsPerPage;
+        $endIndex = min($startIndex + $questionsPerPage, count($combined_result));
+    ?>
     <div class="page py-8 px-20 bg-white text-xl text-zinc-800 w-[210mm]">
-        <div class="w-full flex items-center justify-between gap-4 text-xl font-normal text-zinc-800">
-            <p><?php echo $course_code; ?></p>
-            <img src="img/APC AcademX Logo.png" alt="APC AcademX Logo" class="max-w-[100px]">
-            <h4 class="text-zinc-800"><?php echo htmlspecialchars($exam['exam_name']); ?></h4>
+        <?php renderHeader($course_code, $exam['exam_name'], $exam['qr_code']); ?>
+
+        <div id="keyanswer-sheet" class="keyanswer-sheet">
+        <div class="questions-container grid grid-cols-2 gap-x-4 gap-y-2">
+            <?php
+            for ($index = $startIndex; $index < $endIndex; $index++) {
+                $item = $combined_result[$index];
+                if ($item['type'] === 'question') {
+                    $question = $item['data'];
+                    $hasQuestionImage = !empty($question['question_image']);
+            ?>
+                <div class="question" data-question-id="<?php echo $index + 1; ?>">
+                    <div class="flex items-start">
+                        <span class="font-semibold mr-2 flex-shrink-0"><?php echo $index + 1; ?>.</span>
+                        <div class="flex-1">
+    <div class="flex flex-row items-center mb-2">
+        <div class="flex-grow">
+            <p class="font-semibold text-justify"><?php echo $question['question_text']; ?></p>
         </div>
-        <hr class="my-8" />
-
-        <div class="flex justify-between">
-            <?php for ($column = 0; $column < $columnsPerPage; $column++) { ?>
-                <div class="column w-1/2 pr-4">
-                    <?php
-                    $columnStartIndex = $startIndex + ($column * $questionsPerColumn);
-                    $columnEndIndex = min($columnStartIndex + $questionsPerColumn, $endIndex);
-                    
-                    for ($i = $columnStartIndex; $i < $columnEndIndex; $i++) {
-                        $item = $combined_result[$i];
-                        if ($item['type'] === 'question') {
-                            $question = $item['data'];
-                            $hasQuestionImage = !empty($question['question_image']);
-                    ?>
-                            <div class="question mb-6">
-                                <div class="flex items-start mb-2">
-                                    <span class="font-semibold mr-2"><?php echo $i + 1; ?>.</span>
-                                    <div class="flex-1">
-                                        <!-- flex flex-wrap items-start justify-between w-full -->
-                                        <p class="font-semibold"><?php echo $question['question_text']; ?></p>
-                                        <?php if ($hasQuestionImage) : ?>
-                                            <div class="mt-2">
-                                                <?php echo displayImage($question['question_image'], 'Question Image', 100, 75); ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-
-                                <div class="choices-container pl-6">
-                                   <?php
-                                    $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
-                                    $stmt = $conn->prepare($sql);
-                                    $stmt->bind_param("i", $question['answer_id']);
-                                    $stmt->execute();
-                                    $choices_result = $stmt->get_result();
-                                    $choiceIndex = 0;
-
-                                    while ($choice = $choices_result->fetch_assoc()) {
-                                        $choiceLetter = chr(65 + $choiceIndex);
-                                    ?>
-<div class="choice flex items-start mb-2">
-    <span class="mr-2 flex-shrink-0"><?php echo $choiceLetter; ?>.</span>
-    <div class="flex flex-wrap items-start justify-between w-full">
-        <p class="text-justify flex-grow mr-2"><?php echo $choice['answer_text']; ?></p>
-        <?php if (!empty($choice['answer_image'])) : ?>
-            <div class="flex-shrink-0">
-                <?php echo displayImage($choice['answer_image'], 'Answer Image', 75, 50); ?>
+        <?php if ($hasQuestionImage) : ?>
+            <div class="ml-2 flex-shrink-0">
+                <?php echo displayImage($question['question_image'], 'Question Image', 75, 50); ?>
             </div>
         <?php endif; ?>
     </div>
-</div>
-                                    <?php
-                                        $choiceIndex++;
-                                    }
-                                    ?>
-                                </div>
-                            </div>
-                    <?php
-                        }
-                    }
-                    ?>
+    <div class="choices-container">
+        <?php
+        $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $question['answer_id']);
+        $stmt->execute();
+        $choices_result = $stmt->get_result();
+        $choiceIndex = 0;
+
+        while ($choice = $choices_result->fetch_assoc()) {
+            $choiceLetter = chr(65 + $choiceIndex);
+        ?>
+        <div class="choice flex items-start mb-2">
+            <span class="mr-1 flex-shrink-0"><?php echo $choiceLetter; ?>.</span>
+            <div class="flex-1 flex flex-row items-center">
+                <div class="flex-grow">
+                    <p class="text-justify"><?php echo $choice['answer_text']; ?></p>
                 </div>
-            <?php } ?>
+                <?php if (!empty($choice['answer_image'])) : ?>
+                    <div class="ml-2 flex-shrink-0">
+                        <?php echo displayImage($choice['answer_image'], 'Answer Image', 75, 50); ?>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
+        <?php
+            $choiceIndex++;
+        }
+        ?>
+    </div>
+</div>
+                    </div>
+                </div>
+            <?php
+                }
+            }
+            ?>
+        </div>
+        </div>
+
 
         <!-- Footer -->
-        <div class="w-full flex justify-center mt-4 text-lg">
-            <p>Page <?php echo $page; ?> of <?php echo $totalPagesWithChoices; ?></p>
+        <hr class="mt-8" />
+        <div class="footer w-full flex justify-center mt-4 text-lg">
+            <p>Question Page <?php echo $page; ?> of <?php echo $totalPages; ?></p>
         </div>
     </div>
-
-    <?php if ($page < $totalPagesWithChoices) : ?>
+    <?php if ($page < $totalPages) : ?>
         <div class="pagebreak"></div>
     <?php endif; ?>
-<?php } ?>
+    <?php
+    }
+    ?>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const examPreview = document.getElementById('exam-preview');
+    const pages = examPreview.querySelectorAll('.page');
+    
+    pages.forEach((page, pageIndex) => {
+        const questions = page.querySelectorAll('.question');
+        const questionsContainer = page.querySelector('.questions-container');
+        
+        questions.forEach((question, index) => {
+            if (index % 2 === 0) {
+                question.style.gridColumn = '1';
+            } else {
+                question.style.gridColumn = '2';
+            }
+        });
+    });
+});
+</script>
         </tr>
 
 </table>
