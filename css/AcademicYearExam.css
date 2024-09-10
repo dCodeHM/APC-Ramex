@@ -1,0 +1,592 @@
+/* AcademicYearExam.css */
+/* Base styles */
+body {
+  font-family: 'Noto Sans', sans-serif;
+  color: #343A40;
+  background-color: #f8f9fa;
+}
+
+.AYtitle-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.AYtoggle-arrow {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.AYtoggle-arrow.open {
+  transform: rotate(90deg);
+}
+
+.AYrow-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  flex-grow: 1;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+
+.AYrow-container.open {
+  max-height: 500px; /* Adjust this value based on your content */
+  opacity: 1;
+}
+
+.AYrow-container.open {
+  max-height: 500px; /* Adjust this value based on your content */
+  opacity: 1;
+  padding: 5px 5px; /* Increase padding when open */
+}
+
+.AYheader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.AYacademic-year {
+  font-size: 18px;
+  font-weight: bold;
+  color: #343a40;
+  margin: 0;
+}
+
+.AYdelete-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.AYdelete-icon {
+  width: 23px;  /* Smaller size */
+  height: 23px; /* Smaller size */
+  transition: all 0.3s ease;
+  color: #343a40; /* Default color */
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.AYdelete-text {
+  font-size: 19px;
+  color: #dc3545; /* Red color for delete text */
+  margin-left: 5px;
+  white-space: nowrap; /* Prevent text wrapping */
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.3s ease, opacity 0.3s ease, margin-left 0.3s ease;
+  overflow: hidden;
+}
+
+.AYdelete-container:hover .AYdelete-icon {
+  color: #dc3545; /* Red color on hover */
+  transform: rotate(90deg);
+}
+
+.AYdelete-container:hover .AYdelete-text {
+  max-width: 100px; /* Adjust based on text length */
+  opacity: 1;
+  margin-left: 5px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.AYdelete-container:hover {
+  animation: pulse 0.6s ease-in-out;
+}
+
+.AYboxme {
+  font-size: 18px;
+  font-weight: bolder;
+  box-sizing: border-box;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  border: 2px solid #343a40;
+
+  margin: 1.6vh;
+  padding: 8px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  box-sizing: border-box;
+  overflow: hidden;
+  align-items: center;
+}
+
+.AYheader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: white;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.AYboxme:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
+  border-color: #0761c2;
+  background-color: white;
+}
+
+.insideAYboxme {
+  box-sizing: border-box;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  /* border: 1px solid #fbff00; */
+  padding: 12px;
+  background-color: white;
+  border-radius: 10px;
+  /* transition: all 0.3s ease;
+  height: calc(100% - 3.2vh); */
+  box-sizing: border-box;
+  overflow: hidden;
+  align-items: center;
+}
+
+.insideAYboxme:hover {
+  /* transform: translateY(-5px); */
+  border-color: #fde82d;
+  background-color: white;
+}
+
+.AYmalakingbox {
+  border-radius: 8px;
+  background-color: #ffe600;
+  color: #fff;
+  text-align: center;
+  width: 100%;
+  padding: 10px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease; /* Add transition for smooth animation */
+  cursor: pointer; /* Add cursor pointer to indicate clickable */
+  transition: background-color 0.3s ease;
+  margin: 0 10px; /* Add horizontal margin */
+  flex: 1; /* Allow boxes to grow and fill the space */
+  max-width: calc(33.333% - 20px); /* Ensure boxes don't grow too large, accounting for margins */
+  margin-top: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+/* Adjust the first and last boxes to align with the container edges */
+.AYmalakingbox:first-child {
+  margin-left: 0;
+}
+
+.AYmalakingbox:last-child {
+  margin-right: 0;
+}
+
+/* Change background and text color on hover */
+.AYmalakingbox:hover {
+  opacity: 0.8;
+}
+
+
+/* Hide the status text */
+.course::before {
+  content: attr(data-course-code);
+}
+
+.course-status {
+  display: none;
+}
+
+.AYfill-div {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.AYfill-div .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.open-year {
+    background-color: #FFFF00; 
+    /* Yellow for open years */
+}
+
+.completed-year {
+    background-color: #90EE90; 
+    /* Light green for completed years */
+}
+
+.no-terms-year {
+    background-color: #FF6347; 
+    /* Tomato red for years with no terms */
+}
+
+.open-course {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.completed-course {
+  background-color: #a5d6a7;
+  color: #1b5e20;
+}
+
+.completed-term {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.course {
+  padding: 5px 10px;
+  margin: 5px 0;
+  border-radius: 3px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.no-terms {
+  color: #FF0000; /* Red text for no terms available */
+  font-weight: bold;
+  text-align: center;
+  margin-top: 15px;
+}
+
+.incomplete-term {
+  background-color: #FFD700; /* Gold for incomplete terms */
+  color: #000;
+}
+
+.not-available {
+  background-color: #f0f0f0;
+  color: #888;
+}
+
+.AYrow-container {
+  padding: 10px;
+}
+
+.courses-container {
+  margin-top: 10px;
+}
+
+.courses {
+  display: none;
+}
+
+.terms-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.term-container {
+  width: 100%;
+    margin-bottom: 10px;
+}
+
+.AYoptions {
+  position: absolute;
+  top: 15px;
+  left: 0px;
+}
+
+/* Container */
+.AYcontainerem {
+  width: 95%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.AYrightemhead {
+  display: flex;
+  height: 120px;
+  align-items: center;
+  text-align: left;
+  width: 95%;
+  margin: auto;
+}   
+
+.AYadminemline {
+  border-top: 5px solid black;
+  border-radius: 5px;
+  width: 95%;
+  margin: auto;
+}
+
+.AYadminmehead {
+  width: 100%;
+  text-align: center;
+}
+
+.AYadminmehead p {
+  margin-left: 20px;
+  font-size: 46px;
+  font-weight: 700;
+  text-align: left;
+  size: 50px;
+  color: #343A40;
+}
+
+.AYadminemicon {
+  width: 7%;
+  padding: 5px;
+  margin: auto;
+}
+
+.AYadminemicon img {
+  width: 70px;
+}
+
+.AYmebox {
+  justify-content: space-around;
+}
+
+#AYemservices {
+  width: 95%;
+  margin: auto;
+  overflow: hidden;
+}
+
+.AYaddbutt i {
+  font-size: 30px;
+}
+
+.AYaddbutt {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.AYaddbutt.hover {
+  color: #343A40;
+}
+
+.AYpopup-hidden {
+  display: none;
+}   
+
+.AYpopup_tc {
+  display: flex;
+  position: relative;
+  height: 4rem;
+  width: 40rem;
+  margin-top: 4%;
+  margin-left: 5%;
+}
+
+.AYpopup_tc li {
+  display: list-item;
+  list-style: none;
+  text-decoration: none;
+}
+
+.AYpopup_tc h1 {
+  display: list-item;
+  list-style: none;
+  text-decoration: none;
+  font: Noto Sans;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #343A43;
+  position: relative;
+  display: flex;
+}
+
+.AYpopup_tc img {
+  position: relative;
+  margin-top: -5%;
+  margin-left: 1%;
+  height: 3.5rem;
+  width: 3.5rem;
+}
+
+.AYpopup_ic {
+  position: relative;
+  display: flex;
+  margin-top: 12%;
+  margin-left: -90%;
+  width: 80%;
+  height: 35%;
+}
+
+.AYprog {
+  font-size: 0.85rem;
+  width: 10rem;
+  height: 1rem;
+}
+
+.AYcourse {
+  font: Noto Sans;
+  font-size: 0.85rem;
+  margin-top: 15.55%;
+  width: 10rem;
+  height: 1rem;
+  position: absolute;
+}
+
+.AYpopup_ic li {
+  display: list-item;
+  list-style: none;
+  text-decoration: none;
+}
+
+.AYprogram {
+  font: Noto Sans;
+  font-size: 23px;
+  border-radius: 0.5rem;
+  width: 13.7rem;
+  height: 2.2rem;
+  position: relative;
+  display: flex;
+  margin-top: 7%;
+  margin-left: -20.8%;
+  border-color: #343A40;
+  border: 0.13rem solid;
+}
+
+.AYprogram[type="text"]::-webkit-inner-spin-button,
+.AYprogram[type="text"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.AYprogram[type="text"] {
+  appearance: textfield;
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.AYcourse_code {
+  font: Noto Sans;
+  font-size: 23px;
+  background-color: #EDEDED;
+  border-radius: 0.5rem;
+  width: 13.7rem;
+  height: 2.2rem;
+  position: relative;
+  display: flex;
+  margin-top: 19.9%;
+  margin-left: 0%;
+  border-color: #343A40;
+  border: 0.13rem solid;
+}
+
+#AYcreate {
+  width: 200px;
+  height: 55px;
+  right: 1rem;
+  bottom: 1rem;
+  position: absolute;
+  background: #343A40;
+  color: #FFFFFF;
+  text-decoration: bold;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.AYsearchbar {
+  width: 400px;
+  height: 45px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 3px solid #000000;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;   
+  outline: none;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+  margin-right: 90px;
+}
+
+.AYdots {
+  border: none;
+  width: auto;
+  color: #848484;
+  background: none;
+  z-index: 10;
+  font-weight: bolder;
+  margin-left: 85%;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.AYAdd_smallpopup {
+  display: flex;
+  position: absolute;
+  width: 10rem;
+  height: 5rem;
+  margin-left: 27%;
+  margin-top: 15%;
+  transform: translate(-55%, -15%);
+  background-color: #FFFFFF;
+  border: 3.5px solid #343A40;
+  border-radius: 0.3rem;
+  z-index: 99999;
+}
+
+.AYsmallpop_up {
+  width: 40px;
+  height: 50px;
+  border: #343A40;
+  background: none;
+}
+
+.AYsmallpopup-hidden {
+  display: none;
+  position: relative;
+  margin-top: -790px;
+  min-width: 100.05rem;
+  height: 50rem;
+  min-height: 100%;
+  z-index: 99999;
+  overflow: hidden;
+}
+
+.AYlabelName {
+  color: #343A40;
+  font-size: 20px;
+  width: 50%;
+  font-weight: bold;
+}

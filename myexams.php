@@ -1,3 +1,4 @@
+<!-- myexams.php -->
 <?php
 session_start();
 
@@ -13,6 +14,7 @@ if ($gotResults) {
 if (mysqli_num_rows($gotResults) > 0) {
 while ($row = mysqli_fetch_array($gotResults)) {
 // print_r($row['first_name']);
+
 
 $update = isset($_GET['update']) && $_GET['update'] === 'true';
 
@@ -53,6 +55,10 @@ if ($user_role == 'Executive Director') {
 } else {
     $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
 }
+
+// Get academic year and term from URL parameters
+$acy_id = isset($_GET['acy_id']) ? intval($_GET['acy_id']) : null;
+$term = isset($_GET['term']) ? intval($_GET['term']) : null;
 ?>
 
             <!DOCTYPE html>
@@ -324,40 +330,57 @@ if ($user_role == 'Executive Director') {
 
 <!--boxes-->
 <?php
-$result = $mysqli->query("SELECT cs.*, COUNT(ct.course_topic_id) as topic_count 
+                // Modify the query to include academic year and term filtering
+                $query = "SELECT cs.*, COUNT(ct.course_topic_id) as topic_count 
                           FROM prof_course_subject cs
                           LEFT JOIN prof_course_topic ct ON cs.course_subject_id = ct.course_subject_id
-                          WHERE cs.account_id = $account_id
-                          GROUP BY cs.course_subject_id") or die(mysqli_error($mysqli));
-if ($result->num_rows === 0) { ?>
-    <p class="header" style="margin-left: 50px;">You have no course folders.</p>
-<?php } else { ?>
-    <div style="flex-wrap: wrap; margin-left: 30px;">
-        <?php while ($row = $result->fetch_assoc()) :
-            // **Fetch course_subject_id here:**
-            $course_subject_id = $row['course_subject_id'];
-            $courseCode = $row['course_code']; // Get the course code for the link
-            $hasTopics = $row['topic_count'] > 0;
-        ?>
+                          WHERE cs.account_id = ?";
+                
+                $params = array($account_id);
+                $types = "i";
+
+                if ($acy_id !== null && $term !== null) {
+                    $query .= " AND cs.acy_id = ? AND cs.term = ?";
+                    $params[] = $acy_id;
+                    $params[] = $term;
+                    $types .= "ii";
+                }
+
+                $query .= " GROUP BY cs.course_subject_id";
+
+                $stmt = $mysqli->prepare($query);
+                $stmt->bind_param($types, ...$params);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                if ($result->num_rows === 0) { ?>
+                    <p class="header" style="margin-left: 50px;">No course folders found for the selected criteria.</p>
+                <?php } else { ?>
+                    <div style="flex-wrap: wrap; margin-left: 30px;">
+                        <?php while ($row = $result->fetch_assoc()) :
+                            $course_subject_id = $row['course_subject_id'];
+                            $courseCode = $row['course_code'];
+                            $hasTopics = $row['topic_count'] > 0;
+                        ?>
             <section id="container2" style="cursor:pointer">
                 <div class="emservices">
                     <div class="mebox">
                         <div class="boxme">
-                            <div class="fill-div" onclick="handleClick(event, '<?php echo $course_subject_id; ?>', '<?php echo urlencode($courseCode); ?>')">
-                                <div class="options">
-                                    <img src="./img/delete.png" alt="Delete" onclick="confirmDelete(event, '<?php echo $row['course_subject_id']; ?>')" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
-                                </div>
-                                <p class="malakingbox">
-                                    <?php echo $courseCode; ?>
-                                </p>
-                            </div>
+                        <div class="fill-div" onclick="handleClick(event, '<?php echo $course_subject_id; ?>', '<?php echo urlencode($courseCode); ?>')">
+                                                <div class="options">
+                                                    <img src="./img/delete.png" alt="Delete" onclick="confirmDelete(event, '<?php echo $row['course_subject_id']; ?>')" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
+                                                </div>
+                                                <p class="malakingbox">
+                                                    <?php echo $courseCode; ?>
+                                                </p>
+                                            </div>
                         </div>
                     </div>
                 </div>
             </section>
         <?php endwhile; ?>
     </div>
-<?php } ?>
+<?php } $stmt->close(); ?>
 </div>
 </div>
 </div>

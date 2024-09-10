@@ -195,7 +195,7 @@ if ($user_role == 'Executive Director') {
     <div class="system-list">
 
         <div class="embox">
-            <a href="myexams.php" class="fill-div">
+            <a href="AcademicYearExam.php" class="fill-div">
             <img src="./img/MyExams.png">
             </a>
         </div>

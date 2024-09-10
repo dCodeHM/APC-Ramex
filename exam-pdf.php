@@ -127,7 +127,7 @@ function renderFooter($page, $totalPages) {
         border: 1px solid white;
         margin-top: 20px;
         width: 170mm; /* Fixed width */
-        height: 200mm; /* Fixed height - adjust as needed */
+        height: 190mm; /* Fixed height - adjust as needed */
         overflow: hidden; /* Prevents content from spilling out */
         }
         .answer-sheet-content {
@@ -135,8 +135,8 @@ function renderFooter($page, $totalPages) {
         height: 100%;
         }
         /* Answer Sheet Boxes */
-        .top-left { top: 110px; left: 0px; }
-        .top-right { top: 110px; right: 0px; }
+        .top-left { top: 90px; left: 0px; }
+        .top-right { top: 90px; right: 0px; }
         .bottom-left { bottom: 0px; left: 0px; }
         .bottom-right { bottom: 0px; right: 0px; }
 
@@ -213,20 +213,8 @@ function renderFooter($page, $totalPages) {
                             Score:
                         </div>
                     </div> -->
-                    <p class="mb-6">
-                        <!-- Exam Instructions -->
-                        <?php echo htmlspecialchars($exam['exam_instruction']); ?>
-                    </p>
-                <?php } ?>
 
-                <!-- Answer Sheet -->
-                <div id="answer-sheet" class="answer-sheet">
-                    <!-- Corner Squares -->
-                    <div class="corner-square top-left"></div>
-                    <div class="corner-square top-right"></div>
-                    <div class="corner-square bottom-left"></div>
-                    <div class="corner-square bottom-right"></div>
-                    <div class="w-full flex items-center h-[100px] border-black border-1 mb-6">
+                    <div class="w-full flex items-center h-[90px] border-black border-1">
                         <div class="w-[80%] flex flex-col h-full">
                             <div class="h-full p-4 border-[1px] border-black">Name:</div>
                             <div class="flex h-full">
@@ -238,6 +226,19 @@ function renderFooter($page, $totalPages) {
                             Score:
                         </div>
                     </div>
+                <?php } ?>
+
+                <!-- Answer Sheet -->
+                <div id="answer-sheet" class="answer-sheet">
+                    <!-- Corner Squares -->
+                    <div class="corner-square top-left"></div>
+                    <div class="corner-square top-right"></div>
+                    <div class="corner-square bottom-left"></div>
+                    <div class="corner-square bottom-right"></div>
+                    <p class = "text-l font-semibold text-justify">
+                        <!-- Exam Instructions -->
+                        <?php echo htmlspecialchars($exam['exam_instruction']); ?>
+                    </p>
 
     <div class="answer-sheet-content flex flex-wrap">
     <?php
@@ -257,8 +258,8 @@ function renderFooter($page, $totalPages) {
                 if ($item['type'] === 'question') {
                     $question = $item['data'];
                     ?>
-                    <div class="question flex gap-4 items-center mb-2">
-                        <p class="font-semibold"><?php echo $i + 1; ?>.</p>
+                    <div class="question flex gap-2 items-center mb-2">
+                        <p class="font-semibold ml-4"><?php echo $i + 1; ?>.</p>
                         <div class="choices-container flex gap-4">
                             <?php
                             $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
@@ -376,8 +377,7 @@ function renderFooter($page, $totalPages) {
         </tr>
 
 <!-- Question and Choices Sheet -->
-        <tr>
-
+<tr>
 <div id="exam-preview" class="text-white w-full flex flex-col bg-zinc-400">
     <?php
     $questionsPerPage = 10;
@@ -391,68 +391,67 @@ function renderFooter($page, $totalPages) {
         <?php renderHeader($course_code, $exam['exam_name'], $exam['qr_code']); ?>
 
         <div id="keyanswer-sheet" class="keyanswer-sheet">
-        <div class="questions-container grid grid-cols-2 gap-x-4 gap-y-2">
-            <?php
-            for ($index = $startIndex; $index < $endIndex; $index++) {
-                $item = $combined_result[$index];
-                if ($item['type'] === 'question') {
-                    $question = $item['data'];
-                    $hasQuestionImage = !empty($question['question_image']);
-            ?>
-                <div class="question" data-question-id="<?php echo $index + 1; ?>">
+            <div class="questions-container grid grid-cols-2 gap-x-8 ">
+                <?php
+                for ($index = $startIndex; $index < $endIndex; $index++) {
+                    $item = $combined_result[$index];
+                    if ($item['type'] === 'question') {
+                        $question = $item['data'];
+                        $hasQuestionImage = !empty($question['question_image']);
+                ?>
+                <div class="question break-inside-avoid">
                     <div class="flex items-start">
                         <span class="font-semibold mr-2 flex-shrink-0"><?php echo $index + 1; ?>.</span>
                         <div class="flex-1">
-    <div class="flex flex-row items-center mb-2">
-        <div class="flex-grow">
-            <p class="font-semibold text-justify"><?php echo $question['question_text']; ?></p>
-        </div>
-        <?php if ($hasQuestionImage) : ?>
-            <div class="ml-2 flex-shrink-0">
-                <?php echo displayImage($question['question_image'], 'Question Image', 75, 50); ?>
-            </div>
-        <?php endif; ?>
-    </div>
-    <div class="choices-container">
-        <?php
-        $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $question['answer_id']);
-        $stmt->execute();
-        $choices_result = $stmt->get_result();
-        $choiceIndex = 0;
+                            <div class="flex flex-row items-center mb-2">
+                                <div class="flex-grow">
+                                    <p class="font-semibold text-justify"><?php echo $question['question_text']; ?></p>
+                                </div>
+                                <?php if ($hasQuestionImage) : ?>
+                                    <div class="ml-2 flex-shrink-0">
+                                        <?php echo displayImage($question['question_image'], 'Question Image', 75, 50); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="choices-container ml-4">
+                                <?php
+                                $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
+                                $stmt = $conn->prepare($sql);
+                                $stmt->bind_param("i", $question['answer_id']);
+                                $stmt->execute();
+                                $choices_result = $stmt->get_result();
+                                $choiceIndex = 0;
 
-        while ($choice = $choices_result->fetch_assoc()) {
-            $choiceLetter = chr(65 + $choiceIndex);
-        ?>
-        <div class="choice flex items-start mb-2">
-            <span class="mr-1 flex-shrink-0"><?php echo $choiceLetter; ?>.</span>
-            <div class="flex-1 flex flex-row items-center">
-                <div class="flex-grow">
-                    <p class="text-justify"><?php echo $choice['answer_text']; ?></p>
-                </div>
-                <?php if (!empty($choice['answer_image'])) : ?>
-                    <div class="ml-2 flex-shrink-0">
-                        <?php echo displayImage($choice['answer_image'], 'Answer Image', 75, 50); ?>
+                                while ($choice = $choices_result->fetch_assoc()) {
+                                    $choiceLetter = chr(65 + $choiceIndex);
+                                ?>
+                                <div class="choice flex items-start mb-2">
+                                    <span class="mr-1 flex-shrink-0"><?php echo $choiceLetter; ?>.</span>
+                                    <div class="flex-1 flex flex-row items-center">
+                                        <div class="flex-grow">
+                                            <p class="text-justify"><?php echo $choice['answer_text']; ?></p>
+                                        </div>
+                                        <?php if (!empty($choice['answer_image'])) : ?>
+                                            <div class="ml-2 flex-shrink-0">
+                                                <?php echo displayImage($choice['answer_image'], 'Answer Image', 75, 50); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <?php
+                                    $choiceIndex++;
+                                }
+                                ?>
+                            </div>
+                        </div>
                     </div>
-                <?php endif; ?>
-            </div>
-        </div>
-        <?php
-            $choiceIndex++;
-        }
-        ?>
-    </div>
-</div>
-                    </div>
                 </div>
-            <?php
+                <?php
+                    }
                 }
-            }
-            ?>
+                ?>
+            </div>
         </div>
-        </div>
-
 
         <!-- Footer -->
         <hr class="mt-8" />
@@ -461,33 +460,13 @@ function renderFooter($page, $totalPages) {
         </div>
     </div>
     <?php if ($page < $totalPages) : ?>
-        <div class="pagebreak"></div>
+        <div class="page-break"></div>
     <?php endif; ?>
     <?php
     }
     ?>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const examPreview = document.getElementById('exam-preview');
-    const pages = examPreview.querySelectorAll('.page');
-    
-    pages.forEach((page, pageIndex) => {
-        const questions = page.querySelectorAll('.question');
-        const questionsContainer = page.querySelector('.questions-container');
-        
-        questions.forEach((question, index) => {
-            if (index % 2 === 0) {
-                question.style.gridColumn = '1';
-            } else {
-                question.style.gridColumn = '2';
-            }
-        });
-    });
-});
-</script>
-        </tr>
+</tr>
 
 </table>
 
