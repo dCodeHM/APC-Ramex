@@ -8,6 +8,7 @@ include("config/functions.php");
 $user_data = check_login($conn_ramex);
 
 $account_id = $_SESSION['account_id'];
+
 $sql = "SELECT * FROM  account WHERE account_id = '$account_id' LIMIT 1";
 $gotResults = mysqli_query($conn_ramex, $sql);
 if ($gotResults) {
@@ -54,6 +55,53 @@ if ($user_role == 'Executive Director') {
 } else {
     $redirect_url = 'unauthorized.php'; // Redirect other users to a default homepage
 }
+
+function getLatestCourseInfo($conn_soe) {
+    $query = "SELECT acy_id, term, submitted 
+              FROM course 
+              WHERE submitted = 0 
+              ORDER BY course_id DESC, acy_id DESC, term DESC 
+              LIMIT 1";
+    $result = mysqli_query($conn_soe, $query);
+    return mysqli_fetch_assoc($result);
+}
+
+$latestCourseInfo = getLatestCourseInfo($conn_soe);
+$latest_acy_id = $latestCourseInfo['acy_id'];
+$latest_term = $latestCourseInfo['term'];
+
+// Define the updateProfCourseSubject function
+function updateProfCourseSubject($conn_ramex, $conn_soe, $account_id) {
+    // Get the latest course information
+    $latest_course_query = "SELECT acy_id, term FROM course WHERE submitted = 0 ORDER BY course_id DESC LIMIT 1";
+    $latest_course_result = mysqli_query($conn_soe, $latest_course_query);
+    $latest_course = mysqli_fetch_assoc($latest_course_result);
+
+    if ($latest_course) {
+        $latest_acy_id = $latest_course['acy_id'];
+        $latest_term = $latest_course['term'];
+
+        // Check if this entry already exists in prof_course_subject
+        $check_query = "SELECT * FROM prof_course_subject WHERE account_id = ? AND acy_id = ? AND term = ?";
+        $check_stmt = mysqli_prepare($conn_ramex, $check_query);
+        mysqli_stmt_bind_param($check_stmt, "iii", $account_id, $latest_acy_id, $latest_term);
+        mysqli_stmt_execute($check_stmt);
+        $check_result = mysqli_stmt_get_result($check_stmt);
+
+        if (mysqli_num_rows($check_result) == 0) {
+            // If it doesn't exist, insert a new entry
+            $insert_query = "INSERT INTO prof_course_subject (account_id, acy_id, term) VALUES (?, ?, ?)";
+            $insert_stmt = mysqli_prepare($conn_ramex, $insert_query);
+            mysqli_stmt_bind_param($insert_stmt, "iii", $account_id, $latest_acy_id, $latest_term);
+            mysqli_stmt_execute($insert_stmt);
+            mysqli_stmt_close($insert_stmt);
+        }
+
+        mysqli_stmt_close($check_stmt);
+    }
+}
+
+updateProfCourseSubject($conn_ramex, $conn_soe, $account_id);
 ?>
 
             <!DOCTYPE html>
@@ -191,7 +239,7 @@ if ($user_role == 'Executive Director') {
                                 <img src="img/back.png" style="padding-left: 5px">
                             </a>
                         </div>
-                        <div class="help_buttonme">
+                        <div class="help_buttonAY">
                             <img src="img/help.png" alt="Help Icon">
                         </div>
                     </div>
@@ -209,7 +257,7 @@ if ($user_role == 'Executive Director') {
                             <div class="adminmehead" style="margin-left: 50px; display: flex">
                         <p>Academic Year</p>
                         <div class="searchicon" style="display: flex; align-items: center; margin-left: auto">
-                            <input type="text" class="searchbar" id="live_search" placeholder="Search a Course Folder...">
+                        <input type="text" class="searchbar" id="live_search" placeholder="Search an Academic Year...">
                         </div>
                     </div>
                             </div>
@@ -223,67 +271,80 @@ if ($user_role == 'Executive Director') {
     <div class="emservices">
         <?php
         // Query to fetch all distinct academic years, including future ones
-        $query_academic_years = "SELECT DISTINCT pcs.acy_id, ay.academic_year 
-                                 FROM prof_course_subject pcs
-                                 JOIN soe_assessment_db.academic_year ay ON pcs.acy_id = ay.acy_id
-                                 ORDER BY ay.academic_year DESC";
-        $result_academic_years = mysqli_query($conn_ramex, $query_academic_years);
+        $query_academic_years = "SELECT DISTINCT c.acy_id, ay.academic_year 
+        FROM course c
+        JOIN soe_assessment_db.academic_year ay ON c.acy_id = ay.acy_id
+        WHERE c.acy_id <= ?
+        ORDER BY ay.academic_year DESC";
+$stmt_academic_years = mysqli_prepare($conn_soe, $query_academic_years);
+mysqli_stmt_bind_param($stmt_academic_years, "i", $latest_acy_id);
+mysqli_stmt_execute($stmt_academic_years);
+$result_academic_years = mysqli_stmt_get_result($stmt_academic_years);
 
-        if ($result_academic_years) {
-            while ($row_acy = mysqli_fetch_assoc($result_academic_years)) {
-                $acy_id = $row_acy['acy_id'];
-                $academic_year = $row_acy['academic_year'];
-                ?>
-                        <div class="mebox">
-                            <div class="AYboxme">
-                                <div class="AYheader">
-                                    <div class="AYtitle-container">
-                                        <svg class="AYtoggle-arrow" viewBox="0 0 24 24" onclick="toggleTerms(this)">
-                                            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                        <p class="AYacademic-year">Academic Year: <?php echo $academic_year; ?></p>
-                                    </div>
-                                </div>
-                                <div class="AYfill-div">
-                                    <div class="AYrow-container" style="display: none;">
-                                        <div class="terms-row">
-                                        <?php
-                                for ($term = 1; $term <= 3; $term++) {
-                                    // Query to fetch courses for this academic year and term
-                                    $query_courses = "SELECT * FROM prof_course_subject WHERE acy_id = ? AND term = ? AND account_id = ?";
-                                    $stmt_courses = mysqli_prepare($conn_ramex, $query_courses);
-                                    mysqli_stmt_bind_param($stmt_courses, "isi", $acy_id, $term, $account_id);
-                                    mysqli_stmt_execute($stmt_courses);
-                                    $result_courses = mysqli_stmt_get_result($stmt_courses);
+if ($result_academic_years) {
+    while ($row_acy = mysqli_fetch_assoc($result_academic_years)) {
+        $acy_id = $row_acy['acy_id'];
+        $academic_year = $row_acy['academic_year'];
+        ?>
+        <div class="mebox">
+            <div class="AYboxme">
+                <div class="AYheader">
+                    <div class="AYtitle-container">
+                        <svg class="AYtoggle-arrow" viewBox="0 0 24 24" onclick="toggleTerms(this)">
+                            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <p class="AYacademic-year">Academic Year: <?php echo $academic_year; ?></p>
+                    </div>
+                </div>
+                <div class="AYfill-div">
+                    <div class="AYrow-container" style="display: none;">
+                        <div class="terms-row">
+                        <?php
+for ($term = 1; $term <= 3; $term++) {
+    $term_class = 'not-available';
+    $term_text = "Term $term";
 
-                                    $term_class = mysqli_num_rows($result_courses) > 0 ? 'incomplete-term' : 'not-available';
-                                    $term_text = $term_class == 'not-available' ? "Term $term (Not Available)" : "Term $term";
+    // Check if this term should be displayed
+    if ($acy_id < $latest_acy_id || ($acy_id == $latest_acy_id && $term <= $latest_term)) {
+        // Query to fetch courses for this academic year and term from prof_course_subject
+        $query_courses = "SELECT pcs.*, c.submitted FROM prof_course_subject pcs
+                          JOIN soe_assessment_db.course c ON pcs.acy_id = c.acy_id AND pcs.term = c.term
+                          WHERE pcs.acy_id = ? AND pcs.term = ? AND pcs.account_id = ?";
+        $stmt_courses = mysqli_prepare($conn_ramex, $query_courses);
+        mysqli_stmt_bind_param($stmt_courses, "iii", $acy_id, $term, $account_id);
+        mysqli_stmt_execute($stmt_courses);
+        $result_courses = mysqli_stmt_get_result($stmt_courses);
 
-                                    echo "<div class='term-container'>";
-                                    echo "<div class='AYmalakingbox {$term_class}' onclick='redirectToMyExams($acy_id, $term)'>{$term_text}</div>";
-                                    echo "<div class='courses-container' style='display: none;'>";
+        if (mysqli_num_rows($result_courses) > 0) {
+            $course = mysqli_fetch_assoc($result_courses);
+            $submitted = $course['submitted'];
+            $term_class = $submitted ? 'complete-term' : 'incomplete-term';
+        }
 
-                                    while ($course = mysqli_fetch_assoc($result_courses)) {
-                                        echo "<div class='course' data-course-code='{$course['course_code']}'>{$course['course_code']}</div>";
-                                    }
+        echo "<div class='term-container'>";
+        echo "<div class='AYmalakingbox {$term_class}' onclick='redirectToMyExams({$acy_id}, {$term}, {$submitted})'>{$term_text}</div>";
+        echo "</div>";
 
-                                    echo "</div>"; // Close courses-container
-                                    echo "</div>"; // Close term-container
-
-                                    mysqli_stmt_close($stmt_courses);
-                                }
-                                ?>
-                            </div>
+        mysqli_stmt_close($stmt_courses);
+    } else {
+        $term_text .= " (Not Available)";
+        echo "<div class='term-container'>";
+        echo "<div class='AYmalakingbox {$term_class}'>{$term_text}</div>";
+        echo "</div>";
+    }
+}
+                        ?>
                         </div>
                     </div>
                 </div>
             </div>
-            <?php
-        }
-    } else {
-        echo "Error fetching academic years: " . mysqli_error($conn_ramex);
+        </div>
+        <?php
     }
-    ?>
+} else {
+    echo "Error fetching academic years: " . mysqli_error($conn_soe);
+}
+?>
 </div>
 </section>
 
@@ -305,19 +366,15 @@ function toggleTerms(arrow) {
         }
     }
 
-function toggleCourses(termElement) {
-        const termContainer = termElement.closest('.term-container');
-        const termIndex = Array.from(termContainer.parentNode.children).indexOf(termContainer) + 1;
-        const coursesContainer = termElement.closest('.AYrow-container').querySelector(`.courses.term-${termIndex}`);
-        
-        document.querySelectorAll('.courses').forEach(el => el.style.display = 'none');
-        
-        if (coursesContainer.style.display === 'none' || coursesContainer.style.display === '') {
-            coursesContainer.style.display = 'block';
-        } else {
-            coursesContainer.style.display = 'none';
-        }
+    function toggleCourses(termElement) {
+    const coursesContainer = termElement.nextElementSibling;
+    
+    if (coursesContainer.style.display === 'none' || coursesContainer.style.display === '') {
+        coursesContainer.style.display = 'block';
+    } else {
+        coursesContainer.style.display = 'none';
     }
+}
 
 function handleSearchInput() {
     const searchQuery = document.getElementById("live_search").value.trim().toLowerCase();
@@ -350,30 +407,26 @@ mysqli_close($conn_soe);
 
 
 <script>
-    function redirectToMyExams(acyId, term, courseCode) {
-        window.location.href = `myexams.php?acy_id=${acyId}&term=${term}&course_code=${encodeURIComponent(courseCode)}`;
-    }
+function redirectToMyExams(acyId, term, submitted) {
+    window.location.href = `myexams.php?acy_id=${acyId}&term=${term}&submitted=${submitted}`;
+}
 
 function handleSearchInput() {
-    // Get the value of the search input
     const searchQuery = document.getElementById("live_search").value.trim().toLowerCase();
-    // Get all course folder elements
-    const courseFolders = document.querySelectorAll(".mebox");
+    const academicYearBoxes = document.querySelectorAll(".mebox");
 
-    // Loop through each course folder
-    courseFolders.forEach(folder => {
-        // Get the text content of the course folder
-        const folderText = folder.textContent.toLowerCase();
-        // Check if the folder text contains the search query
-        if (folderText.includes(searchQuery)) {
-            // Show the folder if it matches the search query
-            folder.style.display = "block";
+    academicYearBoxes.forEach(box => {
+        const academicYearText = box.querySelector(".AYacademic-year").textContent.toLowerCase();
+        if (academicYearText.includes(searchQuery)) {
+            box.style.display = "block";
         } else {
-            // Hide the folder if it does not match the search query
-            folder.style.display = "none";
+            box.style.display = "none";
         }
     });
 }
+
+// Attach an event listener to the search input
+document.getElementById("live_search").addEventListener("input", handleSearchInput);
 
 // Attach an event listener to the search input
 document.getElementById("live_search").addEventListener("input", handleSearchInput);

@@ -1,15 +1,24 @@
+<!-- STOP IF NAKITA MO TO PAGSABIHIN NATAPOS MO NA PAG STORE NG SYLLABUS_COURSE_ID *MISSING IS DAPAT YUNG COURSE_CODE UNG NAKA DISPLAY HINDI YUNG SYLLABUS_COURSE_ID -->
+
 <!-- myexams.php -->
 <?php
 session_start();
 
-include("config/db.php");
+include("config/RAMeXSO.php");
 include("config/functions.php");
+global $mysqli_soe, $mysqli_ramex, $conn_ramex;
 
-$user_data = check_login($conn);
+
+$user_data = check_login($conn_ramex);
 
 $account_id = $_SESSION['account_id'];
+
+$acy_id = isset($_GET['acy_id']) ? intval($_GET['acy_id']) : 0;
+$term = isset($_GET['term']) ? intval($_GET['term']) : 0;
+$submitted = isset($_GET['submitted']) ? intval($_GET['submitted']) : 0;
+
 $sql = "SELECT * FROM  account WHERE account_id = '$account_id' LIMIT 1";
-$gotResults = mysqli_query($conn, $sql);
+$gotResults = mysqli_query($conn_ramex, $sql);
 if ($gotResults) {
 if (mysqli_num_rows($gotResults) > 0) {
 while ($row = mysqli_fetch_array($gotResults)) {
@@ -27,7 +36,7 @@ exit();
 
 // Display the user-specific information
 
-$result = mysqli_query($conn, $sql); // Replace with data from the database
+$result = mysqli_query($conn_ramex, $sql); // Replace with data from the database
 if ($result) {
 $row = mysqli_fetch_array($result);
 $user_email = $row['user_email'];
@@ -59,6 +68,25 @@ if ($user_role == 'Executive Director') {
 // Get academic year and term from URL parameters
 $acy_id = isset($_GET['acy_id']) ? intval($_GET['acy_id']) : null;
 $term = isset($_GET['term']) ? intval($_GET['term']) : null;
+
+function getSyllabusCourses($connection) {
+    $courses = array();
+    $sql = "SELECT syllabus_course_id, course_code FROM syllabus_course ORDER BY course_code";
+    $result = $connection->query($sql);
+
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $courses[] = $row;
+        }
+    }
+
+    return $courses;
+}
+
+// $syllabusCourses = getSyllabusCourses($mysqli);
+$syllabusCourses = getSyllabusCourses($mysqli_soe);
+
+
 ?>
 
             <!DOCTYPE html>
@@ -189,7 +217,7 @@ $term = isset($_GET['term']) ? intval($_GET['term']) : null;
 
                     <div class="sidebar">
                         <div class="back_button">
-                            <a href="em.php">
+                            <a href="AcademicYearExam.php">
                                 <img src="img/back.png" style="padding-left: 5px">
                             </a>
                         </div>
@@ -234,8 +262,11 @@ $term = isset($_GET['term']) ? intval($_GET['term']) : null;
                                     <form action="coursefolder.php" method="post">
                                         <!-- Add a hidden input field to indicate action -->
                                         <input type="hidden" name="action" id="action" value="add">
-
-                                        <input type="hidden" name="update" value="<?php echo isset($_GET['update']) ? $_GET['update'] : 'false'; ?>">
+    <input type="hidden" name="acy_id" value="<?php echo $acy_id; ?>">
+    <input type="hidden" name="term" value="<?php echo $term; ?>">
+    <input type="hidden" name="submitted" value="<?php echo $submitted; ?>">
+    <input type="hidden" name="update" value="<?php echo isset($_GET['update']) ? $_GET['update'] : 'false'; ?>">
+    <input type="hidden" name="account_id" value="<?php echo $account_id; ?>">
 
                                         <?php if ($update == true) : ?>
                                             <p class="heading">Update Course Folder Information<img src="img/folder.png"></p>
@@ -251,73 +282,70 @@ $term = isset($_GET['term']) ? intval($_GET['term']) : null;
 
                                         <input type="hidden" name="account_id" value="<?php echo $account_id ?>" readonly><br/>
 
-                                        <div class="inputcolumn">
-                                            <div>
-                                            <label class="labelName" for="program_name">Program Name</label><br />
-                                            <select class="input" name="program_name" required>
-                                                <option value="" disabled selected>None Selected</option>
-                                                <?php
-                                                $sql = "SELECT program_name FROM program_name";
-                                                $result = $mysqli->query($sql);
-
-                                                if ($result->num_rows > 0) {
-                                                    while ($row = $result->fetch_assoc()) {
-                                                        $program = $row['program_name'];
-                                                        $selected = ($program === $program_name) ? 'selected' : '';
-                                                        echo "<option value=\"$program\" $selected>$program</option>";
-                                                    }
-                                                } else {
-                                                    echo "<option value=\"\">No programs found</option>";
-                                                }
-                                                ?>
-                                            </select>
-                                            </div>
-                                            <br/>
-                                        </div>
 
                                         <div class="inputcolumn">
-    <label class="labelName" for="course_code">Course Code</label>
-    <select class="input" name="course_code" required>
-        <option value="" disabled selected>None Selected</option>
-        <?php
-        $sql = "SELECT course_syllabus_id, course_code FROM course_syllabus";
-        $result = $mysqli->query($sql);
+        <label class="labelName" for="course_code">Course Code</label>
+        <select class="input" name="course_code" id="course_code_select" required>
+            <option value="" disabled selected>None Selected</option>
+            <?php
+            $sql = "SELECT sc.syllabus_course_id, sc.course_code 
+                    FROM soe_assessment_db.syllabus_course sc
+                    LEFT JOIN ramexdb.prof_course_subject pcs 
+                        ON sc.syllabus_course_id = pcs.syllabus_course_id 
+                        AND pcs.account_id = ? 
+                        AND pcs.acy_id = ? 
+                        AND pcs.term = ?
+                    WHERE pcs.syllabus_course_id IS NULL
+                    ORDER BY sc.course_code";
+            $stmt = $conn_soe->prepare($sql);
+            $stmt->bind_param("iii", $account_id, $acy_id, $term);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $course = $row['course_code'];
-                $selected = ($course === $course_code) ? 'selected' : '';
-                echo "<option value=\"$course\" $selected>$course</option>";
+            if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $syllabus_course_id = $row['syllabus_course_id'];
+                    $course_code = $row['course_code'];
+                    echo "<option value=\"$syllabus_course_id|$course_code\">$course_code</option>";
+                }
+            } else {
+                echo "<option value=\"\">No courses available</option>";
             }
-        } else {
-            echo "<option value=\"\">No courses found</option>";
-        }
-        ?>
-    </select>
-</div>
+            $stmt->close();
+            ?>
+        </select>
+    </div>
 
-<input type="hidden" name="course_syllabus_id" value="<?php echo $course_subject_id ?>" readonly><br />
-<input type="hidden" name="course_topic_id" value="<?php echo $course_subject_id ?>" readonly><br />
+    <input type="hidden" name="syllabus_course_id" id="syllabus_course_id" value="">
+    <input type="hidden" name="selected_course_code" id="selected_course_code" value="">
 
 <?php if ($update == true) : ?>
     <button class="update" type="submit" name="update">Update</button>
 <?php else : ?>
     <div class="actionbuttons">
-        <button class="cancel" type="button" onclick="cancelForm()">Cancel</button>
+        <button class="cancel" type="button" onclick="cancelForm(<?php echo $acy_id; ?>, <?php echo $term; ?>, <?php echo $submitted; ?>)">Cancel</button>
         <span class="button-gap"></span>
         <button class="save" type="submit" name="save" onclick="return confirmCreate()">Create</button>
     </div>
     <script>
-    function cancelForm() {
-        if (confirm("Are you sure you want to cancel? Any selected program name and course code will not be saved.")) {
-            window.location.href = 'myexams.php';
-        }
+function cancelForm(acyId, term, submitted) {
+    if (confirm("Are you sure you want to cancel? Any selected program name and course code will not be saved.")) {
+        reloadPage(acyId, term, submitted);
     }
+}
 
-    function confirmCreate() {
-        return confirm("Are you sure you want to create the course folder?");
+function confirmCreate() {
+    if (confirm("Are you sure you want to create the course folder?")) {
+        // The form will be submitted, and the page will be reloaded by coursefolder.php
+        return true;
     }
-    </script>
+    return false;
+}
+
+function reloadPage(acyId, term, submitted) {
+    window.location.href = `myexams.php?acy_id=${acyId}&term=${term}&submitted=${submitted}`;
+}
+</script>
 <?php endif; ?>  
                                         
                                     </form>
@@ -331,53 +359,55 @@ $term = isset($_GET['term']) ? intval($_GET['term']) : null;
 <!--boxes-->
 <?php
                 // Modify the query to include academic year and term filtering
-                $query = "SELECT cs.*, COUNT(ct.course_topic_id) as topic_count 
-                          FROM prof_course_subject cs
-                          LEFT JOIN prof_course_topic ct ON cs.course_subject_id = ct.course_subject_id
-                          WHERE cs.account_id = ?";
-                
-                $params = array($account_id);
-                $types = "i";
-
-                if ($acy_id !== null && $term !== null) {
-                    $query .= " AND cs.acy_id = ? AND cs.term = ?";
-                    $params[] = $acy_id;
-                    $params[] = $term;
-                    $types .= "ii";
-                }
-
-                $query .= " GROUP BY cs.course_subject_id";
-
-                $stmt = $mysqli->prepare($query);
-                $stmt->bind_param($types, ...$params);
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                if ($result->num_rows === 0) { ?>
-                    <p class="header" style="margin-left: 50px;">No course folders found for the selected criteria.</p>
-                <?php } else { ?>
-                    <div style="flex-wrap: wrap; margin-left: 30px;">
-                        <?php while ($row = $result->fetch_assoc()) :
-                            $course_subject_id = $row['course_subject_id'];
-                            $courseCode = $row['course_code'];
-                            $hasTopics = $row['topic_count'] > 0;
-                        ?>
-            <section id="container2" style="cursor:pointer">
-                <div class="emservices">
-                    <div class="mebox">
-                        <div class="boxme">
+                $query = "SELECT cs.*, COUNT(ct.course_topic_id) as topic_count, 
+                sc.course_code 
+         FROM prof_course_subject cs
+         LEFT JOIN prof_course_topic ct ON cs.course_subject_id = ct.course_subject_id
+         LEFT JOIN soe_assessment_db.syllabus_course sc ON cs.syllabus_course_id = sc.syllabus_course_id
+         WHERE cs.account_id = ?";
+      
+      $params = array($account_id);
+      $types = "i";
+      
+      if ($acy_id !== null && $term !== null) {
+          $query .= " AND cs.acy_id = ? AND cs.term = ?";
+          $params[] = $acy_id;
+          $params[] = $term;
+          $types .= "ii";
+      }
+      
+      $query .= " GROUP BY cs.course_subject_id";
+      
+      $stmt = $mysqli_ramex->prepare($query);
+      $stmt->bind_param($types, ...$params);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      
+      if ($result->num_rows === 0) { ?>
+          <p class="header" style="margin-left: 50px;">No course folders found for the selected criteria.</p>
+<?php } else { ?>
+    <div style="flex-wrap: wrap; margin-left: 30px;">
+        <?php while ($row = $result->fetch_assoc()) :
+            $course_subject_id = $row['course_subject_id'];
+            $courseCode = $row['course_code']; // Use course_code instead of syllabus_course_id
+            $hasTopics = $row['topic_count'] > 0;
+        ?>
+        <section id="container2" style="cursor:pointer">
+            <div class="emservices">
+                <div class="mebox">
+                    <div class="boxme">
                         <div class="fill-div" onclick="handleClick(event, '<?php echo $course_subject_id; ?>', '<?php echo urlencode($courseCode); ?>')">
-                                                <div class="options">
-                                                    <img src="./img/delete.png" alt="Delete" onclick="confirmDelete(event, '<?php echo $row['course_subject_id']; ?>')" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
-                                                </div>
-                                                <p class="malakingbox">
-                                                    <?php echo $courseCode; ?>
-                                                </p>
-                                            </div>
+                        <div class="options">
+    <img src="./img/delete.png" alt="Delete" onclick="confirmDelete(event, '<?php echo $row['course_subject_id']; ?>', <?php echo $acy_id; ?>, <?php echo $term; ?>, <?php echo $submitted; ?>)" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
+</div>
+                            <p class="malakingbox">
+                                <?php echo $courseCode; ?>
+                            </p>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
         <?php endwhile; ?>
     </div>
 <?php } $stmt->close(); ?>
@@ -399,32 +429,35 @@ function handleClick(event, courseSubjectId, courseCode) {
     window.location.href = "topic.php?course_subject_id=" + courseSubjectId + "&course_code=" + courseCode;
 }
 
-function confirmDelete(event, courseSubjectId) {
-    event.stopPropagation(); // Stop the event from propagating to parent elements
+function confirmDelete(event, courseSubjectId, acyId, term, submitted) {
+    event.stopPropagation(); // Prevent the event from propagating to parent elements
 
-    // Display confirmation message with Yes/No options
     if (confirm("Are you sure you want to delete this course folder?")) {
         // User clicked Yes, proceed with deletion
-        deleteCourseFolder(courseSubjectId);
+        deleteCourseFolder(courseSubjectId, acyId, term, submitted);
+    } else {
+        // User clicked No, just reload the page
+        reloadPage(acyId, term, submitted);
     }
 }
 
-function deleteCourseFolder(courseSubjectId) {
+function deleteCourseFolder(courseSubjectId, acyId, term, submitted) {
     // Create an XMLHttpRequest object
     var xhr = new XMLHttpRequest();
 
     // Set up the request
-    xhr.open("GET", "coursefolder.php?delete=" + courseSubjectId, true);
+    xhr.open("GET", `coursefolder.php?delete=${courseSubjectId}&acy_id=${acyId}&term=${term}&submitted=${submitted}`, true);
 
     // Set up the callback function
     xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
-                // Deletion successful, refresh the page
-                window.location.href = "myexams.php";
+                // Deletion successful, reload the page
+                reloadPage(acyId, term, submitted);
             } else {
-                // Deletion failed, display an error message
+                // Deletion failed, display an error message and reload the page
                 alert("Failed to delete the course folder. Please try again.");
+                reloadPage(acyId, term, submitted);
             }
         }
     };
@@ -533,6 +566,16 @@ function handleAction(select) {
 
     // Attach an event listener to the search input
     document.getElementById("live_search").addEventListener("input", handleSearchInput);
+
+    // Attach an event listener to the course code select element
+    document.getElementById('course_code_select').addEventListener('change', function() {
+    var selectedOption = this.value.split('|');
+    document.getElementById('syllabus_course_id').value = selectedOption[0];
+    document.getElementById('selected_course_code').value = selectedOption[1];
+    console.log('Selected syllabus_course_id:', selectedOption[0]);
+    console.log('Selected course_code:', selectedOption[1]);
+});
+
             </script>
 <?php
         }
