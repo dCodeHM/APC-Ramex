@@ -1,10 +1,10 @@
 <?php 
 session_start();
 
-include("config/db.php");
+include("config/RAMeXSO.php");
 include("config/functions.php");
 
-$user_data = check_login($conn);
+$user_data = check_login($conn_soe);
 
 if (isset($_SESSION['status'])) {
 echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -15,8 +15,8 @@ unset($_SESSION['status']);
 }
 
 $id = $_SESSION['account_id'];
-$sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
-$gotResults = mysqli_query($conn, $sql);
+$sql = "SELECT * FROM soe_assessment_db.account WHERE account_id = '$id' LIMIT 1";
+$gotResults = mysqli_query($conn_soe, $sql);
 if ($gotResults){
 if(mysqli_num_rows($gotResults)>0){
 while($row = mysqli_fetch_array($gotResults)){

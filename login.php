@@ -1,7 +1,7 @@
 <?php 
 session_start();
 
-include("config/db.php");
+include("config/RAMeXSO.php");
 include("config/functions.php");
 
 if($_SERVER["REQUEST_METHOD"] == "POST")
@@ -11,8 +11,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 
   if(!empty($user_email) && !empty($pwd)){
     // Query database for user
-    $query = "SELECT * FROM account WHERE user_email = '$user_email' LIMIT 1";
-    $result = mysqli_query($conn, $query);
+    $query = "SELECT * FROM soe_assessment_db.account WHERE user_email = '$user_email' LIMIT 1";
+    $result = mysqli_query($conn_soe, $query);
 
     if($result && mysqli_num_rows($result) > 0)
     {
@@ -20,7 +20,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
         
         // Check if the password matches
         // Note: replace this line with password_verify if using hashed passwords
-        if($user_data['pwd'] === $pwd){
+        if($user_data['user_password'] === $pwd){
             $_SESSION['account_id'] = $user_data['account_id'];
             $_SESSION['user_email'] = $user_data['user_email'];
             $_SESSION['first_name'] = $user_data['first_name'];

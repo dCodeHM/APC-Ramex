@@ -1,10 +1,10 @@
 <?php 
 session_start();
 
-include("config/db.php");
+include("config/RAMeXSO.php");
 include("config/functions.php");
 
-$user_data = check_login($conn);
+$user_data = check_login($conn_soe);
 ?>
 
 <!DOCTYPE html>

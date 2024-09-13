@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-include("config/db.php");
+include("config/RAMeXSO.php");
 include("config/functions.php");
 
-$user_data = check_login($conn); // Check if the user is logged in and was previously an Executive Director
+$user_data = check_login($conn_soe); // Check if the user is logged in and was previously an Executive Director
 if (!isset($_SESSION['account_id']) || $_SESSION['role'] !== 'Executive Director') {
     header("Location: login.php"); // Redirect to login page if not logged in or no longer an Executive Director
     exit(); // Ensure script stops executing after redirection
