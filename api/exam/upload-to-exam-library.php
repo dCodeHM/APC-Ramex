@@ -1,27 +1,54 @@
 <?php
-include("../../config/db.php");
-include("../../config/functions.php");
+// upload-to-exam-library.php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Include necessary configurations and database connections
+include("config/RAMeXSO.php");
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $exam_id = $_POST['exam_id'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $exam_id = $_POST["exam_id"];
+    // Start a transaction
+    $conn_ramex->begin_transaction();
 
-    // Update the in_exam_library column to 1 for the specific exam
-    $sql = "UPDATE exam SET in_exam_library = 1 WHERE exam_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $exam_id);
+    try {
+        // Update exam details if necessary
 
-    if ($stmt->execute()) {
-        echo "Exam uploaded to library successfully.";
-    } else {
-        echo "Error uploading exam to library: " . $stmt->error;
+        // Process sections
+        foreach ($_POST['sections'] as $section) {
+            // Insert or update section data
+            // Use $section['item_name'], $section['total_points'], $section['clo_id_range']
+        }
+
+        // Process questions
+        foreach ($_POST['questions'] as $question) {
+            // Insert question
+            $stmt = $conn_ramex->prepare("INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("isssi", $exam_id, $question['question_text'], $question['clo_id'], $question['difficulty'], $question['question_points']);
+            $stmt->execute();
+            $question_id = $stmt->insert_id;
+
+            // Process choices
+            foreach ($question['choices'] as $choice) {
+                // Insert choice
+                $stmt = $conn_ramex->prepare("INSERT INTO question_choices (question_id, is_correct, answer_text) VALUES (?, ?, ?)");
+                $stmt->bind_param("iis", $question_id, $choice['is_correct'], $choice['answer_text']);
+                $stmt->execute();
+
+                // Handle answer image upload if present
+                if (isset($choice['answer_image'])) {
+                    // Process and save the image file
+                }
+            }
+        }
+
+        // Commit the transaction
+        $conn_ramex->commit();
+        echo "Exam successfully uploaded to the library.";
+    } catch (Exception $e) {
+        // Rollback the transaction in case of error
+        $conn_ramex->rollback();
+        echo "Error: " . $e->getMessage();
     }
-
-    $stmt->close();
+} else {
+    echo "Invalid request method.";
 }
-
-$conn->close();

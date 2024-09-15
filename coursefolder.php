@@ -1,3 +1,4 @@
+<!-- coursefolder.php -->
 <?php
 $course_subject_id = 0;
 $syllabus_course_id = '';

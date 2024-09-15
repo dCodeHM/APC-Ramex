@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config/RAMeXSO.php");
+include("config/db.php");
 include("config/functions.php");
 
 ini_set('display_errors', 1);
@@ -10,7 +10,7 @@ error_reporting(E_ALL);
 // No cache header
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 
-$user_data = check_login($conn_soe);
+$user_data = check_login($conn);
 
 if (!isset($_SESSION['account_id'])) {
     // Redirect to the login page if the user is not logged in
@@ -37,15 +37,14 @@ $account_id = $_SESSION['account_id'];
 
 // Display the user-specific information
 $sql = "SELECT * FROM account WHERE account_id = $account_id";
-$result = mysqli_query($conn_soe, $sql); // Replace with data from the database
+$result = mysqli_query($conn, $sql); // Replace with data from the database
 if ($result) {
     $row = mysqli_fetch_array($result);
     $user_email = $row['user_email'];
-    $pwd = $row['user_password'];
+    $pwd = $row['pwd'];
     $first_name = $row['first_name'];
     $last_name = $row['last_name'];
     $role = $row['role'];
-    $program_name = $row['program_name'];
 }
 
 // Retrieve the course_topic_id from the URL
@@ -53,9 +52,9 @@ $course_topic_id = isset($_GET['course_topic_id']) ? intval($_GET['course_topic_
 
 // Fetch the course_subject_id using the course_topic_id
 $sql = "SELECT course_subject_id FROM prof_course_topic WHERE course_topic_id = ?";
-$stmt = $conn_ramex->prepare($sql);
+$stmt = $conn->prepare($sql);
 if (!$stmt) {
-    die("Error preparing statement: " . $conn_ramex->error);
+    die("Error preparing statement: " . $conn->error);
 }
 
 $stmt->bind_param("i", $course_topic_id);
@@ -69,9 +68,9 @@ $course_subject_id = $course_topic['course_subject_id'];
 
 // Fetch the exam details based on the course_topic_id
 $sql = "SELECT * FROM exam WHERE course_topic_id = ?";
-$stmt = $conn_ramex->prepare($sql);
+$stmt = $conn->prepare($sql);
 if (!$stmt) {
-    die("Error preparing statement: " . $conn_ramex->error);
+    die("Error preparing statement: " . $conn->error);
 }
 
 $stmt->bind_param("i", $course_topic_id);
@@ -86,9 +85,9 @@ $exam_id = $exam['exam_id'];
 
 // Fetch the instructions based on the exam_id
 $sql = "SELECT * FROM question WHERE exam_id = ?";
-$stmt = $conn_ramex->prepare($sql);
+$stmt = $conn->prepare($sql);
 if (!$stmt) {
-    die("Error preparing statement: " . $conn_ramex->error);
+    die("Error preparing statement: " . $conn->error);
 }
 
 $stmt->bind_param("i", $exam_id);
@@ -98,59 +97,6 @@ if (!$stmt->execute()) {
 
 $questions_result = $stmt->get_result();
 
-// Fetch the exam details and related activity name
-$sql = "SELECT e.*, pct.course_topics as activity_name, pct.activity_id 
-        FROM exam e 
-        JOIN prof_course_topic pct ON e.course_topic_id = pct.course_topic_id 
-        WHERE e.exam_id = ?";
-$stmt = $conn_ramex->prepare($sql);
-if (!$stmt) {
-    die("Error preparing statement: " . $conn_ramex->error);
-}
-
-$stmt->bind_param("i", $exam_id);
-if (!$stmt->execute()) {
-    die("Error executing statement: " . $stmt->error);
-}
-
-$result = $stmt->get_result();
-$exam = $result->fetch_assoc();
-
-// Now fetch the numbered_activity details
-$sql = "SELECT item_name, total_points, clo_id_range 
-        FROM numbered_activity 
-        WHERE activity_id = ?";
-$stmt = $conn_soe->prepare($sql);
-if (!$stmt) {
-    die("Error preparing statement: " . $conn_soe->error);
-}
-
-$stmt->bind_param("i", $exam['activity_id']);
-if (!$stmt->execute()) {
-    die("Error executing statement: " . $stmt->error);
-}
-
-$result = $stmt->get_result();
-$numbered_activity = $result->fetch_assoc();
-
-// Process the numbered_activity data
-$item_names = explode('~', $numbered_activity['item_name']);
-$total_points = explode('~', $numbered_activity['total_points']);
-$clo_id_ranges = explode('~', $numbered_activity['clo_id_range']);
-
-// Create an array to hold the processed data
-$numbered_activity_data = [];
-for ($i = 0; $i < count($item_names); $i++) {
-    $numbered_activity_data[] = [
-        'item_name' => $item_names[$i],
-        'total_points' => $total_points[$i],
-        'clo_id_range' => $clo_id_ranges[$i]
-    ];
-}
-
-// Encode the data as JSON for use in JavaScript
-$numbered_activity_json = json_encode($numbered_activity_data);
-
 
 // ------------------- Fetch CLOs -------------------
 
@@ -158,9 +104,9 @@ $numbered_activity_json = json_encode($numbered_activity_data);
 $course_code = isset($_GET['course_code']) ? $_GET['course_code'] : '';
 
 $sql = "SELECT course_subject_id FROM prof_course_subject WHERE course_code = ?";
-$stmt = $conn_ramex->prepare($sql);
+$stmt = $conn->prepare($sql);
 if (!$stmt) {
-    die("Error preparing statement: " . $conn_ramex->error);
+    die("Error preparing statement: " . $conn->error);
 }
 $stmt->bind_param("s", $course_code);
 if (!$stmt->execute()) {
@@ -171,10 +117,10 @@ $course_subject = $result->fetch_assoc();
 $course_subject_id = $course_subject['course_subject_id'];
 
 // Fetch the course_syllabus_id using the course_subject_id
-$sql = "SELECT syllabus_course_id FROM syllabus_course WHERE course_code = ?";
-$stmt = $conn_soe->prepare($sql);
+$sql = "SELECT course_syllabus_id FROM course_syllabus WHERE course_code = ?";
+$stmt = $conn->prepare($sql);
 if (!$stmt) {
-    die("Error preparing statement: " . $conn_soe->error);
+    die("Error preparing statement: " . $conn->error);
 }
 $stmt->bind_param("s", $course_code);
 if (!$stmt->execute()) {
@@ -182,13 +128,13 @@ if (!$stmt->execute()) {
 }
 $result = $stmt->get_result();
 $course_syllabus = $result->fetch_assoc();
-$course_syllabus_id = $course_syllabus['syllabus_course_id'];
+$course_syllabus_id = $course_syllabus['course_syllabus_id'];
 
 // Fetch the CLOs using the course_syllabus_id
-$sql = "SELECT * FROM syllabus_clo WHERE syllabus_course_id = ?";
-$stmt = $conn_soe->prepare($sql);
+$sql = "SELECT clo_id, clo_number, clo_details FROM course_outcomes WHERE course_syllabus_id = ?";
+$stmt = $conn->prepare($sql);
 if (!$stmt) {
-    die("Error preparing statement: " . $conn_soe->error);
+    die("Error preparing statement: " . $conn->error);
 }
 $stmt->bind_param("i", $course_syllabus_id);
 if (!$stmt->execute()) {
@@ -203,15 +149,13 @@ $clos_json = json_encode($clos);
 // ------------------- Question Library (Fetch Related Questions) -------------------
 
 // Function to fetch related questions based on course_topic_id
-function fetchRelatedQuestions($conn_ramex, $course_topic_id)
+function fetchRelatedQuestions($conn, $course_topic_id)
 {
-    global $conn_soe; // Add this line to access the soe_assessment_db connection
-
     // Get the course_subject_id based on the course_topic_id
     $sql = "SELECT course_subject_id FROM prof_course_topic WHERE course_topic_id = ?";
-    $stmt = $conn_ramex->prepare($sql);
+    $stmt = $conn->prepare($sql);
     if (!$stmt) {
-        die("Error preparing statement: " . $conn_ramex->error);
+        die("Error preparing statement: " . $conn->error);
     }
     $stmt->bind_param("i", $course_topic_id);
     if (!$stmt->execute()) {
@@ -223,9 +167,9 @@ function fetchRelatedQuestions($conn_ramex, $course_topic_id)
 
     // Get all the course_topic_ids with the same course_subject_id
     $sql = "SELECT course_topic_id FROM prof_course_topic WHERE course_subject_id = ?";
-    $stmt = $conn_ramex->prepare($sql);
+    $stmt = $conn->prepare($sql);
     if (!$stmt) {
-        die("Error preparing statement: " . $conn_ramex->error);
+        die("Error preparing statement: " . $conn->error);
     }
     $stmt->bind_param("i", $course_subject_id);
     if (!$stmt->execute()) {
@@ -240,9 +184,9 @@ function fetchRelatedQuestions($conn_ramex, $course_topic_id)
     // Get all the exam_ids based on the course_topic_ids
     $placeholders = implode(',', array_fill(0, count($course_topic_ids), '?'));
     $sql = "SELECT exam_id FROM exam WHERE course_topic_id IN ($placeholders)";
-    $stmt = $conn_ramex->prepare($sql);
+    $stmt = $conn->prepare($sql);
     if (!$stmt) {
-        die("Error preparing statement: " . $conn_ramex->error);
+        die("Error preparing statement: " . $conn->error);
     }
     $stmt->bind_param(str_repeat('i', count($course_topic_ids)), ...$course_topic_ids);
     if (!$stmt->execute()) {
@@ -258,16 +202,16 @@ function fetchRelatedQuestions($conn_ramex, $course_topic_id)
     $placeholders = implode(',', array_fill(0, count($exam_ids), '?'));
     $sql = "
         SELECT q.*, qc.question_choices_id, qc.answer_text, qc.answer_image, qc.is_correct, qc.letter, co.clo_number
-        FROM ramexdb.question q
-        LEFT JOIN ramexdb.question_choices qc ON q.answer_id = qc.answer_id
-        LEFT JOIN soe_assessment_db.syllabus_clo co ON q.clo_id = co.clo_id
+        FROM question q
+        LEFT JOIN question_choices qc ON q.answer_id = qc.answer_id
+        LEFT JOIN course_outcomes co ON q.clo_id = co.clo_id
         WHERE q.exam_id IN ($placeholders) AND q.in_question_library = 1
         ORDER BY q.question_id
     ";
 
-    $stmt = $conn_ramex->prepare($sql);
+    $stmt = $conn->prepare($sql);
     if (!$stmt) {
-        die("Error preparing statement: " . $conn_ramex->error);
+        die("Error preparing statement: " . $conn->error);
     }
     $stmt->bind_param(str_repeat('i', count($exam_ids)), ...$exam_ids);
     if (!$stmt->execute()) {
@@ -290,9 +234,9 @@ $exam_id = isset($_GET['exam_id']) ? intval($_GET['exam_id']) : 0;
 
 // Use exam_id to get the easy, normal, and hard int columns in the exam table
 $sql = "SELECT * FROM exam WHERE exam_id = ?";
-$stmt = $conn_ramex->prepare($sql);
+$stmt = $conn->prepare($sql);
 if (!$stmt) {
-    die("Error preparing statement: " . $conn_ramex->error);
+    die("Error preparing statement: " . $conn->error);
 }
 
 $stmt->bind_param("i", $exam_id);
@@ -308,7 +252,7 @@ $normal = $exam['normal'];
 $hard = $exam['hard'];
 
 // Fetch the related questions
-$related_questions = fetchRelatedQuestions($conn_ramex, $course_topic_id, $easy, $normal, $hard);
+$related_questions = fetchRelatedQuestions($conn, $course_topic_id, $easy, $normal, $hard);
 
 
 function resizeImage($imageData, $maxWidth, $maxHeight) {
@@ -377,24 +321,6 @@ if (!empty($_FILES['answer_image']['name'][0])) {
     }
 }
 
-
-// Fetch the exam details and related activity name
-$sql = "SELECT e.*, pct.course_topics as activity_name 
-        FROM exam e 
-        JOIN prof_course_topic pct ON e.course_topic_id = pct.course_topic_id 
-        WHERE e.exam_id = ?";
-$stmt = $conn_ramex->prepare($sql);
-if (!$stmt) {
-    die("Error preparing statement: " . $conn_ramex->error);
-}
-
-$stmt->bind_param("i", $exam_id);
-if (!$stmt->execute()) {
-    die("Error executing statement: " . $stmt->error);
-}
-
-$result = $stmt->get_result();
-$exam = $result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -407,7 +333,7 @@ $exam = $result->fetch_assoc();
     <meta name="author" content="APC AcademX">
 
     <!-- Title -->
-    <title>APC AcademX | MC-Exam Page</title>
+    <title>APC AcademX | Welcome</title>
     <link rel="shortcut icon" type="x-icon" href="./img/icon.png">
     <!-- Styles -->
     <link rel="stylesheet" href="./css/sidebar.css?v=<?php echo time(); ?>">
@@ -616,8 +542,8 @@ $exam = $result->fetch_assoc();
                                 $cloIds = explode(',', $question['details']['clo_id']);
                                 $cloNumbers = array();
                                 foreach ($cloIds as $cloId) {
-                                    $sql = "SELECT clo_number FROM soe_assessment_db.syllabus_clo WHERE clo_id = ?";
-                                    $stmt = $conn_soe->prepare($sql);
+                                    $sql = "SELECT clo_number FROM course_outcomes WHERE clo_id = ?";
+                                    $stmt = $conn->prepare($sql);
                                     $stmt->bind_param("i", $cloId);
                                     $stmt->execute();
                                     $result = $stmt->get_result();
@@ -693,272 +619,33 @@ $exam = $result->fetch_assoc();
 
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    const addQuestionButton = document.getElementById("add_question");
-    const newQuestionsContainer = document.getElementById("new_questions");
-    const numberedActivityData = <?php echo $numbered_activity_json; ?>;
-    let questionCounter = 0;
+                    document.getElementById("upload-to-exam-library-btn").addEventListener("click", function() {
+                        var exam_id = <?php echo $exam_id; ?>;
 
-    function createQuestion(sectionIndex, questionNumber, totalPoints, cloIdRange) {
-        questionCounter++;
-        const html = String.raw;
-        
-        var questionHTML = html`
-            <div class="new-question bg-zinc-100 mt-6 p-6 gap-4 outline-zinc-300 rounded-md outline outline-1 flex flex-col question">
-                <h3 class="text-2xl font-bold">Section ${sectionIndex + 1} - Question ${questionNumber}</h3>
-                <div class="flex flex-col">
-                    <label class="mb-2 text-2xl font-bold" for="question_text">Question Text</label>
-                    <textarea class="bg-white py-2 px-4 font-medium text-xl rounded-lg outline outline-1 outline-zinc-300" name="new_question_text[]"></textarea>
-                </div>
-                <div class="flex flex-col">
-                    <label class="mb-2 text-2xl font-bold" for="new_clo_id">Course Learning Outcome (CLO) ID</label>
-                    <input class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_clo_id[]" value="${cloIdRange}" readonly>
-                </div>
-                <div class="flex flex-col">
-                    <label class="mb-2 font-bold text-2xl" for="difficulty">Difficulty</label>
-                    <select class="bg-white font-medium text-xl py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" name="new_difficulty[]">
-                        <option value="E">Easy</option>
-                        <option value="N">Normal</option>
-                        <option value="H">Hard</option>
-                    </select>
-                </div>
-                <div class="flex flex-col">
-                    <label class="mb-2 font-bold text-2xl" for="question_points">Question Points</label>
-                    <input class="bg-white py-2 font-medium text-xl px-4 rounded-lg outline outline-1 outline-zinc-300 new-question-points" type="number" name="new_question_points[]" value="${totalPoints}" readonly>
-                </div>
-                <div class="question-choices">
-            <h4 class="font-bold mb-2 text-2xl">Choices</h4>
-            <div class="choices-container flex flex-col gap-4">
-                <div class="choice flex gap-4 items-center">
-                    <input type="checkbox" name="new_is_correct[]" value="1">
-                    <p class="font-semibold text-2xl">A</p>
-                    <div class="flex flex-col w-full">
-                        <input class="font-medium text-xl bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                    </div>
-                    <div class="flex flex-col">
-                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                    </div>
-                </div>
-                <div class="choice flex gap-4 items-center">
-                    <input type="checkbox" name="new_is_correct[]" value="1">
-                    <p class="font-semibold text-2xl">B</p>
-                    <div class="flex flex-col w-full">
-                        <input class="font-medium text-xl bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                    </div>
-                    <div class="flex flex-col">
-                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                    </div>
-                </div>
-            </div>
-            <button type="button" class="add-choice-btn px-4 py-2 bg-[#19da19] hover:bg-[#38dc38]/80 text-white text-xl font-bold rounded-md mt-2">+ Add Choice</button>
-        </div>
-        <div class="flex justify-end">
-            <button class="remove_question px-6 py-3 bg-[#f04a26] hover:bg-[#ff6643]/80 rounded-md text-white text-xl font-bold" type="button">Remove Question</button>
-        </div>
-    </div>
-            </div>
-        `;
-
-        // Add this event listener after the questionHTML is inserted into the DOM
-document.getElementById("new_questions").addEventListener("click", function(event) {
-    if (event.target.classList.contains("add-choice-btn")) {
-        var choicesContainer = event.target.previousElementSibling;
-        var choiceCount = choicesContainer.children.length;
-
-        if (choiceCount < 5) {
-            var choiceLetter = String.fromCharCode(65 + choiceCount);
-            var choiceHTML = `
-                <div class="choice flex gap-4 items-center">
-                    <input type="checkbox" name="new_is_correct[]" value="1">
-                    <p class="font-semibold text-2xl">${choiceLetter}</p>
-                    <div class="flex flex-col w-full">
-                        <input class="font-medium text-xl bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="text" name="new_answer_text[]" placeholder="Type answer text here...">
-                    </div>
-                    <div class="flex flex-col">
-                        <input class="bg-white py-2 px-4 rounded-lg outline outline-1 outline-zinc-300" type="file" name="new_answer_image[]">
-                    </div>
-                    <button type="button" class="remove-choice-btn px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 transition duration-200 ease-in-out">
-                        X
-                    </button>
-                </div>
-            `;
-            choicesContainer.insertAdjacentHTML('beforeend', choiceHTML);
-        } else {
-            alert("Maximum of 5 choices allowed.");
-        }
-    }
-});
-
-// Add this event listener to handle removing choices
-document.getElementById("new_questions").addEventListener("click", function(event) {
-    if (event.target.classList.contains("remove-choice-btn")) {
-        event.target.closest(".choice").remove();
-        
-        // Update the choice letters
-        var choicesContainer = event.target.closest(".choices-container");
-        var choices = choicesContainer.querySelectorAll(".choice");
-        choices.forEach((choice, index) => {
-            choice.querySelector("p").textContent = String.fromCharCode(65 + index);
-        });
-    }
-});
-
-        newQuestionsContainer.insertAdjacentHTML('beforeend', questionHTML);
-    }
-
-    function createQuestionsForSection(sectionData, sectionIndex) {
-        const [start, end] = sectionData.item_name.split('-').map(Number);
-        const totalQuestions = end - start + 1;
-
-        for (let i = 0; i < totalQuestions; i++) {
-            createQuestion(sectionIndex, i + 1, sectionData.total_points, sectionData.clo_id_range);
-        }
-    }
-
-    // Create initial questions based on numbered_activity data
-    numberedActivityData.forEach((sectionData, index) => {
-        createQuestionsForSection(sectionData, index);
-    });
-
-    // Update the add_question button to add a new question to the last section
-    addQuestionButton.addEventListener('click', function() {
-        const lastSection = numberedActivityData[numberedActivityData.length - 1];
-        const lastSectionIndex = numberedActivityData.length - 1;
-        const currentQuestions = document.querySelectorAll('.new-question').length;
-        createQuestion(lastSectionIndex, currentQuestions + 1, lastSection.total_points, lastSection.clo_id_range);
-    });
-
-    // Update total questions and points
-    function updateTotals() {
-        const totalQuestions = document.querySelectorAll('.new-question').length;
-        let totalPoints = 0;
-        document.querySelectorAll('.new-question-points').forEach(input => {
-            totalPoints += parseInt(input.value) || 0;
-        });
-
-        document.getElementById('total-questions').innerText = `(${totalQuestions} Questions)`;
-        document.getElementById('total-points').innerText = `(${totalPoints} Points)`;
-    }
-
-    // Call updateTotals initially and whenever a question is added or removed
-    updateTotals();
-    addQuestionButton.addEventListener('click', updateTotals);
-    newQuestionsContainer.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove_question')) {
-            e.target.closest('.new-question').remove();
-            updateTotals();
-        }
-    });
-});
-
-
-// Upload to Exam Library
-document.getElementById("upload-to-exam-library-btn").addEventListener("click", function() {
-        var exam_id = <?php echo $exam_id; ?>;
-        var formData = new FormData();
-
-        formData.append("exam_id", exam_id);
-
-        // Collect data from all questions
-        document.querySelectorAll('.new-question').forEach((questionElement, index) => {
-            formData.append(`questions[${index}][question_text]`, questionElement.querySelector('textarea[name="new_question_text[]"]').value);
-            formData.append(`questions[${index}][clo_id]`, questionElement.querySelector('input[name="new_clo_id[]"]').value);
-            formData.append(`questions[${index}][difficulty]`, questionElement.querySelector('select[name="new_difficulty[]"]').value);
-            formData.append(`questions[${index}][question_points]`, questionElement.querySelector('input[name="new_question_points[]"]').value);
-
-            // Collect choices data (if applicable)
-            questionElement.querySelectorAll('.choice').forEach((choiceElement, choiceIndex) => {
-                formData.append(`questions[${index}][choices][${choiceIndex}][is_correct]`, choiceElement.querySelector('input[type="checkbox"]').checked ? '1' : '0');
-                formData.append(`questions[${index}][choices][${choiceIndex}][answer_text]`, choiceElement.querySelector('input[name="new_answer_text[]"]').value);
-                
-                const answerImageInput = choiceElement.querySelector('input[name="new_answer_image[]"]');
-                if (answerImageInput && answerImageInput.files.length > 0) {
-                    formData.append(`questions[${index}][choices][${choiceIndex}][answer_image]`, answerImageInput.files[0]);
-                }
-            });
-        });
-
-        // Add section data
-        numberedActivityData.forEach((section, index) => {
-            formData.append(`sections[${index}][item_name]`, section.item_name);
-            formData.append(`sections[${index}][total_points]`, section.total_points);
-            formData.append(`sections[${index}][clo_id_range]`, section.clo_id_range);
-        });
-
-        fetch("http://localhost:8000/api/exam/upload-to-exam-library.php", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.text();
-            } else {
-                throw new Error("An error occurred while uploading the exam to the library.");
-            }
-        })
-        .then(text => {
-            alert(text);
-            // Optionally, you can reload the page or update the UI as needed
-        })
-        .catch(error => {
-            console.error(error);
-            alert(error.message);
-        });
-    });
-
-var exam_id = <?php echo $exam_id; ?>;
-        var formData = new FormData();
-
-        formData.append("exam_id", exam_id);
-
-        // Collect data from all questions
-        document.querySelectorAll('.new-question').forEach((questionElement, index) => {
-            formData.append(`questions[${index}][question_text]`, questionElement.querySelector('textarea[name="new_question_text[]"]').value);
-            formData.append(`questions[${index}][clo_id]`, Array.from(questionElement.querySelector('select[name="new_clo_id[]"]').selectedOptions).map(option => option.value).join(','));
-            formData.append(`questions[${index}][difficulty]`, questionElement.querySelector('select[name="new_difficulty[]"]').value);
-            formData.append(`questions[${index}][question_points]`, questionElement.querySelector('input[name="new_question_points[]"]').value);
-            formData.append(`questions[${index}][clo_id_range]`, questionElement.querySelector('input[name="new_clo_id_range[]"]').value);
-
-            // Collect choices data
-            questionElement.querySelectorAll('.choice').forEach((choiceElement, choiceIndex) => {
-                formData.append(`questions[${index}][choices][${choiceIndex}][is_correct]`, choiceElement.querySelector('input[type="checkbox"]').checked ? '1' : '0');
-                formData.append(`questions[${index}][choices][${choiceIndex}][answer_text]`, choiceElement.querySelector('input[name="new_answer_text[]"]').value);
-                
-                const answerImageInput = choiceElement.querySelector('input[name="new_answer_image[]"]');
-                if (answerImageInput.files.length > 0) {
-                    formData.append(`questions[${index}][choices][${choiceIndex}][answer_image]`, answerImageInput.files[0]);
-                }
-            });
-        });
-
-        // Add section data
-        numberedActivityData.forEach((section, index) => {
-            formData.append(`sections[${index}][item_name]`, section.item_name);
-            formData.append(`sections[${index}][total_points]`, section.total_points);
-            formData.append(`sections[${index}][clo_id_range]`, section.clo_id_range);
-        });
-
-        fetch("http://localhost:8000/api/exam/upload-to-exam-library.php", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.text();
-            } else {
-                throw new Error("An error occurred while uploading the exam to the library.");
-            }
-        })
-        .then(text => {
-            alert(text);
-            // Optionally, you can reload the page or update the UI as needed
-        })
-        .catch(error => {
-            console.error(error);
-            alert(error.message);
-        });
-
-
-                
+                        fetch("http://localhost:8000/api/exam/upload-to-exam-library.php", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/x-www-form-urlencoded"
+                                },
+                                body: "exam_id=" + exam_id
+                            })
+                            .then(function(response) {
+                                if (response.ok) {
+                                    return response.text();
+                                } else {
+                                    throw new Error("An error occurred while uploading the exam to the library.");
+                                }
+                            })
+                            .then(function(text) {
+                                alert(text);
+                                // Optionally, you can reload the page or update the UI as needed
+                            })
+                            .catch(function(error) {
+                                console.error(error);
+                                alert(error.message);
+                            });
+                    });
+                });
             </script>
 
         </div>
@@ -979,7 +666,7 @@ var exam_id = <?php echo $exam_id; ?>;
             <div class="mb-6">
                 <h3 class="font-semibold mb-2 text-3xl text-blue-800 drop-shadow-lg">Exam Details:</h3>
                 <p class="font-medium w-full py-3 px-6 rounded-lg text-2xl bg-white shadow-lg border-l-4 border-blue-500 transition duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl">
-                <?php echo htmlspecialchars($exam['activity_name']); ?>
+                    <?php echo htmlspecialchars($exam['exam_name']); ?>
                 </p>
             </div>
 
@@ -1015,15 +702,15 @@ var exam_id = <?php echo $exam_id; ?>;
             <hr class="mb-4 border-2 border-gray-400 rounded-lg">
 
             <div class="flex items-center mb-4 gap-6">
-    <h3 class="font-semibold text-3xl text-black drop-shadow-lg flex items-center">
-        Total Questions
-        <span class="text-xl font-medium text-green-400 ml-2" id="total-questions"></span>
-    </h3>
-    <h3 class="font-semibold text-3xl text-black drop-shadow-lg flex items-center">
-        Total Points
-        <span class="text-xl font-medium text-green-400 ml-2" id="total-points"></span>
-    </h3>
-</div>
+                <h3 class="font-semibold text-3xl text-black drop-shadow-lg flex items-center">
+                    Total Questions
+                    <span class="text-xl font-medium text-green-400 ml-2" id="total-questions"></span>
+                </h3>
+                <h3 class="font-semibold text-3xl text-black drop-shadow-lg flex items-center">
+                    Total Points
+                    <span class="text-xl font-medium text-green-400 ml-2" id="total-points"></span>
+                </h3>
+            </div>
             
             <div class="flex flex-col gap-6">
                 <?php
@@ -1222,9 +909,9 @@ var exam_id = <?php echo $exam_id; ?>;
                             <h3 class="font-bold text-2xl mt-4">Choices</h3>
                             <?php
                             $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
-                            $stmt = $conn_ramex->prepare($sql);
+                            $stmt = $conn->prepare($sql);
                             if (!$stmt) {
-                                die("Error preparing statement: " . $conn_ramex->error);
+                                die("Error preparing statement: " . $conn->error);
                             }
 
                             $stmt->bind_param("i", $question['answer_id']);
@@ -1946,7 +1633,8 @@ async function updateExistingQuestionChoices() {
 });
 
             // Add this script to pass CLO data to JavaScript
-            const clos = <?php echo json_encode($clos); ?>;
+            const clos = <?php echo $clos_json; ?>;
+
             // CLO Index Counter to make it 2D array
             var cloIndex = 0;
 
@@ -2258,22 +1946,6 @@ let questionCounter = 0;
                 $("#total-points").text(`(${newQuestionPoints} Points)`);
             });
         });
-
-        const numberedActivityData = <?php echo $numbered_activity_json; ?>;
-                console.log(numberedActivityData);
-
-// Access individual items
-numberedActivityData.forEach((item, index) => {
-    console.log(`Item ${index + 1}:`);
-    console.log(`Name: ${item.item_name}`);
-    console.log(`Total Points: ${item.total_points}`);
-    console.log(`CLO ID Range: ${item.clo_id_range}`);
-});
-
-
-    const clos = <?php echo json_encode($clos); ?>;
-    const numberedActivityData = <?php echo $numbered_activity_json; ?>;
-
     </script>
 </body>
 

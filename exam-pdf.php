@@ -263,7 +263,7 @@ function renderFooter($page, $totalPages) {
                         <div class="choices-container flex gap-4">
                             <?php
                             $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
-                            $stmt = $conn->prepare($sql);
+                            $stmt = $conn_ramex->prepare($sql);
                             $stmt->bind_param("i", $question['answer_id']);
                             $stmt->execute();
                             $choices_result = $stmt->get_result();
@@ -341,7 +341,7 @@ function renderFooter($page, $totalPages) {
                                     <span class="font-semibold"><?php echo $i + 1; ?>.</span>
                                     <?php
                                     $sql = "SELECT * FROM question_choices WHERE answer_id = ? AND is_correct = 1";
-                                    $stmt = $conn->prepare($sql);
+                                    $stmt = $conn_ramex->prepare($sql);
                                     $stmt->bind_param("i", $question['answer_id']);
                                     $stmt->execute();
                                     $choices_result = $stmt->get_result();
@@ -416,7 +416,7 @@ function renderFooter($page, $totalPages) {
                             <div class="choices-container ml-4">
                                 <?php
                                 $sql = "SELECT * FROM question_choices WHERE answer_id = ?";
-                                $stmt = $conn->prepare($sql);
+                                $stmt = $conn_ramex->prepare($sql);
                                 $stmt->bind_param("i", $question['answer_id']);
                                 $stmt->execute();
                                 $choices_result = $stmt->get_result();

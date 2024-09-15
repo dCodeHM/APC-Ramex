@@ -9,7 +9,7 @@ include("config/functions.php");
 global $mysqli_soe, $mysqli_ramex, $conn_ramex;
 
 
-$user_data = check_login($conn_ramex);
+$user_data = check_login($conn_soe);
 
 $account_id = $_SESSION['account_id'];
 
@@ -17,8 +17,8 @@ $acy_id = isset($_GET['acy_id']) ? intval($_GET['acy_id']) : 0;
 $term = isset($_GET['term']) ? intval($_GET['term']) : 0;
 $submitted = isset($_GET['submitted']) ? intval($_GET['submitted']) : 0;
 
-$sql = "SELECT * FROM  account WHERE account_id = '$account_id' LIMIT 1";
-$gotResults = mysqli_query($conn_ramex, $sql);
+$sql = "SELECT * FROM soe_assessment_db.account WHERE account_id = '$account_id' LIMIT 1";
+$gotResults = mysqli_query($conn_soe, $sql);
 if ($gotResults) {
 if (mysqli_num_rows($gotResults) > 0) {
 while ($row = mysqli_fetch_array($gotResults)) {
@@ -36,14 +36,15 @@ exit();
 
 // Display the user-specific information
 
-$result = mysqli_query($conn_ramex, $sql); // Replace with data from the database
+$result = mysqli_query($conn_soe, $sql); // Replace with data from the database
 if ($result) {
 $row = mysqli_fetch_array($result);
 $user_email = $row['user_email'];
-$pwd = $row['pwd'];
+$pwd = $row['user_password'];
 $first_name = $row['first_name'];
 $last_name = $row['last_name'];
 $role = $row['role'];
+$program_name = $row['program_name'];
 }
 // Assuming $course_code is the course folder name
 if (isset($course_code)) {
@@ -71,7 +72,7 @@ $term = isset($_GET['term']) ? intval($_GET['term']) : null;
 
 function getSyllabusCourses($connection) {
     $courses = array();
-    $sql = "SELECT syllabus_course_id, course_code FROM syllabus_course ORDER BY course_code";
+    $sql = "SELECT syllabus_course_id, course_code, program_id FROM syllabus_course ORDER BY course_code";
     $result = $connection->query($sql);
 
     if ($result && $result->num_rows > 0) {
@@ -86,6 +87,28 @@ function getSyllabusCourses($connection) {
 // $syllabusCourses = getSyllabusCourses($mysqli);
 $syllabusCourses = getSyllabusCourses($mysqli_soe);
 
+
+// New function to update the submitted value in prof_course_subject
+function updateSubmittedValue($conn_ramex, $account_id, $acy_id, $term, $submitted) {
+    $update_query = "UPDATE prof_course_subject 
+                     SET submitted = ? 
+                     WHERE account_id = ? AND acy_id = ? AND term = ?";
+    $update_stmt = mysqli_prepare($conn_ramex, $update_query);
+    mysqli_stmt_bind_param($update_stmt, "iiii", $submitted, $account_id, $acy_id, $term);
+    $result = mysqli_stmt_execute($update_stmt);
+    mysqli_stmt_close($update_stmt);
+
+    if ($result) {
+        // echo "<script>console.log('Submitted value updated successfully');</script>";
+    } else {
+        // echo "<script>console.log('Error updating submitted value: " . mysqli_error($conn_ramex) . "');</script>";
+    }
+}
+
+// Call the function to update the submitted value
+if ($acy_id && $term && isset($_GET['submitted'])) {
+    updateSubmittedValue($conn_ramex, $account_id, $acy_id, $term, $submitted);
+}
 
 ?>
 
@@ -288,31 +311,37 @@ $syllabusCourses = getSyllabusCourses($mysqli_soe);
         <select class="input" name="course_code" id="course_code_select" required>
             <option value="" disabled selected>None Selected</option>
             <?php
-            $sql = "SELECT sc.syllabus_course_id, sc.course_code 
-                    FROM soe_assessment_db.syllabus_course sc
-                    LEFT JOIN ramexdb.prof_course_subject pcs 
-                        ON sc.syllabus_course_id = pcs.syllabus_course_id 
-                        AND pcs.account_id = ? 
-                        AND pcs.acy_id = ? 
-                        AND pcs.term = ?
-                    WHERE pcs.syllabus_course_id IS NULL
-                    ORDER BY sc.course_code";
-            $stmt = $conn_soe->prepare($sql);
-            $stmt->bind_param("iii", $account_id, $acy_id, $term);
-            $stmt->execute();
-            $result = $stmt->get_result();
+// Assuming $program_name is available from the user's session or profile
+$program_name = $user_data['program_name']; // Make sure this is correctly set
 
-            if ($result && $result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $syllabus_course_id = $row['syllabus_course_id'];
-                    $course_code = $row['course_code'];
-                    echo "<option value=\"$syllabus_course_id|$course_code\">$course_code</option>";
-                }
-            } else {
-                echo "<option value=\"\">No courses available</option>";
-            }
-            $stmt->close();
-            ?>
+$sql = "SELECT sc.syllabus_course_id, sc.course_code 
+        FROM soe_assessment_db.syllabus_course sc
+        JOIN soe_assessment_db.program_name pl ON sc.program_id = pl.program_id
+        LEFT JOIN ramexdb.prof_course_subject pcs 
+            ON sc.syllabus_course_id = pcs.syllabus_course_id 
+            AND pcs.account_id = ? 
+            AND pcs.acy_id = ? 
+            AND pcs.term = ?
+        WHERE pcs.syllabus_course_id IS NULL
+        AND pl.program_name = ?  -- Filter by program_name
+        ORDER BY sc.course_code";
+
+$stmt = $conn_soe->prepare($sql);
+$stmt->bind_param("iiis", $account_id, $acy_id, $term, $program_name);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $syllabus_course_id = $row['syllabus_course_id'];
+        $course_code = $row['course_code'];
+        echo "<option value=\"$syllabus_course_id|$course_code\">$course_code</option>";
+    }
+} else {
+    echo "<option value=\"\">No courses available for your program</option>";
+}
+$stmt->close();
+?>
         </select>
     </div>
 
@@ -360,7 +389,7 @@ function reloadPage(acyId, term, submitted) {
 <?php
                 // Modify the query to include academic year and term filtering
                 $query = "SELECT cs.*, COUNT(ct.course_topic_id) as topic_count, 
-                sc.course_code 
+                sc.course_code, sc.syllabus_course_id
          FROM prof_course_subject cs
          LEFT JOIN prof_course_topic ct ON cs.course_subject_id = ct.course_subject_id
          LEFT JOIN soe_assessment_db.syllabus_course sc ON cs.syllabus_course_id = sc.syllabus_course_id
@@ -389,16 +418,20 @@ function reloadPage(acyId, term, submitted) {
     <div style="flex-wrap: wrap; margin-left: 30px;">
         <?php while ($row = $result->fetch_assoc()) :
             $course_subject_id = $row['course_subject_id'];
-            $courseCode = $row['course_code']; // Use course_code instead of syllabus_course_id
+            $courseCode = $row['course_code'];
+            $syllabus_course_id = $row['syllabus_course_id']; // Fetch the syllabus_course_id
             $hasTopics = $row['topic_count'] > 0;
         ?>
         <section id="container2" style="cursor:pointer">
             <div class="emservices">
                 <div class="mebox">
                     <div class="boxme">
-                        <div class="fill-div" onclick="handleClick(event, '<?php echo $course_subject_id; ?>', '<?php echo urlencode($courseCode); ?>')">
+                    <?php 
+$courseCode = trim($courseCode); // Trim the course code to remove any unwanted characters
+?>
+                        <div class="fill-div" onclick="handleClick(event, '<?php echo $course_subject_id; ?>', '<?php echo urlencode($courseCode); ?>', '<?php echo $syllabus_course_id; ?>', '<?php echo $account_id; ?>', '<?php echo $acy_id; ?>', '<?php echo $term; ?>')">
                         <div class="options">
-    <img src="./img/delete.png" alt="Delete" onclick="confirmDelete(event, '<?php echo $row['course_subject_id']; ?>', <?php echo $acy_id; ?>, <?php echo $term; ?>, <?php echo $submitted; ?>)" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
+    <img src="./img/x.png" alt="Delete" onclick="confirmDelete(event, '<?php echo $row['course_subject_id']; ?>', <?php echo $acy_id; ?>, <?php echo $term; ?>, <?php echo $submitted; ?>)" style="display: <?php echo $hasTopics ? 'none' : 'block'; ?>">
 </div>
                             <p class="malakingbox">
                                 <?php echo $courseCode; ?>
@@ -417,7 +450,7 @@ function reloadPage(acyId, term, submitted) {
 </div>
 </body>
 <script>
-function handleClick(event, courseSubjectId, courseCode) {
+function handleClick(event, courseSubjectId, courseCode, syllabusCourseId, accountId, acyId, term) {
     event.preventDefault(); // Prevent the default link behavior
 
     // Check if the delete button was clicked
@@ -425,8 +458,14 @@ function handleClick(event, courseSubjectId, courseCode) {
         return; // Do nothing if the delete button was clicked
     }
 
-    // Redirect to the topic.php page with the course subject ID and course code
-    window.location.href = "topic.php?course_subject_id=" + courseSubjectId + "&course_code=" + courseCode;
+    // Redirect to the topic.php page with all the parameters
+    window.location.href = "topic.php?course_subject_id=" + courseSubjectId + 
+                           "&course_code=" + encodeURIComponent(courseCode) + 
+                           "&syllabus_course_id=" + syllabusCourseId + 
+                           "&account_id=" + accountId + 
+                           "&acy_id=" + acyId + 
+                           "&term=" + term;
+                           console.log("Redirecting with syllabus_course_id:", syllabusCourseId); // Add this line for debugging
 }
 
 function confirmDelete(event, courseSubjectId, acyId, term, submitted) {

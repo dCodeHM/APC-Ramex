@@ -5,12 +5,12 @@ session_start();
 include("config/RAMeXSO.php");
 include("config/functions.php");
 
-$user_data = check_login($conn_ramex);
+$user_data = check_login($conn_soe);
 
 $account_id = $_SESSION['account_id'];
 
-$sql = "SELECT * FROM  account WHERE account_id = '$account_id' LIMIT 1";
-$gotResults = mysqli_query($conn_ramex, $sql);
+$sql = "SELECT * FROM account WHERE account_id = '$account_id' LIMIT 1";
+$gotResults = mysqli_query($conn_soe, $sql);
 if ($gotResults) {
 if (mysqli_num_rows($gotResults) > 0) {
 while ($row = mysqli_fetch_array($gotResults)) {
@@ -27,14 +27,16 @@ exit();
 
 // Display the user-specific information
 
-$result = mysqli_query($conn_ramex, $sql); // Replace with data from the database
+$result = mysqli_query($conn_soe, $sql); // Replace with data from the database
 if ($result) {
 $row = mysqli_fetch_array($result);
 $user_email = $row['user_email'];
-$pwd = $row['pwd'];
+$pwd = $row['user_password'];
 $first_name = $row['first_name'];
 $last_name = $row['last_name'];
 $role = $row['role'];
+$program_name = $row['program_name'];
+
 }
 // Assuming $course_code is the course folder name
 // if (isset($course_code)) {
@@ -270,14 +272,26 @@ updateProfCourseSubject($conn_ramex, $conn_soe, $account_id);
 <section id="container2" style="cursor:pointer">
     <div class="emservices">
         <?php
-        // Query to fetch all distinct academic years, including future ones
-        $query_academic_years = "SELECT DISTINCT c.acy_id, ay.academic_year 
-        FROM course c
-        JOIN soe_assessment_db.academic_year ay ON c.acy_id = ay.acy_id
-        WHERE c.acy_id <= ?
-        ORDER BY ay.academic_year DESC";
+// Get the program_id for the current user
+$query_program_id = "SELECT pl.program_id 
+FROM account a
+JOIN program_name pl ON a.program_name = pl.program_name
+WHERE a.account_id = ?";
+$stmt_program_id = mysqli_prepare($conn_soe, $query_program_id);
+mysqli_stmt_bind_param($stmt_program_id, "i", $account_id);
+mysqli_stmt_execute($stmt_program_id);
+$result_program_id = mysqli_stmt_get_result($stmt_program_id);
+$row_program_id = mysqli_fetch_assoc($result_program_id);
+$user_program_id = $row_program_id['program_id'];
+mysqli_stmt_close($stmt_program_id);
+
+// Query to fetch all academic years for the user's program
+$query_academic_years = "SELECT acy_id, academic_year
+                         FROM academic_year
+                         WHERE program_id = ?
+                         ORDER BY academic_year DESC";
 $stmt_academic_years = mysqli_prepare($conn_soe, $query_academic_years);
-mysqli_stmt_bind_param($stmt_academic_years, "i", $latest_acy_id);
+mysqli_stmt_bind_param($stmt_academic_years, "i", $user_program_id);
 mysqli_stmt_execute($stmt_academic_years);
 $result_academic_years = mysqli_stmt_get_result($stmt_academic_years);
 
@@ -286,7 +300,7 @@ if ($result_academic_years) {
         $acy_id = $row_acy['acy_id'];
         $academic_year = $row_acy['academic_year'];
         ?>
-        <div class="mebox">
+<div class="mebox">
             <div class="AYboxme">
                 <div class="AYheader">
                     <div class="AYtitle-container">
@@ -300,39 +314,43 @@ if ($result_academic_years) {
                     <div class="AYrow-container" style="display: none;">
                         <div class="terms-row">
                         <?php
-for ($term = 1; $term <= 3; $term++) {
-    $term_class = 'not-available';
-    $term_text = "Term $term";
+                        for ($term = 1; $term <= 3; $term++) {
+                            // Query to check if there's a course for this academic year and term
+                            $query_course = "SELECT submitted FROM course 
+                                             WHERE acy_id = ? AND term = ? AND user_id = ? 
+                                             LIMIT 1";
+                            $stmt_course = mysqli_prepare($conn_soe, $query_course);
+                            mysqli_stmt_bind_param($stmt_course, "isi", $acy_id, $term, $account_id);
+                            mysqli_stmt_execute($stmt_course);
+                            $result_course = mysqli_stmt_get_result($stmt_course);
+                            
+                            if (mysqli_num_rows($result_course) > 0) {
+                                $course = mysqli_fetch_assoc($result_course);
+                                $submitted = $course['submitted'];
+                                if ($submitted == 1) {
+                                    $term_class = 'complete-term';
+                                    $term_status = 'Complete';
+                                } else {
+                                    $term_class = 'ongoing-term';
+                                    $term_status = 'Ongoing';
+                                }
+                            } else {
+                                $term_class = 'not-available';
+                                $term_status = 'Not Available';
+                                $submitted = 0;
+                            }
+                            
+                            mysqli_stmt_close($stmt_course);
 
-    // Check if this term should be displayed
-    if ($acy_id < $latest_acy_id || ($acy_id == $latest_acy_id && $term <= $latest_term)) {
-        // Query to fetch courses for this academic year and term from prof_course_subject
-        $query_courses = "SELECT pcs.*, c.submitted FROM prof_course_subject pcs
-                          JOIN soe_assessment_db.course c ON pcs.acy_id = c.acy_id AND pcs.term = c.term
-                          WHERE pcs.acy_id = ? AND pcs.term = ? AND pcs.account_id = ?";
-        $stmt_courses = mysqli_prepare($conn_ramex, $query_courses);
-        mysqli_stmt_bind_param($stmt_courses, "iii", $acy_id, $term, $account_id);
-        mysqli_stmt_execute($stmt_courses);
-        $result_courses = mysqli_stmt_get_result($stmt_courses);
+                            $term_text = "Term $term";
 
-        if (mysqli_num_rows($result_courses) > 0) {
-            $course = mysqli_fetch_assoc($result_courses);
-            $submitted = $course['submitted'];
-            $term_class = $submitted ? 'complete-term' : 'incomplete-term';
-        }
-
-        echo "<div class='term-container'>";
-        echo "<div class='AYmalakingbox {$term_class}' onclick='redirectToMyExams({$acy_id}, {$term}, {$submitted})'>{$term_text}</div>";
-        echo "</div>";
-
-        mysqli_stmt_close($stmt_courses);
-    } else {
-        $term_text .= " (Not Available)";
-        echo "<div class='term-container'>";
-        echo "<div class='AYmalakingbox {$term_class}'>{$term_text}</div>";
-        echo "</div>";
-    }
-}
+                            echo "<div class='term-container'>";
+                            echo "<div class='AYmalakingbox {$term_class}' onclick='handleTermClick({$acy_id}, {$term}, {$submitted}, \"{$term_class}\")' data-status='{$term_status}'>";
+                            echo "<span class='term-text'>{$term_text}</span>";
+                            echo "<span class='term-status'>{$term_status}</span>";
+                            echo "</div>";
+                            echo "</div>";
+                        }
                         ?>
                         </div>
                     </div>
@@ -344,6 +362,7 @@ for ($term = 1; $term <= 3; $term++) {
 } else {
     echo "Error fetching academic years: " . mysqli_error($conn_soe);
 }
+mysqli_stmt_close($stmt_academic_years);
 ?>
 </div>
 </section>
@@ -391,6 +410,7 @@ function handleSearchInput() {
 }
 
 document.getElementById("live_search").addEventListener("input", handleSearchInput);
+
 </script>
 
 <?php
@@ -402,6 +422,13 @@ mysqli_close($conn_soe);
 </div>
 </div>
 </div>
+</div>
+                        <!-- Add this HTML for the popup at the end of the body tag -->
+                        <div id="termPopup" class="term-popup">
+    <div class="term-popup-content">
+        <span class="close-popup">&times;</span>
+        <p id="popupMessage"></p>
+    </div>
 </div>
 </body>
 
@@ -476,6 +503,33 @@ function handleAction(select) {
 
     // Attach an event listener to the search input
     document.getElementById("live_search").addEventListener("input", handleSearchInput);
+
+    function handleTermClick(acyId, term, submitted, termClass) {
+    if (termClass === 'not-available') {
+        showPopup("This term is not available.");
+    } else {
+        redirectToMyExams(acyId, term, submitted);
+    }
+}
+
+function showPopup(message) {
+    const popup = document.getElementById("termPopup");
+    const popupMessage = document.getElementById("popupMessage");
+    popupMessage.textContent = message;
+    popup.style.display = "block";
+}
+
+// Close the popup when clicking on the close button or outside the popup
+document.querySelector(".close-popup").onclick = function() {
+    document.getElementById("termPopup").style.display = "none";
+}
+
+window.onclick = function(event) {
+    const popup = document.getElementById("termPopup");
+    if (event.target == popup) {
+        popup.style.display = "none";
+    }
+}
             </script>
 <?php
         }

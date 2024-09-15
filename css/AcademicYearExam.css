@@ -26,6 +26,7 @@ body {
 .AYrow-container {
   display: flex;
   flex-direction: row;
+  justify-items: center;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -178,23 +179,82 @@ body {
 }
 
 .AYmalakingbox {
-  border-radius: 8px;
-  background-color: #ffe600;
-  color: #fff;
-  text-align: center;
-  width: 100%;
-  padding: 10px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  transition: all 0.3s ease; /* Add transition for smooth animation */
-  cursor: pointer; /* Add cursor pointer to indicate clickable */
-  transition: background-color 0.3s ease;
-  margin: 0 10px; /* Add horizontal margin */
-  flex: 1; /* Allow boxes to grow and fill the space */
-  max-width: calc(33.333% - 20px); /* Ensure boxes don't grow too large, accounting for margins */
-  margin-top: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  padding: 5px;             /* Reduced padding */
+  border-radius: 6px;       /* Slightly smaller corners */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 18px;          /* Reduced font size */
+}
+
+.complete-term {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.ongoing-term {
+  background-color: #FFC107;
+  color: rgb(255, 255, 255);
+}
+
+.not-available {
+  background-color: #9E9E9E;
+  color: white;
+}
+
+.term-text {
   font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.term-status {
+  font-size: 0.8em;
+}
+
+.term-popup {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4); /* Dark overlay */
+}
+
+.term-popup-content {
+  background-color: #f9f9f9;            /* Light background for the popup content */
+  margin: 10% auto;                     /* Vertically centers the popup */
+  padding: 20px;                        /* Adds padding inside the popup */
+  border-radius: 8px;                   /* Rounded corners for the popup */
+  border: 1px solid #cccccc;            /* Soft border */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds depth with shadow */
+  width: 300px;                         /* Fixed width */
+  text-align: center;                   /* Center the text inside */
+  position: relative;                   /* For positioning the close button */
+  font-family: 'Arial', sans-serif;     /* Clean font */
+  font-size: 18px;                      /* Readable font size */
+  color: #333333;                       /* Text color */
+}
+
+.close-popup {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-popup:hover,
+.close-popup:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 /* Adjust the first and last boxes to align with the container edges */
@@ -232,7 +292,6 @@ body {
   color: inherit;
   padding: 10px;
   border-radius: 5px;
-  margin-top: 10px;
 }
 
 .AYfill-div .content {
@@ -315,13 +374,17 @@ body {
 .terms-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
 }
 
 .term-container {
   width: 100%;
-    margin-bottom: 10px;
+  display: flex;             /* Add this to enable flexbox */
+  align-items: center;       /* Centers items vertically */
+  justify-content: center;   /* Centers items horizontally */
 }
+
 
 .AYoptions {
   position: absolute;
