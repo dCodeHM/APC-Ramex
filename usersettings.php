@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("config/db.php");
+include("config/RAMeXSO.php");
 include("config/functions.php");
 
 if (isset($_SESSION['status'])) {
@@ -17,7 +17,7 @@ if (isset($_SESSION['status'])) {
 <?php
 $id = $_SESSION['account_id'];
 $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
-$gotResults = mysqli_query($conn, $sql);
+$gotResults = mysqli_query($conn_soe, $sql);
 if ($gotResults) {
     if (mysqli_num_rows($gotResults) > 0) {
         while ($row = mysqli_fetch_array($gotResults)) {
@@ -269,7 +269,7 @@ if ($gotResults) {
                                 </p>
                                 <div class="flex items-center gap-8">
                                     <div class="py-4 px-8 w-[60%] bg-white outline outline-1 outline-zinc-800 rounded-xl flex gap-4 justify-between">
-                                        <input class="bg-white" type="password" name="updatePassword" id="userInput" value="<?php echo $row['pwd']; ?>">
+                                        <input class="bg-white" type="password" name="updatePassword" id="userInput" value="<?php echo $row['user_password']; ?>">
                                         <div class="flex gap-4">
                                             <p class="text-zinc-400 cursor-pointer" id="showHide">Show</p>
                                             <!-- <div class="error"></div> -->

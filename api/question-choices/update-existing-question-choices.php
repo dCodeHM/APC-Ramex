@@ -1,5 +1,5 @@
 <?php
-include("../../config/db.php");
+include("config/RAMeXSO.php");
 include("../../config/functions.php");
 
 ini_set('display_errors', 0);
@@ -14,22 +14,22 @@ try {
 
         foreach ($questionData['choices'] as $choiceIndex => $choice) {
             $isCorrectValue = intval($choice['is_correct']);
-            $answerTextValue = mysqli_real_escape_string($conn, $choice['answer_text']);
+            $answerTextValue = mysqli_real_escape_string($conn_ramex, $choice['answer_text']);
             $questionChoicesId = intval($choice['question_choices_id']);
 
             if (isset($_FILES['question_data']['tmp_name'][$questionIndex]['choices'][$choiceIndex]['answer_image'])) {
                 $answerImageValue = file_get_contents($_FILES['question_data']['tmp_name'][$questionIndex]['choices'][$choiceIndex]['answer_image']);
                 $sql = "UPDATE question_choices SET answer_text = ?, answer_image = ?, is_correct = ? WHERE question_choices_id = ?";
-                $stmt = $conn->prepare($sql);
+                $stmt = $conn_ramex->prepare($sql);
                 if (!$stmt) {
-                    throw new Exception("Error preparing statement: " . $conn->error);
+                    throw new Exception("Error preparing statement: " . $conn_ramex->error);
                 }
                 $stmt->bind_param("ssii", $answerTextValue, $answerImageValue, $isCorrectValue, $questionChoicesId);
             } else {
                 $sql = "UPDATE question_choices SET answer_text = ?, is_correct = ? WHERE question_choices_id = ?";
-                $stmt = $conn->prepare($sql);
+                $stmt = $conn_ramex->prepare($sql);
                 if (!$stmt) {
-                    throw new Exception("Error preparing statement: " . $conn->error);
+                    throw new Exception("Error preparing statement: " . $conn_ramex->error);
                 }
                 $stmt->bind_param("sii", $answerTextValue, $isCorrectValue, $questionChoicesId);
             }

@@ -379,7 +379,7 @@ if ($activity_result->num_rows > 0) {
 ?>
 </div>
 
-<div id="numbered_activity_fields" style="display: none;">
+<div id="numbered_activity_fields" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" style="display: none;">
     <!-- This div will be populated with the numbered activity fields -->
 </div>
 
@@ -391,7 +391,7 @@ function showNumberedActivity(activityId) {
     const numberedActivities = <?php echo json_encode($numbered_activities); ?>;
 
     if (numberedActivities[activityId]) {
-        numberedActivityFields.style.display = 'block';
+        numberedActivityFields.style.display = 'grid';
         numberedActivities[activityId].forEach((item, index) => {
             const itemNames = item.item_name.split('~');
             const totalPoints = item.total_points.split('~');
@@ -401,21 +401,19 @@ function showNumberedActivity(activityId) {
                 // Only create a fieldset if there's actual data
                 if (itemNames[i].trim() !== '' || totalPoints[i].trim() !== '' || cloIdRanges[i].trim() !== '') {
                     const fieldSet = document.createElement('fieldset');
-                    fieldSet.className = 'mb-4 p-4 border border-gray-500 rounded';
+                    fieldSet.className = 'p-4 border border-gray-300 rounded shadow-sm hover:shadow-md transition-shadow duration-300';
 
                     fieldSet.innerHTML = `
-                        <legend class="font-bold text-3xl">Item ${i + 1}</legend>
-                        <div class="mb-2">
-                            <label class="block text-2xl font-bold text-gray-700">Item Name</label>
-                            <input type="text" name="item_name[]" value="${itemNames[i]}" class="mt-1 block w-full rounded-md border-gray-600 shadow-sm text-2xl">
-                        </div>
-                        <div class="mb-2">
-                            <label class="block text-2xl font-bold text-gray-700">Total Points</label>
-                            <input type="text" name="total_points[]" value="${totalPoints[i]}" class="mt-1 block w-full rounded-md border-gray-600 shadow-sm text-2xl">
-                        </div>
-                        <div class="mb-2">
-                            <label class="block text-2xl font-bold text-gray-700">CLO ID Range</label>
-                            <input type="text" name="clo_id_range[]" value="${cloIdRanges[i]}" class="mt-1 block w-full rounded-md border-gray-600 shadow-sm text-2xl">
+                        <legend class="font-bold text-lg mb-2">Item ${i + 1}</legend>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Item Name</label>
+                            <input type="text" name="item_name[]" value="${itemNames[i]}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            
+                            <label class="block text-sm font-medium text-gray-700">Total Points</label>
+                            <input type="text" name="total_points[]" value="${totalPoints[i]}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            
+                            <label class="block text-sm font-medium text-gray-700">CLO ID Range</label>
+                            <input type="text" name="clo_id_range[]" value="${cloIdRanges[i]}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         </div>
                     `;
 
@@ -423,6 +421,14 @@ function showNumberedActivity(activityId) {
                 }
             }
         });
+
+        // Adjust the grid based on the number of items
+        const itemCount = numberedActivityFields.children.length;
+        if (itemCount <= 4) {
+            numberedActivityFields.className = `grid grid-cols-${itemCount} gap-4`;
+        } else {
+            numberedActivityFields.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4';
+        }
     } else {
         numberedActivityFields.style.display = 'none';
     }

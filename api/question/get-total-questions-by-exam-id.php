@@ -1,5 +1,5 @@
 <?php
-include("../../config/db.php");
+include("config/RAMeXSO.php");
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -12,7 +12,7 @@ $exam_id = $_GET['exam_id'];
 $sql = "SELECT COUNT(question_id) as total_questions FROM question WHERE exam_id = $exam_id";
 
 // Execute SQL Query
-$result = $conn->query($sql);
+$result = $conn_ramex->query($sql);
 
 // Check if the result is not empty
 if ($result->num_rows > 0) {

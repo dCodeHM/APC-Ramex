@@ -1,5 +1,5 @@
 <?php
-include("../../config/db.php");
+include("config/RAMeXSO.php");
 include("../../config/functions.php");
 
 $log->info('POST request to post-question-choices.php');
@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         for ($question_index = 0; $question_index < $num_questions; $question_index++) {
             // Prepare question data
-            $question_text = mysqli_real_escape_string($conn, $new_question_texts[$question_index]);
+            $question_text = mysqli_real_escape_string($conn_ramex, $new_question_texts[$question_index]);
             $log->info('Question text: ' . $question_text);
 
             if (!isset($new_clo_ids[$question_index])) {
@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $log->info('Combined clo ids: ' . $clo_ids_string);
 
-            $difficulty = mysqli_real_escape_string($conn, $new_difficulties[$question_index]);
+            $difficulty = mysqli_real_escape_string($conn_ramex, $new_difficulties[$question_index]);
             $log->info('Difficulty: ' . $difficulty);
 
             $points = intval($new_question_points[$question_index]);
@@ -52,10 +52,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             // Get the highest answer_id from the question_choices table
             $sql = "SELECT MAX(answer_id) AS max_answer_id FROM question_choices";
-            $result = $conn->query($sql);
+            $result = $conn_ramex->query($sql);
 
             if ($result === false) {
-                throw new Exception("Error executing query: " . $conn->error);
+                throw new Exception("Error executing query: " . $conn_ramex->error);
             }
 
             if ($result->num_rows > 0) {
@@ -80,17 +80,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if ($question_image !== null) {
                 $sql = "INSERT INTO question (exam_id, question_text, question_image, clo_id, difficulty, question_points, answer_id, in_question_library)
                 VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
-                $stmt = $conn->prepare($sql);
+                $stmt = $conn_ramex->prepare($sql);
                 if (!$stmt) {
-                    throw new Exception("Error preparing statement: " . $conn->error);
+                    throw new Exception("Error preparing statement: " . $conn_ramex->error);
                 }
                 $stmt->bind_param("issssii", $exam_id, $question_text, $question_image, $clo_ids_string, $difficulty, $points, $answer_id);
             } else {
                 $sql = "INSERT INTO question (exam_id, question_text, clo_id, difficulty, question_points, answer_id, in_question_library)
                 VALUES (?, ?, ?, ?, ?, ?, 1)";
-                $stmt = $conn->prepare($sql);
+                $stmt = $conn_ramex->prepare($sql);
                 if (!$stmt) {
-                    throw new Exception("Error preparing statement: " . $conn->error);
+                    throw new Exception("Error preparing statement: " . $conn_ramex->error);
                 }
                 $stmt->bind_param("isssii", $exam_id, $question_text, $clo_ids_string, $difficulty, $points, $answer_id);
             }
@@ -131,17 +131,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($new_image_content !== null) {
                     $sql = "INSERT INTO question_choices (answer_text, answer_image, is_correct, letter, answer_id)
                             VALUES (?, ?, ?, ?, ?)";
-                    $stmt = $conn->prepare($sql);
+                    $stmt = $conn_ramex->prepare($sql);
                     if (!$stmt) {
-                        throw new Exception("Error preparing statement: " . $conn->error);
+                        throw new Exception("Error preparing statement: " . $conn_ramex->error);
                     }
                     $stmt->bind_param("ssisi", $new_answer_text, $new_image_content, $is_correct, $new_letter, $answer_id);
                 } else {
                     $sql = "INSERT INTO question_choices (answer_text, is_correct, letter, answer_id)
                             VALUES (?, ?, ?, ?)";
-                    $stmt = $conn->prepare($sql);
+                    $stmt = $conn_ramex->prepare($sql);
                     if (!$stmt) {
-                        throw new Exception("Error preparing statement: " . $conn->error);
+                        throw new Exception("Error preparing statement: " . $conn_ramex->error);
                     }
                     $stmt->bind_param("sisi", $new_answer_text, $is_correct, $new_letter, $answer_id);
                 }

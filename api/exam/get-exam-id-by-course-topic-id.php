@@ -1,5 +1,5 @@
 <?php
-include("../../config/db.php");
+include("config/RAMeXSO.php");
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -12,7 +12,7 @@ $course_topic_id = $_GET['course_topic_id'];
 $sql = "SELECT exam_id FROM exam WHERE course_topic_id = $course_topic_id";
 
 // Execute SQL Query
-$result = $conn->query($sql);
+$result = $conn_ramex->query($sql);
 
 // Check if the result is not empty
 if ($result->num_rows > 0) {
@@ -27,4 +27,4 @@ if ($result->num_rows > 0) {
 }
 
 // Close the connection
-$conn->close();
+$conn_ramex->close();

@@ -1,5 +1,5 @@
 <?php
-include("../../config/db.php");
+include("config/RAMeXSO.php");
 include("../../config/functions.php");
 
 ini_set('display_errors', 1);
@@ -24,7 +24,7 @@ $log->info('Exam Instruction: ' . $examInstruction);
 
 // Update the exam instruction in the database
 $sql = "UPDATE exam SET exam_instruction = ? WHERE exam_id = ?";
-$stmt = $conn->prepare($sql);
+$stmt = $conn_ramex->prepare($sql);
 $stmt->bind_param("si", $examInstruction, $examId);
 $stmt->execute();
 

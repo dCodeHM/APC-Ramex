@@ -1,5 +1,5 @@
 <?php
-include("../../config/db.php");
+include("config/RAMeXSO.php");
 include("../../config/functions.php");
 
 $exam_id = $_POST['exam_id'];
@@ -10,25 +10,25 @@ $difficulties = $_POST['difficulty'];
 $question_points = $_POST['question_points'];
 
 foreach ($question_ids as $index => $question_id) {
-    $question_text = mysqli_real_escape_string($conn, $question_texts[$index]);
-    $clo_id = mysqli_real_escape_string($conn, $clo_ids[$index]);
-    $difficulty = mysqli_real_escape_string($conn, $difficulties[$index]);
+    $question_text = mysqli_real_escape_string($conn_ramex, $question_texts[$index]);
+    $clo_id = mysqli_real_escape_string($conn_ramex, $clo_ids[$index]);
+    $difficulty = mysqli_real_escape_string($conn_ramex, $difficulties[$index]);
     $points = intval($question_points[$index]);
 
     // Handle question image upload
     if (isset($_FILES['question_image']['tmp_name'][$index]) && !empty($_FILES['question_image']['tmp_name'][$index])) {
         $question_image = file_get_contents($_FILES['question_image']['tmp_name'][$index]);
         $sql = "UPDATE question SET question_text = ?, question_image = ?, clo_id = ?, difficulty = ?, question_points = ? WHERE question_id = ?";
-        $stmt = $conn->prepare($sql);
+        $stmt = $conn_ramex->prepare($sql);
         if (!$stmt) {
-            die("Error preparing statement: " . $conn->error);
+            die("Error preparing statement: " . $conn_ramex->error);
         }
         $stmt->bind_param("ssssii", $question_text, $question_image, $clo_id, $difficulty, $points, $question_id);
     } else {
         $sql = "UPDATE question SET question_text = ?, clo_id = ?, difficulty = ?, question_points = ? WHERE question_id = ?";
-        $stmt = $conn->prepare($sql);
+        $stmt = $conn_ramex->prepare($sql);
         if (!$stmt) {
-            die("Error preparing statement: " . $conn->error);
+            die("Error preparing statement: " . $conn_ramex->error);
         }
         $stmt->bind_param("sssii", $question_text, $clo_id, $difficulty, $points, $question_id);
     }
