@@ -6,6 +6,9 @@ include("config/functions.php");
 
 $user_data = check_login($conn_soe);
 
+ 
+$run = mysqli_query($conn_soe,"SELECT * FROM academic_program_view");
+
 $result = mysqli_query($conn_soe, "SELECT * FROM account"); //data get from database
 $id = $_SESSION['account_id'];
 $sql = "SELECT * FROM  account WHERE account_id = '$id' LIMIT 1";
@@ -15,6 +18,7 @@ if ($gotResults) {
         while ($row = mysqli_fetch_array($gotResults)) {
             // print_r($row['first_name']);
 ?>
+
             <!DOCTYPE html>
             <html lang="en">
 
@@ -190,7 +194,7 @@ if ($gotResults) {
                                 </div>
 
                                 <div class="programlisthead">
-                                    <p> Program List</p>
+                                    <h1> Program List</h1>
                                 </div>
 
                                 <div class="search">
@@ -211,7 +215,7 @@ if ($gotResults) {
                                 <?php
                                 $i = 1;
                                 // You need to assign a query result to $run
-                                $run = mysqli_query($conn_soe, "SELECT * FROM program_name"); // Example query
+                                $run = mysqli_query($conn_soe, "SELECT * FROM academic_program_view"); // Example query
 
                                 if ($run && mysqli_num_rows($run) > 0) {
                                     while ($result = mysqli_fetch_assoc($run)) {
