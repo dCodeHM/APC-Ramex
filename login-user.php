@@ -3,13 +3,14 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=utf-8");
 
 include "config/RAMeXSO.php";
+include "config/functions.php";
 
 
 session_start(); // Start or resume the session
 
-if (isset($_GET['user_email']) && isset($_GET['pwd'])) {
+if (isset($_GET['user_email']) && isset($_GET['user_password'])) {
     $email = mysqli_real_escape_string($conn_soe, $_GET['user_email']);
-    $password = mysqli_real_escape_string($conn_soe, $_GET['pwd']);
+    $password = mysqli_real_escape_string($conn_soe, $_GET['user_password']);
 
         // Construct the SQL query
         $query = "SELECT * FROM account WHERE user_email = '$email' LIMIT 1";
